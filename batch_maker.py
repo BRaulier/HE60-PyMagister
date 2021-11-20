@@ -13,7 +13,10 @@ class Batch:
         self.batch_file = None
         self.run_title = None
         self.rootname = None
+        self.Nwave = None
         self.batch_name = batch_name
+
+        self.set_N_band_waves()
 
         self.create_batch_file()
 
@@ -25,6 +28,9 @@ class Batch:
 
     def set_rootname(self, rootname):
         self.rootname = rootname
+
+    def set_N_band_waves(self, N_band=15):
+        self.Nwave = N_band
 
     def set_record1(self):
         self.meta['record1']['sOutDir'] = '/Users/braulier/Documents/HE60/output'
@@ -102,7 +108,14 @@ class Batch:
                            '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}'.format(**self.meta['record5'])
 
     def set_record6(self):
+        self.meta['record6']['Nwave'] = self.Nwave
+        inc = (self.meta['record1']['Parmax'] - self.meta['record1']['Parmin'])/ self.Nwave
+        print(inc)
+        self.meta['record6']['bands'] = np.arange(self.meta['record1']['Parmin'], self.meta['record1']['Parmax'], self.Nwave)
 
+    def prep_record6(self):
+        self.meta['record6']['bands_str'] = ','.join([str(i) for i in self.meta['record6']['bands']])
+        self.record6_str = '{Nwave}\n{bands_str}'.format(**self.meta['record6'])
 
 
 
@@ -111,9 +124,14 @@ class Batch:
 if __name__ == '__main__':
     print('\n')
     test_1 = Batch(batch_name='test')
+    test_1.set_record1()
     test_1.set_record4()
     test_1.prep_record4()
+    print(test_1.record4_str)
+
     test_1.set_record5()
     test_1.prep_record5()
-    print(test_1.record4_str)
     print(test_1.record5_str)
+    test_1.set_record6()
+    test_1.prep_record6()
+    print(test_1.record6_str)
