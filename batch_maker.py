@@ -21,7 +21,7 @@ class Batch:
         self.create_batch_file()
 
     def create_batch_file(self, path="/Users/braulier/Documents/HE60/run/batch"):
-        self.batch_file = open(path + '/' + self.batch_name, "w+")
+        self.batch_file = open(path + self.batch_name+'.txt', "w+")
 
     def set_title(self, title):
         self.run_title = title
@@ -32,8 +32,25 @@ class Batch:
     def set_N_band_waves(self, N_band=15):
         self.Nwave = N_band
 
+    def set_all_records(self):
+        self.set_record1()
+        self.set_record2()
+        self.set_record3()
+        self.set_record4()
+        self.set_record5()
+        self.set_record6()
+        self.set_record7()
+        self.set_record8()
+        self.set_record9()
+        self.set_record10()
+        self.set_record11()
+        self.set_record12()
+
+    def write_batch_file(self):
+        self.batch_file.writelines([self.meta['record{}'.format(i)]['string'] for i in range(1, 13)])
+
     def set_record1(self):
-        self.meta['record1']['sOutDir'] = '/Users/braulier/Documents/HE60/output'
+        self.meta['record1']['sOutDir'] = '"/Users/braulier/Documents/HE60/output"'
         self.meta['record1']['Parmin'] = 400                            # lowest wavelength included in PAR calculations
         self.meta['record1']['Parmax'] = 700                            # highest wavelength included in PAR calculations
         self.meta['record1']['PhiChl'] = 0.02                           # chlorophyll fluorescence efficiency
@@ -42,21 +59,18 @@ class Batch:
         self.meta['record1']['iDynz'] = 1                               # inelastic sources are present and an infinitely-deep bottom is selected
         self.meta['record1']['RamanExp'] = 5.5                          # wavelength dependence of the Raman scattering coefficient
                                                                         # see HydroLight Technical Note 10
-
-    def prep_record1(self):
-        self.record1_str = '{sOutDir}, {Parmin}, {Parmax}, {PhiChl}, {Raman0}, {RamanXS}, {iDynz}, {RamanExp}'.format(**self.meta['record1'])
+        # String construction
+        self.meta['record1']['string'] = '{sOutDir}, {Parmin}, {Parmax}, {PhiChl}, {Raman0}, {RamanXS}, {iDynz}, {RamanExp}\n'.format(**self.meta['record1'])
 
     def set_record2(self):
-        self.meta['record2']['ititle'] = self.run_title
-
-    def prep_record2(self):
-        self.record2_str = '{ititle}'.format(**self.meta['record2'])
+        self.meta['record2']['ititle'] = self.run_title + '\n'
+        # String construction
+        self.meta['record2']['string'] = '{ititle}'.format(**self.meta['record2'])
 
     def set_record3(self):
         self.meta['record3']['rootname'] = self.rootname
-
-    def prep_record3(self):
-        self.record3_str = '{rootname}'.format(**self.meta['record3'])
+        # String construction
+        self.meta['record3']['string'] = '{rootname}'.format(**self.meta['record3']) + '\n'
 
     def set_record4(self):
         # Record 4a
@@ -72,10 +86,9 @@ class Batch:
         self.meta['record4']['iIOPTS'] = 0                          # For pure water IOP's independent of temperature and salinity
         self.meta['record4']['iChl'] = 0
         self.meta['record4']['iCDOM'] = 0
-
-    def prep_record4(self):
-        self.record4_str = '{iOptPrnt}, {iOptDigital}, {iOptExcelS}, {iOptExcelM}, {iOptRad}\n' \
-                           '{iIOPmodel}, {iSkyRadmodel}, {iSkyIrradmodel}, {iIOPTS}, {iChl}, {iCDOM}'.format(**self.meta['record4'])
+        # String construction
+        self.meta['record4']['string'] = '{iOptPrnt}, {iOptDigital}, {iOptExcelS}, {iOptExcelM}, {iOptRad}\n' \
+                           '{iIOPmodel}, {iSkyRadmodel}, {iSkyIrradmodel}, {iIOPTS}, {iChl}, {iCDOM}\n'.format(**self.meta['record4'])
 
     def set_record5(self):
         # record 5a: number of components
@@ -102,27 +115,23 @@ class Batch:
         self.meta['record5']['5h_line1'] = 'dpf_pure_H2O.txt'               # TODO NULL
         self.meta['record5']['5h_line2'] = 'dpf_Petzold_avg_particle.txt'   # TODO
 
-    def prep_record5(self):
-        self.record5_str = '{ncomp}, {nconc}\n{compconc}\n{5c_line1}\n{5c_line2}\n{null_water_file}\n' \
+        self.meta['record5']['string'] = '{ncomp}, {nconc}\n{compconc}\n{5c_line1}\n{5c_line2}\n{null_water_file}\n' \
                            '{user_absorption_file}\n{5e_line1}\n{5e_line2}\n{5f_line1}\n{5f_line2}\n' \
-                           '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}'.format(**self.meta['record5'])
+                           '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}\n'.format(**self.meta['record5'])
 
     def set_record6(self):
         self.meta['record6']['Nwave'] = self.Nwave
         self.meta['record6']['bands'] = np.arange(self.meta['record1']['Parmin'], self.meta['record1']['Parmax'], self.Nwave)
-
-    def prep_record6(self):
         self.meta['record6']['bands_str'] = ','.join([str(i) for i in self.meta['record6']['bands']])
-        self.record6_str = '{Nwave}\n{bands_str}'.format(**self.meta['record6'])
+        self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
 
     def set_record7(self):
         self.meta['record7']['ibiolum'] = 0                         # 0: no bioluminescence present
         self.meta['record7']['ichlfl'] = 0                          # 0: no chlorophyll fluorescence present
         self.meta['record7']['icdomfl'] = 0                         # 0: no CDOM fluorescence present
         self.meta['record7']['iraman'] = 0                         # 0: no Raman scattering present
-
-    def prep_record7(self):
-        self.record7_str = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}'.format(**self.meta['record7'])
+        self.meta['record7']['icompchl'] = 0                        # index for the chlorophyll fluorescence component
+        self.meta['record7']['string'] = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}, {icompchl}\n'.format(**self.meta['record7'])
 
     def set_record8(self):
         # record 8a
@@ -142,10 +151,8 @@ class Batch:
         self.meta['record8']['vi'] = 15                             # average horizontal visibility (km) https://essd.copernicus.org/articles/12/805/2020/
         self.meta['record8']['wsm'] = 6.0                          # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
         self.meta['record8']['ro3'] = 300                          # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
-
-    def prep_record8(self):
-        self.record8_str = '{iflagsky}, {suntheta}, {sunphi}, {cloud}' \
-                           '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}'.format(**self.meta['record8'])
+        self.meta['record8']['string'] = '{iflagsky}, {suntheta}, {sunphi}, {cloud}\n' \
+                           '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
 
     def set_record9(self):
         self.meta['record9']['windspd'] = 15.0                      # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
@@ -153,82 +160,43 @@ class Batch:
         self.meta['record9']['temp'] = -1.8                         # water temperature
         self.meta['record9']['salinty'] = 35.0                      # salinity (PSU)
         self.meta['record9']['iSurfaceModelFlag'] = 3               # azimuthally averaged Cox-Munk surfaces
-
-    def prep_record9(self):
-        self.record9_str = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}'.format(**self.meta['record9'])
+        self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
 
     def set_record10(self):
         self.meta['record10']['ibotm'] = 0                          # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
         self.meta['record10']['rflbot'] = 0.2                       # Bottom reflectance, only used when ibotm=1
-
-    def prep_record10(self):
-        self.record10_str = '{ibotm}, {rflbot}'.format(**self.meta['record10'])
+        self.meta['record10']['string'] = '{ibotm}, {rflbot}\n'.format(**self.meta['record10'])
 
     def set_record11(self):
         self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
         self.meta['record11']['nznom'] = 10                     # number of depths
         self.meta['record11']['zetanom'] = np.linspace(0, 10, self.meta['record11']['nznom']+1, dtype=np.float16)
         self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
-
-    def prep_record11(self):
-        self.record11_str = '{iop}, {nznom}, {zetanom_str}'.format(**self.meta['record11'])
+        self.meta['record11']['string'] = '{iop}, {nznom}, {zetanom_str}\n'.format(**self.meta['record11'])
 
     def set_record12(self):
         self.meta['record12']['PureWaterDataFile'] = self.meta['record5']['null_water_file']
         self.meta['record12']['nac9Files'] = 1                                       # Number of ac9 files to read
         self.meta['record12']['ac9DataFile'] = self.meta['record5']['user_absorption_file']
-        self.meta['record12']['Ac9FilteredDataFile'] = 'DUMMY'
-        self.meta['record12']['AHydroScatDataFile'] = 'DUMMY'                       # TODO:  backscattering data
-        self.meta['record12']['ChlzDataFile'] = 'DUMMY'                       # Standard-format chlorophyll profile
-        self.meta['record12']['CDOMDataFile'] = 'DUMMY'                       # file containing values of CDOM absorption at a given reference wavelength
-        self.meta['record12']['RbottomFile'] = 'DUMMY'                       # file containing values of CDOM absorption at a given reference wavelength
-        self.meta['record12']['TxtDataFile(i)'] = 'DUMMY'                       # Concentration profile data files for component i
-        self.meta['record12']['IrradDataFile'] = 'DUMMY'                       # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
-        self.meta['record12']['S0biolumFile'] = 'DUMMY'                         # file containing bioluminescentsource strength (in W m-3 nm)
-        self.meta['record12']['LskyDataFile'] = 'DUMMY' # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
-
-    def prep_record12(self):
-        self.record12_str = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
-                            '\n{AHydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
+        self.meta['record12']['Ac9FilteredDataFile'] = 'dummyFilteredAc9.txt'
+        self.meta['record12']['HydroScatDataFile'] = 'TODO BACKSCATTER'                       # TODO:  backscattering data
+        self.meta['record12']['ChlzDataFile'] = 'dummyCHLdata.txt'                       # Standard-format chlorophyll profile
+        self.meta['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'                       # file containing values of CDOM absorption at a given reference wavelength
+        self.meta['record12']['RbottomFile'] = 'dummyR.bot'                       # file containing values of CDOM absorption at a given reference wavelength
+        self.meta['record12']['TxtDataFile(i)'] = 'dummyComp.txt\ndummyComp.txt'  # Concentration profile data files for component i
+        self.meta['record12']['IrradDataFile'] = 'dummyIrrad.txt'                       # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
+        self.meta['record12']['S0biolumFile'] = 'dummyBiolum.txt'                         # file containing bioluminescentsource strength (in W m-3 nm)
+        self.meta['record12']['LskyDataFile'] = 'dummyLsky.txt' # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
+        self.meta['record12']['string'] = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
+                            '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
                             '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
+
 
 
 if __name__ == '__main__':
     print('\n')
     test_1 = Batch(batch_name='test')
-    test_1.set_record1()
-    test_1.set_record4()
-    test_1.prep_record4()
-    print(test_1.record4_str)
-
-    test_1.set_record5()
-    test_1.prep_record5()
-    print(test_1.record5_str)
-
-    test_1.set_record6()
-    test_1.prep_record6()
-
-    print(test_1.record6_str)
-
-    test_1.set_record7()
-    test_1.prep_record7()
-    print(test_1.record7_str)
-
-    test_1.set_record8()
-    test_1.prep_record8()
-    print(test_1.record8_str)
-
-    test_1.set_record9()
-    test_1.prep_record9()
-    print(test_1.record9_str)
-
-    test_1.set_record10()
-    test_1.prep_record10()
-    print(test_1.record10_str)
-
-    test_1.set_record11()
-    test_1.prep_record11()
-    print(test_1.record11_str)
-    test_1.set_record12()
-    test_1.prep_record12()
-    print(test_1.record12_str)
+    test_1.set_title(title='Test_1')
+    test_1.create_batch_file(path='')
+    test_1.set_all_records()
+    test_1.write_batch_file()
