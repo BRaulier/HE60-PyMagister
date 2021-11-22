@@ -98,7 +98,7 @@ class Batch:
         # record 5g: type of concentrations and phase functions
         self.meta['record5']['5g_line1'] = '0,0,550,0.01,0'              # Dummy values phase functions
         self.meta['record5']['5g_line2'] = '0,0,550,0.01,0'              # Dummy values phase functions
-        # record 5h
+        # record 5h: discretized phase functions file names
         self.meta['record5']['5h_line1'] = 'dpf_pure_H2O.txt'               # TODO NULL
         self.meta['record5']['5h_line2'] = 'dpf_Petzold_avg_particle.txt'   # TODO
 
@@ -109,16 +109,88 @@ class Batch:
 
     def set_record6(self):
         self.meta['record6']['Nwave'] = self.Nwave
-        inc = (self.meta['record1']['Parmax'] - self.meta['record1']['Parmin'])/ self.Nwave
-        print(inc)
         self.meta['record6']['bands'] = np.arange(self.meta['record1']['Parmin'], self.meta['record1']['Parmax'], self.Nwave)
 
     def prep_record6(self):
         self.meta['record6']['bands_str'] = ','.join([str(i) for i in self.meta['record6']['bands']])
         self.record6_str = '{Nwave}\n{bands_str}'.format(**self.meta['record6'])
 
+    def set_record7(self):
+        self.meta['record7']['ibiolum'] = 0                         # 0: no bioluminescence present
+        self.meta['record7']['ichlfl'] = 0                          # 0: no chlorophyll fluorescence present
+        self.meta['record7']['icdomfl'] = 0                         # 0: no CDOM fluorescence present
+        self.meta['record7']['iraman'] = 0                         # 0: no Raman scattering present
 
+    def prep_record7(self):
+        self.record7_str = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}'.format(**self.meta['record7'])
 
+    def set_record8(self):
+        # record 8a
+        self.meta['record8']['iflagsky'] = 2                      # 1: idealized sky, 2 (3): semi analytic, zenith angle or (time and location)
+        self.meta['record8']['suntheta'] = 45.0                   # solar zenith angle (degrees)
+        self.meta['record8']['sunphi'] = 0.0                      # solar azimuthal angle in degrees relative to the wind direction.
+                                                                  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
+        self.meta['record8']['cloud'] = 0.5                       # 0.0: clear sky, 1.0:solid overcast
+        # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
+        self.meta['record8']['fjday'] = 180.0                     # Julian day (for earth-sun distance)
+        self.meta['record8']['rlat'] = 76.0                       # latitude (degrees)
+        self.meta['record8']['rlon'] = -83.0                     # longitude (degrees)
+        self.meta['record8']['pres'] = 29.92                    # sea level pressure (inches Hg) Value from https://www.britannica.com/science/atmospheric-pressure
+        self.meta['record8']['am'] = 1.0                         # marine aerosol type (1: marine, 10: continental) see Gathman, 1983
+        self.meta['record8']['rh'] = 75                         # relative humidity (percents), educated guess
+        self.meta['record8']['wv'] = 0.05                           # precipitable content: the amount of moisture there is above a fixed point, see https://earth.nullschool.net
+        self.meta['record8']['vi'] = 15                             # average horizontal visibility (km) https://essd.copernicus.org/articles/12/805/2020/
+        self.meta['record8']['wsm'] = 6.0                          # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
+        self.meta['record8']['ro3'] = 300                          # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
+
+    def prep_record8(self):
+        self.record8_str = '{iflagsky}, {suntheta}, {sunphi}, {cloud}' \
+                           '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}'.format(**self.meta['record8'])
+
+    def set_record9(self):
+        self.meta['record9']['windspd'] = 15.0                      # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.meta['record9']['refr'] = 1.355                        # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
+        self.meta['record9']['temp'] = -1.8                         # water temperature
+        self.meta['record9']['salinty'] = 35.0                      # salinity (PSU)
+        self.meta['record9']['iSurfaceModelFlag'] = 3               # azimuthally averaged Cox-Munk surfaces
+
+    def prep_record9(self):
+        self.record9_str = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}'.format(**self.meta['record9'])
+
+    def set_record10(self):
+        self.meta['record10']['ibotm'] = 0                          # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
+        self.meta['record10']['rflbot'] = 0.2                       # Bottom reflectance, only used when ibotm=1
+
+    def prep_record10(self):
+        self.record10_str = '{ibotm}, {rflbot}'.format(**self.meta['record10'])
+
+    def set_record11(self):
+        self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
+        self.meta['record11']['nznom'] = 10                     # number of depths
+        self.meta['record11']['zetanom'] = np.linspace(0, 10, self.meta['record11']['nznom']+1, dtype=np.float16)
+        self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
+
+    def prep_record11(self):
+        self.record11_str = '{iop}, {nznom}, {zetanom_str}'.format(**self.meta['record11'])
+
+    def set_record12(self):
+        self.meta['record12']['PureWaterDataFile'] = self.meta['record5']['null_water_file']
+        self.meta['record12']['nac9Files'] = 1                                       # Number of ac9 files to read
+        self.meta['record12']['ac9DataFile'] = self.meta['record5']['user_absorption_file']
+        self.meta['record12']['Ac9FilteredDataFile'] = 'DUMMY'
+        self.meta['record12']['AHydroScatDataFile'] = 'DUMMY'                       # TODO:  backscattering data
+        self.meta['record12']['ChlzDataFile'] = 'DUMMY'                       # Standard-format chlorophyll profile
+        self.meta['record12']['CDOMDataFile'] = 'DUMMY'                       # file containing values of CDOM absorption at a given reference wavelength
+        self.meta['record12']['RbottomFile'] = 'DUMMY'                       # file containing values of CDOM absorption at a given reference wavelength
+        self.meta['record12']['TxtDataFile(i)'] = 'DUMMY'                       # Concentration profile data files for component i
+        self.meta['record12']['IrradDataFile'] = 'DUMMY'                       # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
+        self.meta['record12']['S0biolumFile'] = 'DUMMY'                         # file containing bioluminescentsource strength (in W m-3 nm)
+        self.meta['record12']['LskyDataFile'] = 'DUMMY' # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
+
+    def prep_record12(self):
+        self.record12_str = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
+                            '\n{AHydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
+                            '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
 
 
 if __name__ == '__main__':
@@ -132,6 +204,31 @@ if __name__ == '__main__':
     test_1.set_record5()
     test_1.prep_record5()
     print(test_1.record5_str)
+
     test_1.set_record6()
     test_1.prep_record6()
+
     print(test_1.record6_str)
+
+    test_1.set_record7()
+    test_1.prep_record7()
+    print(test_1.record7_str)
+
+    test_1.set_record8()
+    test_1.prep_record8()
+    print(test_1.record8_str)
+
+    test_1.set_record9()
+    test_1.prep_record9()
+    print(test_1.record9_str)
+
+    test_1.set_record10()
+    test_1.prep_record10()
+    print(test_1.record10_str)
+
+    test_1.set_record11()
+    test_1.prep_record11()
+    print(test_1.record11_str)
+    test_1.set_record12()
+    test_1.prep_record12()
+    print(test_1.record12_str)
