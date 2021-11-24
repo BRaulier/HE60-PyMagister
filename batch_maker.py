@@ -100,7 +100,7 @@ class Batch:
         self.meta['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'         # Pure water line
         self.meta['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
-        self.meta['record5']['null_water_file'] = '../data/null_H2Oabsorps.txt'      # TODO: add null water properties
+        self.meta['record5']['null_water_file'] = '../data/null_H2Oabsorps.txt'      # null water properties
         self.meta['record5']['user_absorption_file'] = 'TODO_ABS_FILE'   # TODO: add null water properties
         # record 5e: Specific scattering parameters
         self.meta['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'   # Pure water

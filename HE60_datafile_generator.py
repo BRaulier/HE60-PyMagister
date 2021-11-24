@@ -18,3 +18,6 @@ def create_null_pure_water():
         file.write(footer)
 
 
+class
+
+
