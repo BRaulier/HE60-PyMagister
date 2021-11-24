@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def fournier_forand_pf(n, mu, phi):
     def delta(theta=phi):
         delta = 4 / (3 * (n - 1)**2) * np.sin(theta / 2) ** 2
@@ -11,10 +12,12 @@ def fournier_forand_pf(n, mu, phi):
            (1-delta(np.pi)**nu)/(16*np.pi*(delta(np.pi)-1)*delta(np.pi)**nu)*(3*np.cos(phi)**2 -1)
     return beta
 
+
 def henvey_greenstein_pf(phi, g):
     mu = np.cos(phi)
     beta = (1/(4*np.pi))*((1-g**2)/(1+g**2-2*g*mu)**(3/2))
     return beta
+
 
 def henvey_greenstein_bb(g):
     bb= (1-g)/(2*g)*((1+g)/np.sqrt(1+g**2)-1)
@@ -29,7 +32,7 @@ _ns = [1.021, 1.040, 1.08, 1.175, 1.15]
 _mus = [3.0742, 3.2010, 3.483, 4.065, 4.874]
 _bbs = [0.0001, 0.001, 0.01, 0.1, 0.4]
 
-_gs = np.linspace(0, 0.9, 10)
+_gs = np.linspace(0.98, 0.98, 1)
 _phis = np.linspace(0, np.pi, 100)
 
 plt.scatter(_10_angle*np.pi/180, _10_pf)
