@@ -1,6 +1,5 @@
 \begin_header
-Backscattering file used to find a corresponding Fournier-Forand phase 
-function. As described in https://www.oceanopticsbook.info/view/scattering/the-fournier-forand-phase-function
+ac9 file used to describe the arbitrary chosen medium 
 Column headers (depth in m; and and c in 1/m): 
 depth 412a	440a	488a	510a	532a	555a	650a	676a	715 412	c440	c488	c510	c532	c555	c650	c676	c715 
 The first data record gives the number of wavelengths and the wavelengths.
