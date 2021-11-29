@@ -1,4 +1,4 @@
-from pyHE60 import Simulation
+from HE60_magister import Simulation
 
 if __name__ == "__main__":
     path_to_user_files = r'/Users/braulier/Documents/HE60/run/mobley'
