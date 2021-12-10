@@ -14,4 +14,4 @@ Open _run_me.py_ to run (Mobley et al. 1998) and user built geometry examples.
 ### Classes calling scheme used in HE60-PyMagister
 ![image info](./ressources/pymagister_scheme.png)
 
-For questions and comment please see Bastian Raulier (Takuvik, Université Laval) [contact](mailto:bastian.raulier.1@ulaval.ca). 
+For questions and comments please see Bastian Raulier ([Takuvik Joint International Team](linkto:http://www.takuvik.ulaval.ca/), Université Laval) [contact](mailto:bastian.raulier.1@ulaval.ca). 
