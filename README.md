@@ -1,4 +1,4 @@
-# HE60-PyMagister
+# HE60-PyMagister: Work In Progress :)
 
 PyMagister is a Python interface of Hydro Light MacOS version. 
 
