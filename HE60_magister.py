@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import shutil
+import matplotlib.pyplot as plt
 import subprocess
 
 
@@ -29,16 +30,12 @@ class BatchMaker:
         self.record5_str, self.record6_str, self.record7_str, self.record8_str = None, None, None, None
         self.record9_str, self.record10_str, self.record11_str, self.record12_str, self.record13_str = None, None, None, None, None
 
-        self.ac9_path = None
-        self.bb_path = None
         self.batch_file = None
         self.run_title = None
         self.rootname = None
         self.Nwave = None
         self.batch_name = batch_name
-
-        self.set_N_band_waves()
-
+        
     def set_title(self, title):
         self.run_title = title
 
@@ -48,8 +45,7 @@ class BatchMaker:
     def set_N_band_waves(self, N_band=17):
         self.Nwave = N_band
 
-    def set_all_records(self, ac9_file_path, bb_file_path):
-        self.ac9_path, self.bb_path = ac9_file_path, bb_file_path
+    def set_all_records(self):
         self.set_record1()
         self.set_record2()
         self.set_record3()
@@ -140,7 +136,6 @@ class BatchMaker:
     def set_record6(self):
         self.meta['record6']['Nwave'] = self.Nwave - 1
         self.meta['record6']['bands'] = np.linspace(self.meta['record1']['Parmin'], self.meta['record1']['Parmax'], self.Nwave)
-        print(self.Nwave, self.meta['record6']['bands'])
         self.meta['record6']['bands_str'] = ','.join([str(int(i)) for i in self.meta['record6']['bands']])
         self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
 
@@ -188,7 +183,7 @@ class BatchMaker:
 
     def set_record11(self):
         self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
-        self.meta['record11']['nznom'] = 100                     # number of depths
+        self.meta['record11']['nznom'] = 100                         # number of depths
         self.meta['record11']['zetanom'] = np.linspace(0, 2, self.meta['record11']['nznom']+1, dtype=np.float16)
         self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
         self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
@@ -217,25 +212,23 @@ class EnvironmentBuilder:
         self.create_backscattering_file(self.path)
         self.create_ac9_file(self.path)
 
-    def create_run_delete_bash_file(self, print_output=False):
+    def create_run_delete_bash_file(self, print_output):
         bash_file_path = "/Applications/HE60.app/Contents/backend/run.sh"
         with open(bash_file_path, "w") as file:
             file.write("#!/bin/bash\n"
                        "./HydroLight6 < /Users/braulier/Documents/HE60/run/batch/"+self.batch_name+".txt")
         bash_command = './run.sh'
         path_to_he60 = '/Applications/HE60.app/Contents/backend'
-        command_chmod = 'chmod u+x '+bash_file_path
-        subprocess1 = subprocess.Popen(command_chmod.split(), stdout=subprocess.PIPE)
-        subprocess2 = subprocess.Popen(bash_command, stdout=subprocess.PIPE, cwd=path_to_he60)
-        subprocess1.communicate()
-        subprocess2.communicate()
+        command_chmod = 'chmod u+x ' + bash_file_path
+        chmod_process = subprocess.Popen(command_chmod.split(), stdout=subprocess.PIPE)
+        chmod_process.communicate()
+        HE60_process = subprocess.Popen(bash_command, stdout=subprocess.PIPE, cwd=path_to_he60, bufsize=1, universal_newlines=True)
         if print_output:
-            with subprocess.Popen(bash_command, cwd=path_to_he60, stdout=subprocess.PIPE, bufsize=1,
-                                  universal_newlines=True) as p:
+            with HE60_process as p:
                 for line in p.stdout:
                     print(line, end='')
         else:
-            subprocess.Popen(bash_command,stdout=subprocess.PIPE, cwd=path_to_he60)
+            HE60_process.communicate()
         os.remove(bash_file_path)
 
     def create_backscattering_file(self, path):
@@ -272,7 +265,7 @@ class EnvironmentBuilder:
             file.write(footer)
 
 
-class Simulation(BatchMaker, EnvironmentBuilder):
+class AC9Simulation(BatchMaker, EnvironmentBuilder):
     def __init__(self, path, batch_name):
         super().__init__(batch_name)
         self.wavelengths = None
@@ -286,12 +279,17 @@ class Simulation(BatchMaker, EnvironmentBuilder):
 
         self.ac9_path = self.path + '/ac9_file.txt'
         self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
+        
+        self.set_N_band_waves()
+        self.set_title(self.batch_name)
+        self.set_rootname(self.batch_name)
+        self.set_all_records()
+        self.set_wavelengths(wvelgths=self.meta['record6']['bands'])
 
     def build_and_run_mobley_1998_example(self):
         """
         Four-layer model of sea ice, from Mobley et al. 1998 : MODELING LIGHT PROPAGATION IN SEA ICE
         """
-        self.set_wavelengths(wvelgths=[412.0, 440.0, 488.0, 510.0, 532.0, 555.0, 650.0, 676.0, 715.0])
         self.set_z_grid(z_max=2.0)
         self.add_layer(z1=0.0, z2=0.1, abs=0.4, scat=250, bb=0.0109)
         self.add_layer(z1=0.1, z2=1.61, abs=0.4, scat=200, bb=0.0042)
@@ -299,16 +297,13 @@ class Simulation(BatchMaker, EnvironmentBuilder):
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
         self.run_built_model()
 
-    def run_built_model(self):
+    def run_built_model(self, printOutput = False):
         print('Preparing files...')
-        self.set_title(self.batch_name)
-        self.set_rootname(self.batch_name)
-        self.set_all_records(ac9_file_path=self.ac9_path, bb_file_path=self.bb_path)
         self.write_batch_file()
         print('Creating simulation environnement...')
         self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
-        self.create_run_delete_bash_file()
+        self.create_run_delete_bash_file(print_output=printOutput)
 
     def add_layer(self, z1, z2, abs, scat, bb):
         c = abs + scat
@@ -329,12 +324,8 @@ class Simulation(BatchMaker, EnvironmentBuilder):
         self.wavelengths = np.array(wvelgths)
 
 
-
-
 if __name__ == "__main__":
-    test_1 = Simulation(path='ressources/')
-    test_1.set_wavelengths(wvelgths=[412.0, 440.0, 488.0, 510.0, 532.0, 555.0, 650.0, 676.0, 715.0])
-    test_1.set_z_grid(z_max=2.0)
-    test_1.build_mobley_1998_example()
+    print('\n')
+    plt.scatter()
 
 
