@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import shutil
+import matplotlib.pyplot as plt
 import subprocess
 
 
@@ -182,7 +183,7 @@ class BatchMaker:
 
     def set_record11(self):
         self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
-        self.meta['record11']['nznom'] = 100                     # number of depths
+        self.meta['record11']['nznom'] = 100                         # number of depths
         self.meta['record11']['zetanom'] = np.linspace(0, 2, self.meta['record11']['nznom']+1, dtype=np.float16)
         self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
         self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
@@ -264,7 +265,7 @@ class EnvironmentBuilder:
             file.write(footer)
 
 
-class Simulation(BatchMaker, EnvironmentBuilder):
+class AC9Simulation(BatchMaker, EnvironmentBuilder):
     def __init__(self, path, batch_name):
         super().__init__(batch_name)
         self.wavelengths = None
@@ -325,5 +326,6 @@ class Simulation(BatchMaker, EnvironmentBuilder):
 
 if __name__ == "__main__":
     print('\n')
+    plt.scatter()
 
 
