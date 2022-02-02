@@ -1,4 +1,4 @@
-from HE60_PY.HE60_magister import AC9Simulation
+from HE60PY.HE60_magister import AC9Simulation
 import numpy as np
 from tqdm import tqdm
 
