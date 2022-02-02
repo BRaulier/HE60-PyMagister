@@ -6,7 +6,7 @@ import subprocess
 
 
 def create_null_pure_water():
-    H2O_default_data = np.genfromtxt('ressources/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
+    H2O_default_data = np.genfromtxt('../ressources/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
     H2O_NULL_WATER_PROP[:, 1], H2O_NULL_WATER_PROP[:, 2], H2O_NULL_WATER_PROP[:, 3] = 0.0, 0.0, 0.0
     header = "\\begin_header \n" \
@@ -16,9 +16,9 @@ def create_null_pure_water():
              "wavelen[nm]  aref[1/m]  PsiT[(1/m)/deg C] PsiS[(1/m)/ppt] \n" \
              "\\end_header\n"
     footer = "\\end_data"
-    with open('ressources/null_H2Oabsorps.txt', 'w') as file:
+    with open('../ressources/null_H2Oabsorps.txt', 'w+') as file:
         file.write(header)
-        np.savetxt(file, H2O_NULL_WATER_PROP, fmt='%1.2e', delimiter='\t')
+        np.savetxt(file, H2O_NULL_WATER_PROP, fmt='%1.5e', delimiter='\t')
         file.write(footer)
 
 
@@ -35,7 +35,7 @@ class BatchMaker:
         self.rootname = None
         self.Nwave = None
         self.batch_name = batch_name
-        
+
     def set_title(self, title):
         self.run_title = title
 
@@ -241,10 +241,10 @@ class EnvironmentBuilder:
                  "\\end_header\n"
         first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
         footer = "\\end_data"
-        with open(path+'/backscattering_file.txt', 'w') as file:
+        with open(path+'/backscattering_file.txt', 'w+') as file:
             file.write(header)
             file.write(first_line)
-            np.savetxt(file, self.z_bb_grid, fmt='%1.2e', delimiter='\t')
+            np.savetxt(file, self.z_bb_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
         shutil.copy(src=path+'/backscattering_file.txt', dst=r'/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt')
 
@@ -258,10 +258,10 @@ class EnvironmentBuilder:
                  "\\end_header\n"
         first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
         footer = "\\end_data"
-        with open(path+'/ac9_file.txt', 'w') as file:
+        with open(path+'/ac9_file.txt', 'w+') as file:
             file.write(header)
             file.write(first_line)
-            np.savetxt(file, self.z_ac_grid, fmt='%1.2e', delimiter='\t')
+            np.savetxt(file, self.z_ac_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
 
 
@@ -307,11 +307,11 @@ class AC9Simulation(BatchMaker, EnvironmentBuilder):
 
     def add_layer(self, z1, z2, abs, scat, bb):
         c = abs + scat
-        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths] = abs
-        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths::] = c
+        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
+        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
         self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def set_z_grid(self, z_max, delta_z=0.01):
+    def set_z_grid(self, z_max, delta_z=0.001):
         self.z_max = z_max
         self.delta_z = delta_z
         nz = int(z_max/delta_z)+1
