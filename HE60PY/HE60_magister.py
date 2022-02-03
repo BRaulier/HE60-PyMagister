@@ -214,7 +214,7 @@ class EnvironmentBuilder:
 
     def create_run_delete_bash_file(self, print_output):
         bash_file_path = "/Applications/HE60.app/Contents/backend/run.sh"
-        with open(bash_file_path, "w") as file:
+        with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
                        "./HydroLight6 < /Users/braulier/Documents/HE60/run/batch/"+self.batch_name+".txt")
         bash_command = './run.sh'
@@ -241,11 +241,12 @@ class EnvironmentBuilder:
                  "\\end_header\n"
         first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
         footer = "\\end_data"
-        with open(path+'/backscattering_file.txt', 'w+') as file:
+        with open(path+'/backscattering_file.txt', 'w') as file:
             file.write(header)
             file.write(first_line)
             np.savetxt(file, self.z_bb_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
+
         shutil.copy(src=path+'/backscattering_file.txt', dst=r'/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt')
 
     def create_ac9_file(self, path):
@@ -265,7 +266,7 @@ class EnvironmentBuilder:
             file.write(footer)
 
 
-class AC9Simulation(BatchMaker, EnvironmentBuilder):
+class AC9Simulation(BatchMaker, EnvironmentBuilder):  # Todo composition classes instead of inheritance
     def __init__(self, path, batch_name):
         super().__init__(batch_name)
         self.wavelengths = None
@@ -297,7 +298,7 @@ class AC9Simulation(BatchMaker, EnvironmentBuilder):
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
         self.run_built_model()
 
-    def run_built_model(self, printOutput = False):
+    def run_built_model(self, printOutput = True):
         print('Preparing files...')
         self.write_batch_file()
         print('Creating simulation environnement...')
