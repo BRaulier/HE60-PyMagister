@@ -6,5 +6,5 @@ setuptools.setup(
     author='Bastian Raulier',
     author_email='bastian.raulier.1@ulaval.ca',
     description='Python code to control Hydro Light.',
-    packages=['HE60PY']
+    packages=setuptools.find_packages()
 )
