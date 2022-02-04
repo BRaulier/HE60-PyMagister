@@ -45,7 +45,7 @@ class BatchMaker:
     def set_N_band_waves(self, N_band=17):
         self.Nwave = N_band
 
-    def set_all_records(self):
+    def set_all_records(self, non_default_dict):
         self.set_record1()
         self.set_record2()
         self.set_record3()
@@ -58,6 +58,34 @@ class BatchMaker:
         self.set_record10()
         self.set_record11()
         self.set_record12()
+        self.insert_non_default_values(non_default_dict=non_default_dict)
+        self.prepare_record_strings()
+
+    def insert_non_default_values(self, non_default_dict):
+        if non_default_dict:
+            for key in non_default_dict.keys():
+                for nested_key in non_default_dict[key].keys():
+                    self.meta[key][nested_key] = non_default_dict[key][nested_key]
+
+    def prepare_record_strings(self):
+        self.meta['record1']['string'] = '{sOutDir}, {Parmin}, {Parmax}, {PhiChl}, {Raman0}, {RamanXS}, {iDynz}, {RamanExp}\n'.format(**self.meta['record1'])
+        self.meta['record2']['string'] = '{ititle}'.format(**self.meta['record2'])
+        self.meta['record3']['string'] = '{rootname}'.format(**self.meta['record3']) + '\n'
+        self.meta['record4']['string'] = '{iOptPrnt}, {iOptDigital}, {iOptExcelS}, {iOptExcelM}, {iOptRad}\n' \
+                                         '{iIOPmodel}, {iSkyRadmodel}, {iSkyIrradmodel}, {iIOPTS}, {iChl}, {iCDOM}\n'.format(**self.meta['record4'])
+        self.meta['record5']['string'] = '{ncomp}, {nconc}\n{compconc}\n{5c_line1}\n{5c_line2}\n{null_water_file}\n' \
+                           '{user_absorption_file}\n{5e_line1}\n{5e_line2}\n{5f_line1}\n{5f_line2}\n' \
+                           '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}\n'.format(**self.meta['record5'])
+        self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
+        self.meta['record7']['string'] = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}, {icompchl}\n'.format(**self.meta['record7'])
+        self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
+                                         '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format( **self.meta['record8'])
+        self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
+        self.meta['record10']['string'] = '{ibotm}, {rflbot}\n'.format(**self.meta['record10'])
+        self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
+        self.meta['record12']['string'] = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
+                                          '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
+                                          '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
 
     def write_batch_file(self, path="/Users/braulier/Documents/HE60/run/batch/"):
         with open(path + self.batch_name+'.txt', "w+") as file:
@@ -73,18 +101,11 @@ class BatchMaker:
         self.meta['record1']['iDynz'] = 1                               # inelastic sources are present and an infinitely-deep bottom is selected
         self.meta['record1']['RamanExp'] = 5.5                          # wavelength dependence of the Raman scattering coefficient
                                                                         # see HydroLight Technical Note 10
-        # String construction
-        self.meta['record1']['string'] = '{sOutDir}, {Parmin}, {Parmax}, {PhiChl}, {Raman0}, {RamanXS}, {iDynz}, {RamanExp}\n'.format(**self.meta['record1'])
-
     def set_record2(self):
         self.meta['record2']['ititle'] = self.run_title + '\n'
-        # String construction
-        self.meta['record2']['string'] = '{ititle}'.format(**self.meta['record2'])
 
     def set_record3(self):
         self.meta['record3']['rootname'] = self.rootname
-        # String construction
-        self.meta['record3']['string'] = '{rootname}'.format(**self.meta['record3']) + '\n'
 
     def set_record4(self):
         # Record 4a
@@ -100,9 +121,6 @@ class BatchMaker:
         self.meta['record4']['iIOPTS'] = 0                          # For pure water IOP's independent of temperature and salinity
         self.meta['record4']['iChl'] = 0
         self.meta['record4']['iCDOM'] = 0
-        # String construction
-        self.meta['record4']['string'] = '{iOptPrnt}, {iOptDigital}, {iOptExcelS}, {iOptExcelM}, {iOptRad}\n' \
-                           '{iIOPmodel}, {iSkyRadmodel}, {iSkyIrradmodel}, {iIOPTS}, {iChl}, {iCDOM}\n'.format(**self.meta['record4'])
 
     def set_record5(self):
         # record 5a: number of components
@@ -129,15 +147,10 @@ class BatchMaker:
         self.meta['record5']['5h_line1'] = 'dpf_pure_H2O.txt'               # TODO NULL
         self.meta['record5']['5h_line2'] = 'user_defined/backscattering_file.txt'   # TODO
 
-        self.meta['record5']['string'] = '{ncomp}, {nconc}\n{compconc}\n{5c_line1}\n{5c_line2}\n{null_water_file}\n' \
-                           '{user_absorption_file}\n{5e_line1}\n{5e_line2}\n{5f_line1}\n{5f_line2}\n' \
-                           '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}\n'.format(**self.meta['record5'])
-
     def set_record6(self):
         self.meta['record6']['Nwave'] = self.Nwave - 1
         self.meta['record6']['bands'] = np.linspace(self.meta['record1']['Parmin'], self.meta['record1']['Parmax'], self.Nwave)
         self.meta['record6']['bands_str'] = ','.join([str(int(i)) for i in self.meta['record6']['bands']])
-        self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
 
     def set_record7(self):
         self.meta['record7']['ibiolum'] = 0                         # 0: no bioluminescence present
@@ -145,7 +158,6 @@ class BatchMaker:
         self.meta['record7']['icdomfl'] = 0                         # 0: no CDOM fluorescence present
         self.meta['record7']['iraman'] = 0                         # 0: no Raman scattering present
         self.meta['record7']['icompchl'] = 0                        # index for the chlorophyll fluorescence component
-        self.meta['record7']['string'] = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}, {icompchl}\n'.format(**self.meta['record7'])
 
     def set_record8(self):
         # record 8a
@@ -165,8 +177,6 @@ class BatchMaker:
         self.meta['record8']['vi'] = 15                             # average horizontal visibility (km) https://essd.copernicus.org/articles/12/805/2020/
         self.meta['record8']['wsm'] = 6.0                          # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
         self.meta['record8']['ro3'] = 300                          # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
-        self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
-                           '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
 
     def set_record9(self):
         self.meta['record9']['windspd'] = 15.0                      # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
@@ -174,19 +184,16 @@ class BatchMaker:
         self.meta['record9']['temp'] = -1.8                         # water temperature
         self.meta['record9']['salinty'] = 35.0                      # salinity (PSU)
         self.meta['record9']['iSurfaceModelFlag'] = 3               # azimuthally averaged Cox-Munk surfaces
-        self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
 
     def set_record10(self):
         self.meta['record10']['ibotm'] = 0                          # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
         self.meta['record10']['rflbot'] = 0.2                       # Bottom reflectance, only used when ibotm=1
-        self.meta['record10']['string'] = '{ibotm}, {rflbot}\n'.format(**self.meta['record10'])
 
     def set_record11(self):
         self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
         self.meta['record11']['nznom'] = 100                         # number of depths
         self.meta['record11']['zetanom'] = np.linspace(0, 2, self.meta['record11']['nznom']+1, dtype=np.float16)
         self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
-        self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
 
     def set_record12(self):
         self.meta['record12']['PureWaterDataFile'] = self.meta['record5']['null_water_file']
@@ -201,9 +208,6 @@ class BatchMaker:
         self.meta['record12']['IrradDataFile'] = 'dummyIrrad.txt'                       # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
         self.meta['record12']['S0biolumFile'] = 'dummyBiolum.txt'                         # file containing bioluminescentsource strength (in W m-3 nm)
         self.meta['record12']['LskyDataFile'] = 'dummyLsky.txt' # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
-        self.meta['record12']['string'] = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
-                        '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
-                            '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
 
 
 class EnvironmentBuilder:
@@ -214,7 +218,7 @@ class EnvironmentBuilder:
 
     def create_run_delete_bash_file(self, print_output):
         bash_file_path = "/Applications/HE60.app/Contents/backend/run.sh"
-        with open(bash_file_path, "w") as file:
+        with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
                        "./HydroLight6 < /Users/braulier/Documents/HE60/run/batch/"+self.batch_name+".txt")
         bash_command = './run.sh'
@@ -241,11 +245,12 @@ class EnvironmentBuilder:
                  "\\end_header\n"
         first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
         footer = "\\end_data"
-        with open(path+'/backscattering_file.txt', 'w+') as file:
+        with open(path+'/backscattering_file.txt', 'w') as file:
             file.write(header)
             file.write(first_line)
             np.savetxt(file, self.z_bb_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
+
         shutil.copy(src=path+'/backscattering_file.txt', dst=r'/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt')
 
     def create_ac9_file(self, path):
@@ -265,8 +270,8 @@ class EnvironmentBuilder:
             file.write(footer)
 
 
-class AC9Simulation(BatchMaker, EnvironmentBuilder):
-    def __init__(self, path, batch_name):
+class AC9Simulation(BatchMaker, EnvironmentBuilder):  # Todo composition classes instead of inheritance
+    def __init__(self, path, batch_name, non_default_dict=None):
         super().__init__(batch_name)
         self.wavelengths = None
         self.n_wavelengths = None
@@ -283,7 +288,7 @@ class AC9Simulation(BatchMaker, EnvironmentBuilder):
         self.set_N_band_waves()
         self.set_title(self.batch_name)
         self.set_rootname(self.batch_name)
-        self.set_all_records()
+        self.set_all_records(non_default_dict=non_default_dict)
         self.set_wavelengths(wvelgths=self.meta['record6']['bands'])
 
     def build_and_run_mobley_1998_example(self):
@@ -297,7 +302,7 @@ class AC9Simulation(BatchMaker, EnvironmentBuilder):
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
         self.run_built_model()
 
-    def run_built_model(self, printOutput = False):
+    def run_built_model(self, printOutput = True):
         print('Preparing files...')
         self.write_batch_file()
         print('Creating simulation environnement...')

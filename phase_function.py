@@ -44,7 +44,7 @@ _ns = [1.040, 1.08, 1.175]
 _mus = [3.2010, 3.483, 4.065]
 _bbs = [0.001, 0.01, 0.1]           #    0.995       0.95        0.6582
 
-_gs = [0.995, 0.954, 0.6582]
+_gs = [0.995, 0.954, 0.6582, .85, .985, .94]
 # _gs = np.linspace(0.6582, 0.85, 10)
 _phis = np.linspace(0.001, np.pi, 100000)
 
@@ -57,7 +57,7 @@ colors = ['red', 'blue', 'green', 'green', 'orange', 'black', 'grey', 'yellow', 
 for i, _g in enumerate(_gs):
     _beta_HG = henvey_greenstein_pf(phi=_phis, g=_g)
     _HG_bb = henvey_greenstein_bb(g=_g)
-    plt.semilogy(_phis, _beta_HG, label='HG g={:.3f}, bb/b={:.4f}'.format(_g, _HG_bb), color=colors[i])
+    plt.semilogy(_phis, _beta_HG, label='HG g={:.3f}, bb/b={:.5f}'.format(_g, _HG_bb), color=colors[i])
 
 for i, (_n, _mu, _bb) in enumerate(zip(_ns, _mus, _bbs)):
     _beta_FF = fournier_forand_pf(n=_n, mu=_mu, phi=_phis)
