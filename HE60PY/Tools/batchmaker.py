@@ -58,9 +58,10 @@ class BatchMaker:
         self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
         self.meta['record7']['string'] = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}, {icompchl}\n'.format(**self.meta['record7'])
         self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
-                                         '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format( **self.meta['record8'])
+                                         '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
         self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
         self.meta['record10']['string'] = '{ibotm}, {rflbot}\n'.format(**self.meta['record10'])
+        self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
         self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
         self.meta['record12']['string'] = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
@@ -88,11 +89,11 @@ class BatchMaker:
 
     def set_record4(self):
         # Record 4a
-        self.meta['record4']['iOptPrnt'] = 0                        # -1: minimal output, 0: standard, 1: extensive
-        self.meta['record4']['iOptDigital'] = 1                     # Generation of Droot.txt file, 0 or 1
+        self.meta['record4']['iOptPrnt'] = -1                        # -1: minimal output, 0: standard, 1: extensive
+        self.meta['record4']['iOptDigital'] = 0                     # Generation of Droot.txt file, 0 or 1
         self.meta['record4']['iOptExcelS'] = 2                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.meta['record4']['iOptExcelM'] = 1                      # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
-        self.meta['record4']['iOptRad'] = 1                         # Generation of the full radiance printout Lroot.txt (0 or 1)
+        self.meta['record4']['iOptRad'] = 0                         # Generation of the full radiance printout Lroot.txt (0 or 1)
         # Record 4b
         self.meta['record4']['iIOPmodel'] = 3                       # User data IOP model
         self.meta['record4']['iSkyRadmodel'] = 1                    # Harrison and Coombes 1998 semi-empirical model
@@ -170,9 +171,8 @@ class BatchMaker:
 
     def set_record11(self):
         self.meta['record11']['iop'] = 0                        # Flag, 0, (1): indicating geometrical (optical) depths
-        self.meta['record11']['nznom'] = 100                         # number of depths
-        self.meta['record11']['zetanom'] = np.linspace(0, 2, self.meta['record11']['nznom']+1, dtype=np.float16)
-        self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])
+        self.meta['record11']['nznom'] = 100                        # number of depths
+        self.meta['record11']['zetanom'] = np.array(list(np.linspace(0, 0.97, 98, dtype=np.float16))+[1.90, 2.00])
 
     def set_record12(self):
         self.meta['record12']['PureWaterDataFile'] = self.meta['record5']['null_water_file']
