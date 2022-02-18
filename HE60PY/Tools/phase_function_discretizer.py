@@ -4,22 +4,15 @@ import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
 
-def henvey_greenstein_pf(phi, g, normalize=False):
+def henvey_greenstein_pf(phi, g):
     phi_rad = phi*np.pi/180
     mu = np.cos(phi_rad)
     beta = (1/(4*np.pi))*((1-g**2)/(1+g**2-2*g*mu)**(3/2))
-    delta_phi = phi_rad
-    delta_phi[1:] -= delta_phi[:-1].copy()
-    if normalize:
-        beta_normed = 2*np.pi*np.sum(beta*np.sin(phi_rad)*delta_phi)
-        print(beta_normed)
-        beta_normed = 2*np.pi*np.sum(beta*np.sin(phi_rad)*1.80018002e-02*np.pi/180)
-        print(beta_normed)
-        print(delta_phi)
     return beta
 
 
-def create_tabulated_file(filename, pf_type):
+def create_tabulated_file(angle_beta_array, tab_filename, pf_type):
+    path = '/Applications/HE60.app/Contents/source_code/Phase_Function_code/PF_user_data/'+tab_filename
     header = "/begin_header \n" \
              "{} phase function \n"\
              "This file is on the HSF95 format for phase function discretization. \n" \
@@ -27,12 +20,11 @@ def create_tabulated_file(filename, pf_type):
              "/end_header\n" \
              "1.00\n".format(pf_type)
     footer = "    -1.0    -1.0"
-
-
-
-
-
-
+    with open(path, 'w+') as file:
+        file.write(header)
+        np.savetxt(file, angle_beta_array, fmt='%1.5e', delimiter='\t')
+        file.write(footer)
+    return filename
 
 def create_input_file():
 
@@ -43,9 +35,9 @@ def create_executable_discretizer():
     subprocess.run(cmd, cwd=path, capture_output=True, check=True)
 
 
-def run_executable_discretizer():
+def run_executable_discretizer(input_filename):
     path = '/Applications/HE60.app/Contents/backend'
-    cmd = ['sudo ./PFdiscretization6 < ../source_code/Phase_Function_code/Input_test.txt']
+    cmd = ['sudo ./PFdiscretization6 < ../source_code/Phase_Function_code/PF_PyMagister_input/{}'.format(input_filename)]
     subprocess.run(cmd, cwd=path, capture_output=True, check=True, shell=True)
 
 
