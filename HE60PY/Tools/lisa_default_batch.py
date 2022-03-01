@@ -129,13 +129,20 @@ class SeaIceDefaultBatch(BatchMaker):
         self.meta['record12']['nac9Files'] = 1  # Number of ac9 files to read
         self.meta['record12']['ac9DataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
                                                'SensitivityAnalysis/Data_Greenedge/Matlab/Hydrolight_modelled_SCMod/' \
-                                               'RG100od/aActot_homChl10.txt'  # Todo
+                                               '{}/{}'.format(self.station_filename, self.ac9_filename)
         self.meta['record12']['Ac9FilteredDataFile'] = 'dummyFilteredAc9.txt'
-        self.meta['record12']['HydroScatDataFile'] = self.bb_path  # TODO:  backscattering data
-        self.meta['record12']['ChlzDataFile'] = 'dummyCHLdata.txt'  # Standard-format chlorophyll profile
+        self.meta['record12']['HydroScatDataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
+                                                     'SensitivityAnalysis/Data_Greenedge/GreenEdge_cruise2016/' \
+                                                     'Hydrolight_input_files_Cruise2016/Hydroscat6_withH2O_G100.txt'
+        self.meta['record12']['ChlzDataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
+                                                'SensitivityAnalysis/Data_Greenedge/Matlab/Hydrolight_modelled_SCMod/' \
+                                                '{}/{}'.format(self.station_filename, self.Chlaz_filename)  # Standard-format chlorophyll profile
         self.meta['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'  # file containing values of CDOM absorption at a given reference wavelength
         self.meta['record12']['RbottomFile'] = 'dummyR.bot'  # file containing values of CDOM absorption at a given reference wavelength
-        self.meta['record12']['TxtDataFile(i)'] = 'dummyComp.txt\ndummyComp.txt'  # Concentration profile data files for component i
-        self.meta['record12']['IrradDataFile'] = 'dummyIrrad.txt'  # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
-        self.meta['record12']['S0biolumFile'] = 'dummyBiolum.txt'  # file containing bioluminescentsource strength (in W m-3 nm)
-        self.meta['record12']['LskyDataFile'] = 'dummyLsky.txt'  # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
+        self.meta['record12']['TxtDataFile(i)'] = 'dummyComp.txt\n' \
+                                                  '/Users/lisamatthes/Documents/HE60/data/examples/Chlzdata.txt'  # Concentration profile data files for component i
+        self.meta['record12']['IrradDataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
+                                                 'SensitivityAnalysis/Data_Greenedge/Matlab/Hydrolight_modelled_SCMod/' \
+                                                 'RG100od/Irradata_G300.txt'  # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
+        self.meta['record12']['S0biolumFile'] = '/Users/lisamatthes/Documents/HE60/data/examples/So_biolum_user_data.txt'  # file containing bioluminescentsource strength (in W m-3 nm)
+        self.meta['record12']['LskyDataFile'] = 'dummyRad.txt'  # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
