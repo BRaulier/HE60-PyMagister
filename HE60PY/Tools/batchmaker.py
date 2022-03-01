@@ -5,46 +5,37 @@ from lisa_default_batch import LisaDefaultBatch
 
 
 class BatchMaker:
-    def __init__(self, batch_name, mode):
+    def __init__(self, hermes):
+        # General initialisation
         self.usr_path = pathlib.Path.home()
+        self.hermes = hermes
+        self.mode = hermes['mode']
+        self.root_name = hermes['root_name']
+        self.run_title = hermes['run_title']
 
+        # Record initialisation
         self.record1_str, self.record2_str, self.record3_str, self.record4_str = None, None, None, None
         self.record5_str, self.record6_str, self.record7_str, self.record8_str = None, None, None, None
         self.record9_str, self.record10_str, self.record11_str, self.record12_str, self.record13_str = None, None, None, None, None
 
-        self.batch_file = None
-        self.run_title = None
-        self.rootname = None
         self.Nwave = None
         self.meta = None
-        self.batch_name = batch_name
-        self.mode = mode
 
-    def set_title(self, title):
-        self.run_title = title
-
-    def set_rootname(self, rootname):
-        self.rootname = rootname
+        self.set_N_band_waves()
+        self.set_all_records()
 
     def set_N_band_waves(self, N_band=17):
         self.Nwave = N_band
 
-    def set_all_records(self, non_default_dict=None):
+    def set_all_records(self):
         if self.mode == 'sea_ice':
-            default_batch = SeaIceDefaultBatch()
+            default_batch = SeaIceDefaultBatch(self.hermes)
         elif self.mode == 'Lisa':
-            default_batch = LisaDefaultBatch()
+            default_batch = LisaDefaultBatch(self.hermes)
         else:
             default_batch = None
-        self.meta = default_batch.set_all_records()
-        self.insert_non_default_values(non_default_dict=non_default_dict)
+        self.meta = default_batch.build_records()
         self.prepare_record_strings()
-
-    def insert_non_default_values(self, non_default_dict):
-        if non_default_dict:
-            for key in non_default_dict.keys():
-                for nested_key in non_default_dict[key].keys():
-                    self.meta[key][nested_key] = non_default_dict[key][nested_key]
 
     def prepare_record_strings(self):
         self.meta['record1']['string'] = '{sOutDir}, {Parmin}, {Parmax}, {PhiChl}, {Raman0}, {RamanXS}, {iDynz}, {RamanExp}\n'.format(**self.meta['record1'])

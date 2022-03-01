@@ -3,6 +3,9 @@ import pathlib
 
 
 class SeaIceDefaultBatch(RecordBuilder):
+    def __init__(self, hermes):
+        self.hermes = hermes
+
     def set_record1(self):
         self.default['record1']['sOutDir'] = f'"{pathlib.Path.home()}/Documents/HE60/output"'
         self.default['record1']['Parmin'] = 300                            # lowest wavelength included in PAR calculations
@@ -15,10 +18,10 @@ class SeaIceDefaultBatch(RecordBuilder):
                                                                         # see HydroLight Technical Note 10
 
     def set_record2(self):
-        self.default['record2']['ititle'] = self.run_title + '\n'
+        self.default['record2']['ititle'] = f"{self.hermes['run_title']}\n"
 
     def set_record3(self):
-        self.default['record3']['rootname'] = self.rootname
+        self.default['record3']['rootname'] = self.hermes['root_name']
 
     def set_record4(self):
         # Record 4a
@@ -45,8 +48,7 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'         # Pure water line
         self.default['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
-        self.default['record5']['abs_files'] = '../data/null_H2Oabsorps.txt\n' \
-                                            +self.ac9_path      # Null water properties
+        self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes['ac9_path']}"  # Null water properties
         # record 5e: Specific scattering parameters
         self.default['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'   # Pure water
         self.default['record5']['5e_line2'] = '-666, -999, -999, -999, -999, -999'   # Measured IOP line
@@ -61,8 +63,8 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['5h_line2'] = 'user_defined/backscattering_file.txt'   # TODO
 
     def set_record6(self):
-        self.default['record6']['Nwave'] = self.Nwave - 1
-        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], self.Nwave)
+        self.default['record6']['Nwave'] = self.hermes['Nwave'] - 1
+        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], self.hermes['Nwave'])
         self.default['record6']['bands_str'] = ','.join([str(int(i)) for i in self.default['record6']['bands']])
 
     def set_record7(self):
@@ -110,9 +112,9 @@ class SeaIceDefaultBatch(RecordBuilder):
     def set_record12(self):
         self.default['record12']['PureWaterDataFile'] = '../data/null_H2Oabsorps.txt'
         self.default['record12']['nac9Files'] = 1  # Number of ac9 files to read
-        self.default['record12']['ac9DataFile'] = self.ac9_path
+        self.default['record12']['ac9DataFile'] = self.hermes['ac9_path']
         self.default['record12']['Ac9FilteredDataFile'] = 'dummyFilteredAc9.txt'
-        self.default['record12']['HydroScatDataFile'] = self.bb_path  # backscattering file
+        self.default['record12']['HydroScatDataFile'] = self.hermes['bb_path']  # backscattering file
         self.default['record12']['ChlzDataFile'] = 'dummyCHLdata.txt'  # Standard-format chlorophyll profile
         self.default['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['RbottomFile'] = 'dummyR.bot'  # file containing values of CDOM absorption at a given reference wavelength

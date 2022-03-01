@@ -4,7 +4,14 @@ class RecordBuilder:
                         'record7': {}, 'record8': {}, 'record9': {}, 'record10': {}, 'record11': {}, 'record12': {},
                         'record13': {}}
 
-    def set_all_records(self):
+    def build_records(self):
+        self.set_all_default_records()
+        updated_dict = self.update_parameters()
+        return updated_dict
+
+
+
+    def set_all_default_records(self):
         self.set_record1()
         self.set_record2()
         self.set_record3()
@@ -20,3 +27,5 @@ class RecordBuilder:
         return self.default
 
     def update_parameters(self):
+        self.defaut
+        return updated_dict
