@@ -19,3 +19,4 @@ class RecordBuilder:
         self.set_record12()
         return self.default
 
+    def update_parameters(self):

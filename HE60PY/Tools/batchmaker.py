@@ -1,10 +1,13 @@
 import numpy as np
+import pathlib
 from sea_ice_default_batch import SeaIceDefaultBatch
 from lisa_default_batch import LisaDefaultBatch
 
 
 class BatchMaker:
     def __init__(self, batch_name, mode):
+        self.usr_path = pathlib.Path.home()
+
         self.record1_str, self.record2_str, self.record3_str, self.record4_str = None, None, None, None
         self.record5_str, self.record6_str, self.record7_str, self.record8_str = None, None, None, None
         self.record9_str, self.record10_str, self.record11_str, self.record12_str, self.record13_str = None, None, None, None, None
@@ -64,7 +67,7 @@ class BatchMaker:
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
                                           '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
 
-    def write_batch_file(self, path="/Users/braulier/Documents/HE60/run/batch/"):
+    def write_batch_file(self, path=f"{self.usr_path}/Documents/HE60/run/batch/"):
         with open(path + self.batch_name+'.txt', "w+") as file:
             file.writelines([self.meta['record{}'.format(i)]['string'] for i in range(1, 13)])
 

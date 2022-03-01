@@ -12,6 +12,7 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record1']['iDynz'] = 1                               # inelastic sources are present and an infinitely-deep bottom is selected
         self.default['record1']['RamanExp'] = 5.5                          # wavelength dependence of the Raman scattering coefficient
                                                                         # see HydroLight Technical Note 10
+
     def set_record2(self):
         self.default['record2']['ititle'] = self.run_title + '\n'
 
