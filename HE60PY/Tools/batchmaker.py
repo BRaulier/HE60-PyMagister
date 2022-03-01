@@ -1,4 +1,6 @@
 import numpy as np
+from sea_ice_default_batch import SeaIceDefaultBatch
+from lisa_default_batch import LisaDefaultBatch
 
 
 class BatchMaker:
@@ -24,19 +26,12 @@ class BatchMaker:
     def set_N_band_waves(self, N_band=17):
         self.Nwave = N_band
 
-    def set_all_records(self, non_default_dict):
-        self.set_record1()
-        self.set_record2()
-        self.set_record3()
-        self.set_record4()
-        self.set_record5()
-        self.set_record6()
-        self.set_record7()
-        self.set_record8()
-        self.set_record9()
-        self.set_record10()
-        self.set_record11()
-        self.set_record12()
+    def set_all_records(self, default_batch, non_default_dict):
+        if self.mode == 'sea_ice':
+            default_batch = SeaIceDefaultBatch
+        elif self.mode == 'Lisa':
+            default_batch = LisaDefaultBatch
+        self.meta = default_batch.set_all_records()
         self.insert_non_default_values(non_default_dict=non_default_dict)
         self.prepare_record_strings()
 
