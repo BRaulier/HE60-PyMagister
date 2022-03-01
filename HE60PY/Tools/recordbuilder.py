@@ -9,8 +9,6 @@ class RecordBuilder:
         updated_dict = self.update_parameters()
         return updated_dict
 
-
-
     def set_all_default_records(self):
         self.set_record1()
         self.set_record2()
@@ -27,5 +25,10 @@ class RecordBuilder:
         return self.default
 
     def update_parameters(self):
-        self.defaut
-        return updated_dict
+        udated_dict = copy(self.default)
+        for param_to_update_key in self.hermes['kwargs'].keys():
+            for record in self.default.keys():
+                default_param_key_list = list(self.default[record].keys())
+                if param_to_update_key in default_param_key_list:
+                    udated_dict[record][param_to_update_key] = self.hermes['kwargs'][param_to_update_key]
+        return udated_dict

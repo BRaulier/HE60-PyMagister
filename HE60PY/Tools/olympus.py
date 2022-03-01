@@ -11,6 +11,5 @@ class Hermes:
         self.dict['root_name'] = root_name
         self.dict['run_title'] = run_title
         self.dict['mode'] = mode
-
-        self.dict.update(kwargs)
+        self.dict['kwargs'] = kwargs
         return self.dict
