@@ -1,9 +1,10 @@
 from recordbuilder import RecordBuilder
+import pathlib
 
 
 class LisaDefaultBatch(RecordBuilder):
     def set_record1(self):
-        self.default['record1']['sOutDir'] = '"/Users/lisamatthes/Documents/HE60/output"'
+        self.default['record1']['sOutDir'] = f'"{pathlib.Path.home()}/Documents/HE60/output"'
         self.default['record1']['Parmin'] = 400  # lowest wavelength included in PAR calculations
         self.default['record1']['Parmax'] = 700  # highest wavelength included in PAR calculations
         self.default['record1']['PhiChl'] = 0.02  # chlorophyll fluorescence efficiency
