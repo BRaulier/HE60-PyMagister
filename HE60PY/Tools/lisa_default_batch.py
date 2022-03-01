@@ -5,14 +5,14 @@ class LisaDefaultBatch(BatchMaker):
     def __init__(self):
 
     def set_record1(self):
-        self.meta['record1']['sOutDir'] = '"/Users/braulier/Documents/HE60/output"'
-        self.meta['record1']['Parmin'] = 300  # lowest wavelength included in PAR calculations
+        self.meta['record1']['sOutDir'] = '"/Users/lisamatthes/Documents/HE60/output"'
+        self.meta['record1']['Parmin'] = 400  # lowest wavelength included in PAR calculations
         self.meta['record1']['Parmax'] = 700  # highest wavelength included in PAR calculations
         self.meta['record1']['PhiChl'] = 0.02  # chlorophyll fluorescence efficiency
         self.meta['record1']['Raman0'] = 488  # Raman reference wavelength
         self.meta['record1']['RamanXS'] = 0.00026  # Raman scattering coefficient at the reference wavelength
         self.meta['record1']['iDyna'] = 1  # inelastic sources are present and an infinitely-deep bottom is selected
-        self.meta['record1']['RamanExp'] = 5.5  # wavelength dependence of the Raman scattering coefficient
+        self.meta['record1']['RamanExp'] = 5.3  # wavelength dependence of the Raman scattering coefficient
         # see HydroLight Technical Note 10
 
     def set_record2(self):
@@ -23,7 +23,7 @@ class LisaDefaultBatch(BatchMaker):
 
     def set_record4(self):
         # Record 4a
-        self.meta['record4']['iOptPrnt'] = -1  # -1: minimal output, 0: standard, 1: extensive
+        self.meta['record4']['iOptPrnt'] = 0  # -1: minimal output, 0: standard, 1: extensive
         self.meta['record4']['iOptDigital'] = 0  # Generation of Droot.txt file, 0 or 1
         self.meta['record4']['iOptExcelS'] = 2  # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.meta['record4']['iOptExcelM'] = 1  # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
@@ -31,23 +31,25 @@ class LisaDefaultBatch(BatchMaker):
         # Record 4b
         self.meta['record4']['iIOPmodel'] = 3  # User data IOP model
         self.meta['record4']['iSkyRadmodel'] = 1  # Harrison and Coombes 1998 semi-empirical model
-        self.meta['record4']['iSkyIrradmodel'] = 0  # Calls RADTRANX to obtain direct and direct irradiances
-        self.meta['record4']['iIOPTS'] = 0  # For pure water IOP's independent of temperature and salinity
+        self.meta['record4']['iSkyIrradmodel'] = 1  # Calls RADTRANX to obtain direct and direct irradiances
+        self.meta['record4']['iIOPTS'] = 4  # For pure water IOP's independent of temperature and salinity
         self.meta['record4']['iChl'] = 0
-        self.meta['record4']['iCDOM'] = 0
+        self.meta['record4']['iCDOM'] = 1
 
     def set_record5(self):
         # record 5a: number of components
         self.meta['record5']['ncomp'] = 2  # Number of components
-        self.meta['record5']['nconc'] = 2  # Number of concentrations
+        self.meta['record5']['nconc'] = 4  # Number of concentrations
         # record 5b: component concentrations
-        self.meta['record5']['compconc'] = '0, 0'  # Component concentrations
+        self.meta['record5']['compconc'] = '0, 0, 0, 0'  # Component concentrations
         # record 5c: Specific absorption parameters
         self.meta['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'  # Pure water line
         self.meta['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'  # Measured IOP line
         # record 5d: Specific absorption data file names
-        self.meta['record5']['null_water_file'] = '../data/null_H2Oabsorps.txt'  # Null water properties
-        self.meta['record5']['user_absorption_file'] = self.ac9_path  # TODO: add null water properties
+        self.meta['record5']['abs_files'] = '../data/H2OabsorpTS.txt\n' \
+                                            '../data/defaults/astarpchl.txt\n' \
+                                            'astarDummy.txt\n' \
+                                            '/Users/lisamatthes/Documents/HE60/data/examples/astarchl.txt'# Water properties
         # record 5e: Specific scattering parameters
         self.meta['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'  # Pure water
         self.meta['record5']['5e_line2'] = '-666, -999, -999, -999, -999, -999'  # Measured IOP line

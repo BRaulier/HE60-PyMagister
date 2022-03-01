@@ -63,8 +63,8 @@ class SeaIceDefaultBatch(BatchMaker):
         self.meta['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'  # Pure water line
         self.meta['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'  # Measured IOP line
         # record 5d: Specific absorption data file names
-        self.meta['record5']['null_water_file'] = '../data/null_H2Oabsorps.txt'  # Null water properties
-        self.meta['record5']['user_absorption_file'] = self.ac9_path  # TODO: add null water properties
+        self.meta['record5']['abs_files'] = '../data/null_H2Oabsorps.txt\n'\
+                                            + self.ac9_path
         # record 5e: Specific scattering parameters
         self.meta['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'  # Pure water
         self.meta['record5']['5e_line2'] = '-666, -999, -999, -999, -999, -999'  # Measured IOP line
