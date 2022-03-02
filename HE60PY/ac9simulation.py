@@ -47,7 +47,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.add_layer(z1=0.1, z2=1.61, abs=0.4, scat=200, bb=0.0042)
         self.add_layer(z1=1.61, z2=1.74, abs=1.28, scat=200, bb=0.0042)
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
-        self.run_simulation(printoutput=True)
+        self.run_simulation()
 
     def run_simulation(self, printoutput=False):
         print('Preparing files...')
