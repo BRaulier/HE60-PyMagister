@@ -43,11 +43,11 @@ class BatchMaker:
         self.meta['record3']['string'] = '{rootname}'.format(**self.meta['record3']) + '\n'
         self.meta['record4']['string'] = '{iOptPrnt}, {iOptDigital}, {iOptExcelS}, {iOptExcelM}, {iOptRad}\n' \
                                          '{iIOPmodel}, {iSkyRadmodel}, {iSkyIrradmodel}, {iIOPTS}, {iChl}, {iCDOM}\n'.format(**self.meta['record4'])
-        self.meta['record5']['string'] = '{ncomp}, {nconc}\n{compconc}\n{5c_line1}\n{5c_line2}\n{abs_files}\n' \
+        self.meta['record5']['string'] = '{ncomp}, {nconc}\n{compconc}\n{5c_lines}\n{abs_files}\n' \
                                          '{5e_line1}\n{5e_line2}\n{5f_line1}\n{5f_line2}\n' \
                                          '{5g_line1}\n{5g_line2}\n{5h_line1}\n{5h_line2}\n'.format(**self.meta['record5'])
         self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
-        self.meta['record7']['string'] = '{ibiolum}, {ichlfl}, {icdomfl}, {iraman}, {icompchl}\n'.format(**self.meta['record7'])
+        self.meta['record7']['string'] = '{ibiolum},{ichlfl},{icdomfl},{iraman},{icompchl}\n'.format(**self.meta['record7'])
         self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
                                          '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
         self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
@@ -56,7 +56,7 @@ class BatchMaker:
         self.meta['record11']['string'] = '{iop},{nznom},{zetanom_str}\n'.format(**self.meta['record11'])
         self.meta['record12']['string'] = '{PureWaterDataFile}\n{nac9Files}\n{ac9DataFile}\n{Ac9FilteredDataFile}' \
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
-                                          '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
+                                          '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}\n'.format(**self.meta['record12'])
 
     def write_batch_file(self):
         path = f"{self.usr_path}/Documents/HE60/run/batch/"

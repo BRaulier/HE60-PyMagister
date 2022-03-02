@@ -47,8 +47,8 @@ class SeaIceDefaultBatch(RecordBuilder):
         # record 5b: component concentrations
         self.default['record5']['compconc'] = '0, 0'                        # Component concentrations
         # record 5c: Specific absorption parameters
-        self.default['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'         # Pure water line
-        self.default['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'      # Measured IOP line
+        self.default['record5']['5c_lines'] = '0, 0, 440, 1, 0.014\n' \
+                                              '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
         self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes['ac9_path']}"  # Null water properties
         # record 5e: Specific scattering parameters

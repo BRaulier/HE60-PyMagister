@@ -6,6 +6,7 @@ from .recordbuilder import RecordBuilder
 class LisaDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
         super().__init__()
+        super().__init__()
         self.hermes = hermes
 
     def set_record1(self):
@@ -15,7 +16,7 @@ class LisaDefaultBatch(RecordBuilder):
         self.default['record1']['PhiChl'] = 0.02  # chlorophyll fluorescence efficiency
         self.default['record1']['Raman0'] = 488  # Raman reference wavelength
         self.default['record1']['RamanXS'] = 0.00026  # Raman scattering coefficient at the reference wavelength
-        self.default['record1']['iDyna'] = 1  # inelastic sources are present and an infinitely-deep bottom is selected
+        self.default['record1']['iDynz'] = 1  # inelastic sources are present and an infinitely-deep bottom is selected
         self.default['record1']['RamanExp'] = 5.3  # wavelength dependence of the Raman scattering coefficient
         # see HydroLight Technical Note 10
 
@@ -47,8 +48,10 @@ class LisaDefaultBatch(RecordBuilder):
         # record 5b: component concentrations
         self.default['record5']['compconc'] = '0, 0, 0, 0'  # Component concentrations
         # record 5c: Specific absorption parameters
-        self.default['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'  # Pure water line
-        self.default['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'  # Measured IOP line
+        self.default['record5']['5c_lines'] = '0, 0, 440, 1, 0.014\n' \
+                                              '2, -666, 440, 1, 0.014\n' \
+                                              '0, 1, 440, 1, 0.014\n' \
+                                              '2, 0, 440, 1, 0.014'  # Measured IOP line
         # record 5d: Specific absorption data file names
         self.default['record5']['abs_files'] = '../data/H2OabsorpTS.txt\n' \
                                             '../data/defaults/astarpchl.txt\n' \
@@ -83,26 +86,26 @@ class LisaDefaultBatch(RecordBuilder):
         # record 8a
         self.default['record8']['iflagsky'] = 2  # 1: idealized sky, 2 (3): semi analytic, zenith angle or (time and location)
         self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
-        self.default['record8']['suntheta'] = 46.0  # solar zenith angle (degrees)
+        self.default['record8']['suntheta'] = 46  # solar zenith angle (degrees)
         self.default['record8']['sunphi'] = 180  # solar azimuthal angle in degrees relative to the wind direction.
-        self.default['record8']['cloud'] = 1.0  # 0.0: clear sky, 1.0:solid overcast
+        self.default['record8']['cloud'] = 1  # 0.0: clear sky, 1.0:solid overcast
         # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
-        self.default['record8']['fjday'] = 169.0  # Julian day (for earth-sun distance)
+        self.default['record8']['fjday'] = 169  # Julian day (for earth-sun distance)
         self.default['record8']['rlat'] = 60  # latitude (degrees)
-        self.default['record8']['rlon'] = -20.0  # longitude (degrees)
+        self.default['record8']['rlon'] = -20  # longitude (degrees)
         self.default['record8']['pres'] = 29.529  # sea level pressure (inches Hg) Value from https://www.britannica.com/science/atmospheric-pressure
-        self.default['record8']['am'] = 1.0  # marine aerosol type (1: marine, 10: continental) see Gathman, 1983
+        self.default['record8']['am'] = 1  # marine aerosol type (1: marine, 10: continental) see Gathman, 1983
         self.default['record8']['rh'] = 95  # relative humidity (percents), educated guess
         self.default['record8']['wv'] = 2.5  # precipitable content: the amount of moisture there is above a fixed point, see https://earth.nullschool.net
         self.default['record8']['vi'] = 15  # average horizontal visibility (km) https://essd.copernicus.org/articles/12/805/2020/
-        self.default['record8']['wsm'] = 5.0  # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
+        self.default['record8']['wsm'] = 5  # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9']['windspd'] = 5.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['windspd'] = 5  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
         self.default['record9']['refr'] = -1.34  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
-        self.default['record9']['temp'] = 1.0  # water temperature
-        self.default['record9']['salinty'] = 33.0  # salinity (PSU)
+        self.default['record9']['temp'] = 1  # water temperature
+        self.default['record9']['salinty'] = 33  # salinity (PSU)
         self.default['record9']['iSurfaceModelFlag'] = 3  # azimuthally averaged Cox-Munk surfaces
 
     def set_record10(self):
@@ -112,7 +115,7 @@ class LisaDefaultBatch(RecordBuilder):
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths
         self.default['record11']['nznom'] = 11  # number of depths
-        self.default['record11']['zetanom'] = ','.join([str(int(i)) for i in np.linspace(0, 50, 11)])
+        self.default['record11']['zetanom'] = np.arange(0, 50+5, 5)
 
     def set_record12(self):
         self.default['record12']['PureWaterDataFile'] = '../data/H2OabsorpTS.txt'
