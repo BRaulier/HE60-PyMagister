@@ -1,9 +1,11 @@
-from .recordbuilder import RecordBuilder
 import pathlib
+import numpy as np
+from .recordbuilder import RecordBuilder
 
 
 class SeaIceDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
+        super().__init__()
         self.hermes = hermes
 
     def set_record1(self):
@@ -45,8 +47,8 @@ class SeaIceDefaultBatch(RecordBuilder):
         # record 5b: component concentrations
         self.default['record5']['compconc'] = '0, 0'                        # Component concentrations
         # record 5c: Specific absorption parameters
-        self.default['record5']['5c_line1'] = '0, 0, 440, 1, 0.014'         # Pure water line
-        self.default['record5']['5c_line2'] = '2, -666, 440, 1, 0.014'      # Measured IOP line
+        self.default['record5']['5c_lines'] = '0, 0, 440, 1, 0.014\n' \
+                                              '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
         self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes['ac9_path']}"  # Null water properties
         # record 5e: Specific scattering parameters
@@ -63,8 +65,8 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['5h_line2'] = 'user_defined/backscattering_file.txt'   # TODO
 
     def set_record6(self):
-        self.default['record6']['Nwave'] = self.hermes['Nwave'] - 1
-        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], self.hermes['Nwave'])
+        self.default['record6']['Nwave'] = self.hermes['Nwavel'] - 1
+        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], self.hermes['Nwavel'])
         self.default['record6']['bands_str'] = ','.join([str(int(i)) for i in self.default['record6']['bands']])
 
     def set_record7(self):

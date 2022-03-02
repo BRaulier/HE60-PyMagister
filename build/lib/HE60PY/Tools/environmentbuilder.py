@@ -6,8 +6,7 @@ import datetime
 
 
 def create_null_pure_water_file(path):
-    package_directory = os.path.dirname(os.path.abspath(__file__))
-    H2O_default_data = np.genfromtxt(package_directory+'/../../ressources/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
+    H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
     H2O_NULL_WATER_PROP[:, 1], H2O_NULL_WATER_PROP[:, 2], H2O_NULL_WATER_PROP[:, 3] = 0.0, 0.0, 0.0
     header = "\\begin_header \n" \
@@ -40,7 +39,7 @@ class EnvironmentBuilder:
         bash_file_path = f"/Applications/HE60.app/Contents/backend/{time_stamp}.sh"
         with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
-                       f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.batch_name}.txt")
+                       f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.root_name}.txt")
         bash_command = f'./{time_stamp}.sh'
         path_to_he60 = '/Applications/HE60.app/Contents/backend'
         command_chmod = 'chmod u+x ' + bash_file_path
