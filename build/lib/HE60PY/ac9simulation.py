@@ -9,7 +9,6 @@ from HE60PY.Tools.olympus import Hermes
 
 class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
     def __init__(self, path, root_name, run_title, mode='sea_ice', **kwargs):
-        super().__init__(batch_name)
         # General initialisation
         self.usr_path = pathlib.Path.home()
         self.path = path
@@ -19,7 +18,12 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.mode = mode
 
         # Hermes initialisation (used to pass information all over the module)
-        self.hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
+        hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
+        self.hermes = hermes.dict
+
+        self.ac9_path = self.path + '/ac9_file.txt'
+        self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
+        self.hermes['ac9_path'], self.hermes['bb_path'] = self.ac9_path, self.bb_path
 
         # BatchMaker  initialisation
         self.batchmaker = BatchMaker(self.hermes)
@@ -27,16 +31,12 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         # EnvironmentBuilder needed parameters, only needed for sea_ice mode TODO: Remove this part and activate it only for the proper mode
         self.wavelengths = None
         self.n_wavelengths = None
-        self.set_wavelengths(wvelgths=self.meta['record6']['bands'])
+        self.set_wavelengths(wvelgths=self.batchmaker.meta['record6']['bands'])
         self.z_max = None
         self.delta_z = None
         self.z_grid = None
         self.z_ac_grid = None
         self.z_bb_grid = None
-
-        self.ac9_path = self.path + '/ac9_file.txt'
-        self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
-        self.hermes['ac9_path'], self.hermes['bb_path'] = self.ac9_path, self.bb_path
 
     def build_and_run_mobley_1998_example(self):
         """
@@ -47,13 +47,13 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.add_layer(z1=0.1, z2=1.61, abs=0.4, scat=200, bb=0.0042)
         self.add_layer(z1=1.61, z2=1.74, abs=1.28, scat=200, bb=0.0042)
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
-        self.run_built_model()
+        self.run_simulation()
 
     def run_simulation(self, printoutput=False):
         print('Preparing files...')
         self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
-        if self.mode == 'sea_ice': # TODO: Change this
+        if self.mode == 'sea_ice':  # TODO: Change this
             self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)

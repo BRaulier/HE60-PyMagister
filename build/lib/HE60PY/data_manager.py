@@ -1,29 +1,34 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pathlib
+
 
 
 class DataFinder:
-    def __init__(self, batch_name):
-        self.data = None
-        self.batch_name = batch_name
+    def __init__(self, hermes):
+        self.usr_path = pathlib.Path.home()
+        self.hermes = hermes
+        self.root_name = self.hermes['root_name']
+        self.xlpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/excel/M{self.root_name}.xlsx'
 
+        self.data = None
         self.broad_band_Kdz_df = None
         self.transmittance = None
+        self.reflectance = None
 
-    def hercule_poirot(self, xl_path, sheet):
+    def hercule_poirot(self, sheet):
         """
         Famous Agatha Christie's detective, always there
         when you need to find where you have put that
         sneaky data point.
         :return:
         """
-        df = pd.read_excel(xl_path, sheet, header=3)
+        df = pd.read_excel(self.xlpath, sheet, header=3)
         return df
 
     def get_broadband_Kdz(self):
-        path = '/Users/braulier/Documents/HE60/output/HydroLight/excel/M' + self.batch_name + '.xlsx'
-        self.broad_band_Kdz_df = self.hercule_poirot(xl_path=path, sheet='KPAR')
+        self.broad_band_Kdz_df = self.hercule_poirot(sheet='KPAR')
 
     def get_broadband_transmittance(self):
         if self.broad_band_Kdz_df is None:
@@ -34,21 +39,31 @@ class DataFinder:
         self.transmittance = np.cumprod(np.exp(-depths*Kdz))
         self.broad_band_Kdz_df['Transmittance'] = self.transmittance
 
+    def get_reflectance_and_transmittance(self):
+        self.wavelenght_binwidth = self.hermes['bands'][1] - self.hermes['bands'][0]
+        self.Eu = self.get_Eu()
+        self.Ed = self.get_Ed()
+        self.transmittance = self.Ed[1:]/self.Ed[1]
+        self.reflectance = self.Eu[1:]/self.Ed[1:]  # In the water
+        self.albedo = self.Eu[0]/self.Ed[0]*np.ones(self.Eu[1:].shape)  # In the air
+        print(self.albedo.shape, self.hermes['zetanom'].shape)
+        result_array = np.zeros((100,4))
+        result_array[:,0], result_array[:,1] = self.hermes['zetanom'], self.albedo
+        result_array[:,2], result_array[:,3] = self.transmittance, self.reflectance
+        result_df = pd.DataFrame(data=result_array, columns=['depths', 'albedo', 'transmittance', 'reflectance'])
+        return result_df
+
+    def get_Eu(self):
+        E_u_lambda = self.hercule_poirot(sheet='Eu').T
+        E_u = np.sum(E_u_lambda.to_numpy()[1:, ], axis=1)*self.wavelenght_binwidth
+        return E_u
+
+    def get_Ed(self):
+        E_d_lambda = self.hercule_poirot(sheet='Ed').T
+        E_d = np.sum(E_d_lambda.to_numpy()[1:, ], axis=1)*self.wavelenght_binwidth
+        return E_d
+
 
 if __name__ == "__main__":
-    ssl_list = np.linspace(0.01, 0.20, 20)
-    fig, axes = plt.subplots(1, 2)
-    for ssl_thickness in ssl_list:
-        ssl_thickness = round(ssl_thickness, 2)
-        example = DataFinder(batch_name='BL_ssl_{}'.format(str(ssl_thickness).replace('.', '_')))
-        example.get_broadband_transmittance()
-        kd_df = example.broad_band_Kdz_df
-        axes[0].plot(kd_df['depth'], kd_df['K_d (broadband)'])
-        axes[1].scatter([ssl_thickness], [example.transmittance])
-    axes[1].set_ylabel('Transmittance')
-    axes[1].set_xlabel('SSL thickness    [m]')
-    axes[1].set_xlim([0, 0.25])
-    axes[0].set_xlim([0, 1.25])
-    axes[0].gca().invert_yaxis()
-    plt.show()
+    print('\n')
 

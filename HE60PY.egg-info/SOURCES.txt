@@ -18,3 +18,4 @@ HE60PY/Tools/recordbuilder.py
 HE60PY/Tools/sea_ice_default_batch.py
 HE60PY/test/__init__.py
 HE60PY/test/test.py
+ressources/__init__.py
