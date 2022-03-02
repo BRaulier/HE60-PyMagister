@@ -40,7 +40,7 @@ class EnvironmentBuilder:
         bash_file_path = f"/Applications/HE60.app/Contents/backend/{time_stamp}.sh"
         with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
-                       f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.batch_name}.txt")
+                       f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.root_name}.txt")
         bash_command = f'./{time_stamp}.sh'
         path_to_he60 = '/Applications/HE60.app/Contents/backend'
         command_chmod = 'chmod u+x ' + bash_file_path

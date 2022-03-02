@@ -1,11 +1,9 @@
-import pathlib
-import numpy as np
 from .recordbuilder import RecordBuilder
+import pathlib
 
 
 class LisaDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
-        super().__init__()
         self.hermes = hermes
 
     def set_record1(self):

@@ -1,7 +1,7 @@
 import numpy as np
 import pathlib
-from sea_ice_default_batch import SeaIceDefaultBatch
-from lisa_default_batch import LisaDefaultBatch
+from .sea_ice_default_batch import SeaIceDefaultBatch
+from .lisa_default_batch import LisaDefaultBatch
 
 
 class BatchMaker:
@@ -58,16 +58,18 @@ class BatchMaker:
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
                                           '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}'.format(**self.meta['record12'])
 
-    def write_batch_file(self, path=f"{self.usr_path}/Documents/HE60/run/batch/"):
-        with open(path + self.batch_name+'.txt', "w+") as file:
+    def write_batch_file(self):
+        path = f"{self.usr_path}/Documents/HE60/run/batch/"
+        with open(path + self.root_name + '.txt', "w+") as file:
             file.writelines([self.meta['record{}'.format(i)]['string'] for i in range(1, 13)])
 
 
 if __name__ == "__main__":
+    print('\n')
     # Test for new batch_maker methods
     # Test for Lisa
-    test_lisa = BatchMaker(batch_name='RG100od_C10', mode='Lisa')
-    test_lisa.set_title(title='Chl a profiles based on real data: b - baseline, 10 - 10% to 100 - 100%')
-    test_lisa.set_rootname(rootname='RG100od_C10')
-    test_lisa.set_all_records()
-    test_lisa.write_batch_file(path='/')
+    # test_lisa = BatchMaker(batch_name='RG100od_C10', mode='Lisa')
+    # test_lisa.set_title(title='Chl a profiles based on real data: b - baseline, 10 - 10% to 100 - 100%')
+    # test_lisa.set_rootname(rootname='RG100od_C10')
+    # test_lisa.set_all_records()
+    # test_lisa.write_batch_file(path='/')
