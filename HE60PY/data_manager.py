@@ -4,7 +4,6 @@ import numpy as np
 import pathlib
 
 
-
 class DataFinder:
     def __init__(self, hermes):
         self.usr_path = pathlib.Path.home()
@@ -46,7 +45,6 @@ class DataFinder:
         self.transmittance = self.Ed[1:]/self.Ed[1]
         self.reflectance = self.Eu[1:]/self.Ed[1:]  # In the water
         self.albedo = self.Eu[0]/self.Ed[0]*np.ones(self.Eu[1:].shape)  # In the air
-        print(self.albedo.shape, self.hermes['zetanom'].shape)
         result_array = np.zeros((100,4))
         result_array[:,0], result_array[:,1] = self.hermes['zetanom'], self.albedo
         result_array[:,2], result_array[:,3] = self.transmittance, self.reflectance
