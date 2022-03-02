@@ -11,5 +11,10 @@ HE60PY.egg-info/top_level.txt
 HE60PY/Tools/__init__.py
 HE60PY/Tools/batchmaker.py
 HE60PY/Tools/environmentbuilder.py
+HE60PY/Tools/lisa_default_batch.py
+HE60PY/Tools/olympus.py
+HE60PY/Tools/phase_function_discretizer.py
+HE60PY/Tools/recordbuilder.py
+HE60PY/Tools/sea_ice_default_batch.py
 HE60PY/test/__init__.py
 HE60PY/test/test.py

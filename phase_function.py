@@ -24,7 +24,7 @@ def compute_g_fournier_forand(n, mu):
 def henvey_greenstein_pf(phi, g):
     mu = np.cos(phi)
     beta = (1/(4*np.pi))*((1-g**2)/(1+g**2-2*g*mu)**(3/2))
-    normalised_beta = beta/np.sum(beta)
+    # normalised_beta = beta/np.sum(beta)
     return beta
 
 

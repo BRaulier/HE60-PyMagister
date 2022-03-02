@@ -30,7 +30,6 @@ def create_null_water_file_if_needed():
 
 
 class EnvironmentBuilder:
-
     def create_simulation_environnement(self):
         self.create_backscattering_file(self.path)
         self.create_ac9_file(self.path)
@@ -38,11 +37,11 @@ class EnvironmentBuilder:
 
     def create_run_delete_bash_file(self, print_output):
         time_stamp = str(datetime.datetime.now()).replace('.', '_').replace(' ', '_').replace(':', '_')
-        bash_file_path = "/Applications/HE60.app/Contents/backend/{}.sh".format(time_stamp)
+        bash_file_path = f"/Applications/HE60.app/Contents/backend/{time_stamp}.sh"
         with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
-                       "./HydroLight6 < /Users/braulier/Documents/HE60/run/batch/" + self.batch_name + ".txt")
-        bash_command = './{}.sh'.format(time_stamp)
+                       f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.root_name}.txt")
+        bash_command = f'./{time_stamp}.sh'
         path_to_he60 = '/Applications/HE60.app/Contents/backend'
         command_chmod = 'chmod u+x ' + bash_file_path
         chmod_process = subprocess.Popen(command_chmod.split(), stdout=subprocess.PIPE)

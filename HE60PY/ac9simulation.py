@@ -1,29 +1,42 @@
 import numpy as np
+import pathlib
 import matplotlib.pyplot as plt
+
 from HE60PY.Tools.batchmaker import BatchMaker
 from HE60PY.Tools.environmentbuilder import EnvironmentBuilder
+from HE60PY.Tools.olympus import Hermes
 
 
-class AC9Simulation(BatchMaker, EnvironmentBuilder):  # Todo composition classes instead of inheritance
-    def __init__(self, path, batch_name, non_default_dict=None):
-        super().__init__(batch_name)
+class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
+    def __init__(self, path, root_name, run_title, mode='sea_ice', **kwargs):
+        # General initialisation
+        self.usr_path = pathlib.Path.home()
+        self.path = path
+        self.kwargs = kwargs
+        self.root_name = root_name
+        self.run_title = run_title
+        self.mode = mode
+
+        # Hermes initialisation (used to pass information all over the module)
+        hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
+        self.hermes = hermes.dict
+
+        self.ac9_path = self.path + '/ac9_file.txt'
+        self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
+        self.hermes['ac9_path'], self.hermes['bb_path'] = self.ac9_path, self.bb_path
+
+        # BatchMaker  initialisation
+        self.batchmaker = BatchMaker(self.hermes)
+
+        # EnvironmentBuilder needed parameters, only needed for sea_ice mode TODO: Remove this part and activate it only for the proper mode
         self.wavelengths = None
         self.n_wavelengths = None
+        self.set_wavelengths(wvelgths=self.batchmaker.meta['record6']['bands'])
         self.z_max = None
         self.delta_z = None
         self.z_grid = None
         self.z_ac_grid = None
         self.z_bb_grid = None
-        self.path = path
-
-        self.ac9_path = self.path + '/ac9_file.txt'
-        self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
-        
-        self.set_N_band_waves()
-        self.set_title(self.batch_name)
-        self.set_rootname(self.batch_name)
-        self.set_all_records(non_default_dict=non_default_dict)
-        self.set_wavelengths(wvelgths=self.meta['record6']['bands'])
 
     def build_and_run_mobley_1998_example(self):
         """
@@ -34,13 +47,14 @@ class AC9Simulation(BatchMaker, EnvironmentBuilder):  # Todo composition classes
         self.add_layer(z1=0.1, z2=1.61, abs=0.4, scat=200, bb=0.0042)
         self.add_layer(z1=1.61, z2=1.74, abs=1.28, scat=200, bb=0.0042)
         self.add_layer(z1=1.74, z2=self.z_max+1, abs=0.5, scat=0.1, bb=0.005)
-        self.run_built_model()
+        self.run_simulation()
 
-    def run_built_model(self, printoutput=False):
+    def run_simulation(self, printoutput=False):
         print('Preparing files...')
-        self.write_batch_file()
+        self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
-        self.create_simulation_environnement()
+        if self.mode == 'sea_ice':  # TODO: Change this
+            self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
 
