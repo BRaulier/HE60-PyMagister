@@ -6,8 +6,7 @@ import datetime
 
 
 def create_null_pure_water_file(path):
-    package_directory = os.path.dirname(os.path.abspath(__file__))
-    H2O_default_data = np.genfromtxt(package_directory+'/../../ressources/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
+    H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
     H2O_NULL_WATER_PROP[:, 1], H2O_NULL_WATER_PROP[:, 2], H2O_NULL_WATER_PROP[:, 3] = 0.0, 0.0, 0.0
     header = "\\begin_header \n" \
