@@ -58,6 +58,12 @@ class BatchMaker:
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
                                           '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}\n'.format(**self.meta['record12'])
 
+        self.hermes['bands'] = self.meta['record6']['bands']
+        self.hermes['Nwave'] = self.meta['record6']['Nwave']
+        self.hermes['Parmin'] = self.meta['record1']['Parmin']
+        self.hermes['Parmax'] = self.meta['record1']['Parmax']  # TODO Hermes could save all the data from the meta
+        self.hermes['zetanom'] = self.meta['record11']['zetanom'] # (once updated) dictionnary, would be usefull for data_managing afterwarDs
+
     def write_batch_file(self):
         path = f"{self.usr_path}/Documents/HE60/run/batch/"
         with open(path + self.root_name + '.txt', "w+") as file:
