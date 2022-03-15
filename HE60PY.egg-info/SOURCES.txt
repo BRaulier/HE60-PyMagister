@@ -8,6 +8,7 @@ HE60PY.egg-info/PKG-INFO
 HE60PY.egg-info/SOURCES.txt
 HE60PY.egg-info/dependency_links.txt
 HE60PY.egg-info/top_level.txt
+HE60PY/Tools/HE60DORT_default_batch.py
 HE60PY/Tools/__init__.py
 HE60PY/Tools/batchmaker.py
 HE60PY/Tools/environmentbuilder.py

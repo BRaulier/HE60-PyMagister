@@ -5,6 +5,19 @@ import numpy as np
 import datetime
 
 
+def create_irrad_file(wavelength_Ed, total_path):
+    header = "\\begin_header\n" \
+             "HydroLight standard format for total (Ed_total) Irradiance \n" \
+             "Total irradiance includes sun + sky sea level irradiance\n" \
+             "wavelength    Ed_total\n" \
+             "(nm)    (W/m^2 nm)\n" \
+             "\\end_header\n"
+    footer = "\\end_data"
+    with open(total_path, 'w+') as file:
+        file.write(header)
+        np.savetxt(file, wavelength_Ed, fmt='%1.9e', delimiter='\t')
+        file.write(footer)
+
 def create_null_pure_water_file(path):
     H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
@@ -89,4 +102,6 @@ class EnvironmentBuilder:
             file.write(first_line)
             np.savetxt(file, self.z_ac_grid, fmt='%1.9e', delimiter='\t')
             file.write(footer)
+
+
 

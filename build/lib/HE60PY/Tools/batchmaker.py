@@ -2,6 +2,7 @@ import numpy as np
 import pathlib
 from .sea_ice_default_batch import SeaIceDefaultBatch
 from .lisa_default_batch import LisaDefaultBatch
+from .HE60DORT_default_batch import HE60DORTDefaultBatch
 
 
 class BatchMaker:
@@ -30,6 +31,8 @@ class BatchMaker:
     def set_all_records(self):
         if self.mode == 'sea_ice':
             default_batch = SeaIceDefaultBatch(self.hermes)
+        elif self.mode == 'HE60DORT':
+            default_batch = HE60DORTDefaultBatch(self.hermes)
         elif self.mode == 'Lisa':
             default_batch = LisaDefaultBatch(self.hermes)
         else:
