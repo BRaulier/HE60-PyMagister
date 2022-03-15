@@ -3,7 +3,7 @@ import numpy as np
 from .recordbuilder import RecordBuilder
 
 
-class SeaIceDefaultBatch(RecordBuilder):
+class HE60DORTDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
         super().__init__()
         self.hermes = hermes
@@ -35,7 +35,7 @@ class SeaIceDefaultBatch(RecordBuilder):
         # Record 4b
         self.default['record4']['iIOPmodel'] = 3                       # User data IOP model
         self.default['record4']['iSkyRadmodel'] = 1                    # Harrison and Coombes 1998 semi-empirical model
-        self.default['record4']['iSkyIrradmodel'] = 0                  # Calls RADTRANX to obtain direct and direct irradiances
+        self.default['record4']['iSkyIrradmodel'] = 1                  # Calls RADTRANX to obtain direct and direct irradiances
         self.default['record4']['iIOPTS'] = 0                          # For pure water IOP's independent of temperature and salinity
         self.default['record4']['iChl'] = 0
         self.default['record4']['iCDOM'] = 0
@@ -59,14 +59,14 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['_5f_line2'] = 'dummybstar.txt'              # Dummy
         # record 5g: type of concentrations and phase functions
         self.default['record5']['_5g_line1'] = '0,0,550,0.01,0'              # Dummy values phase functions
-        self.default['record5']['_5g_line2'] = '2,0,550,0.01,0'              # Dummy values phase functions
+        self.default['record5']['_5g_line2'] = '0,0,550,0.01,0'              # Dummy values phase functions
         # record 5h: discretized phase functions file names
         self.default['record5']['_5h_line1'] = 'dpf_pure_H2O.txt'               # First component phase function
-        self.default['record5']['_5h_line2'] = 'user_defined/backscattering_file.txt'   # Second component phase function
+        self.default['record5']['_5h_line2'] = 'dpf_OTHG_0_98.txt'    # Second component phase function
 
     def set_record6(self):
-        self.default['record6']['Nwave'] = 16
-        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], 17)
+        self.default['record6']['Nwave'] = 3
+        self.default['record6']['bands'] = np.linspace(450, 630, 4)
         self.default['record6']['bands_str'] = ','.join([str(int(i)) for i in self.default['record6']['bands']])
 
     def set_record7(self):

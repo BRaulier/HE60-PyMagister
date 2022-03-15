@@ -53,7 +53,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         print('Preparing files...')
         self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
-        if self.mode == 'sea_ice':  # TODO: Change this
+        if self.mode == 'sea_ice' or 'HE60DORT':  # TODO: Change this
             self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)

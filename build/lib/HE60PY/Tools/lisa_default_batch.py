@@ -37,7 +37,7 @@ class LisaDefaultBatch(RecordBuilder):
         self.default['record4']['iIOPmodel'] = 3  # User data IOP model
         self.default['record4']['iSkyRadmodel'] = 1  # Harrison and Coombes 1998 semi-empirical model
         self.default['record4']['iSkyIrradmodel'] = 1  # Calls RADTRANX to obtain direct and direct irradiances
-        self.default['record4']['iIOPTS'] = 4  # For pure water IOP's independent of temperature and salinity
+        self.default['record4']['iIOPTS'] = 4  # For pure water IOP's dependent of temperature and salinity
         self.default['record4']['iChl'] = 0
         self.default['record4']['iCDOM'] = 1
 
@@ -58,17 +58,17 @@ class LisaDefaultBatch(RecordBuilder):
                                             'astarDummy.txt\n' \
                                             '/Users/lisamatthes/Documents/HE60/data/examples/astarchl.txt'  # Water properties
         # record 5e: Specific scattering parameters
-        self.default['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'  # Pure water
-        self.default['record5']['5e_line2'] = '-666, -999, -999, -999, -999, -999'  # Measured IOP line
+        self.default['record5']['_5e_line1'] = '0, -999, -999, -999, -999, -999'  # Pure water
+        self.default['record5']['_5e_line2'] = '-666, -999, -999, -999, -999, -999'  # Measured IOP line
         # record 5f: Specific scattering data file names
-        self.default['record5']['5f_line1'] = 'bstarDummy.txt'  # Dummy
-        self.default['record5']['5f_line2'] = 'dummybstar.txt'  # Dummy
+        self.default['record5']['_5f_line1'] = 'bstarDummy.txt'  # Dummy
+        self.default['record5']['_5f_line2'] = 'dummybstar.txt'  # Dummy
         # record 5g: type of concentrations and phase functions
-        self.default['record5']['5g_line1'] = '0,0,550,0.01,0'  # Dummy values phase functions
-        self.default['record5']['5g_line2'] = '0,0,550,0.01,0'  # Dummy values phase functions
+        self.default['record5']['_5g_line1'] = '0,0,550,0.01,0'  # Dummy values phase functions
+        self.default['record5']['_5g_line2'] = '0,0,550,0.01,0'  # Dummy values phase functions
         # record 5h: discretized phase functions file names
-        self.default['record5']['5h_line1'] = 'dpf_pure_H2O.txt'  #
-        self.default['record5']['5h_line2'] = 'dpf_Petzold_avg_particle.txt'  #
+        self.default['record5']['_5h_line1'] = 'dpf_pure_H2O.txt'  #
+        self.default['record5']['_5h_line2'] = 'dpf_Petzold_avg_particle.txt'  #
 
     def set_record6(self):
         self.default['record6']['Nwave'] = 60

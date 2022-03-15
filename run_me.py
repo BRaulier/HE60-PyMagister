@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # user_built_sim.add_layer(z1=0.5, z2=2.01, abs=0.4, scat=200, bb=0.0042)
     # user_built_sim.run_simulation(printoutput=True)
 
-    wavelength_abs_built_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='abs_example', mode='sea_ice')
+    wavelength_abs_built_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='abs_example', mode='HE60DORT')
     wavelength_abs_built_sim.set_z_grid(z_max=2.0, wavelength_list=[484, 544, 602])
     wavelength_abs_built_sim.add_layer(z1=0.0, z2=0.5, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=1000, bb=0.0109)
     wavelength_abs_built_sim.add_layer(z1=0.5, z2=2.01, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=200, bb=0.0042)
