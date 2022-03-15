@@ -47,22 +47,22 @@ class SeaIceDefaultBatch(RecordBuilder):
         # record 5b: component concentrations
         self.default['record5']['compconc'] = '0, 0'                        # Component concentrations
         # record 5c: Specific absorption parameters
-        self.default['record5']['5c_lines'] = '0, 0, 440, 1, 0.014\n' \
+        self.default['record5']['_5c_lines'] = '0, 0, 440, 1, 0.014\n' \
                                               '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
         self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes['ac9_path']}"  # Null water properties
         # record 5e: Specific scattering parameters
-        self.default['record5']['5e_line1'] = '0, -999, -999, -999, -999, -999'   # Pure water
-        self.default['record5']['5e_line2'] = '-666, -999, -999, -999, -999, -999'   # Measured IOP line
+        self.default['record5']['_5e_line1'] = '0, -999, -999, -999, -999, -999'   # Pure water
+        self.default['record5']['_5e_line2'] = '-666, -999, -999, -999, -999, -999'   # Measured IOP line
         # record 5f: Specific scattering data file names
-        self.default['record5']['5f_line1'] = 'dummybstar.txt'              # Dummy
-        self.default['record5']['5f_line2'] = 'dummybstar.txt'              # Dummy
+        self.default['record5']['_5f_line1'] = 'dummybstar.txt'              # Dummy
+        self.default['record5']['_5f_line2'] = 'dummybstar.txt'              # Dummy
         # record 5g: type of concentrations and phase functions
-        self.default['record5']['5g_line1'] = '0,0,550,0.01,0'              # Dummy values phase functions
-        self.default['record5']['5g_line2'] = '2,0,550,0.01,0'              # Dummy values phase functions
+        self.default['record5']['_5g_line1'] = '0,0,550,0.01,0'              # Dummy values phase functions
+        self.default['record5']['_5g_line2'] = '2,0,550,0.01,0'              # Dummy values phase functions
         # record 5h: discretized phase functions file names
-        self.default['record5']['5h_line1'] = 'dpf_pure_H2O.txt'               # TODO NULL
-        self.default['record5']['5h_line2'] = 'user_defined/backscattering_file.txt'   # TODO
+        self.default['record5']['_5h_line1'] = 'dpf_pure_H2O.txt'               # First component phase function
+        self.default['record5']['_5h_line2'] = 'user_defined/backscattering_file.txt'   # Second component phase function
 
     def set_record6(self):
         self.default['record6']['Nwave'] = 16
