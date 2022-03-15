@@ -50,7 +50,7 @@ class DataFinder:
         result_array = np.zeros((100, 7))
         result_array[:,0], result_array[:,1] = self.hermes['zetanom'], self.albedo
         result_array[:,2], result_array[:,3] = self.transmittance, self.reflectance
-        result_array[:, 4], result_array[:, 5], result_array[:, 6] = self.Ed, self.Eu, self.Eo
+        result_array[:, 4], result_array[:, 5], result_array[:, 6] = self.Ed[1:], self.Eu[1:], self.Eo[1:]
         result_df = pd.DataFrame(data=result_array, columns=['depths', 'albedo', 'transmittance', 'reflectance', 'Ed', 'Eu', 'Eo'])
         return result_df
 
