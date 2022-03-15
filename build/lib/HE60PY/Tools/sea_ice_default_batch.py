@@ -65,8 +65,8 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['5h_line2'] = 'user_defined/backscattering_file.txt'   # TODO
 
     def set_record6(self):
-        self.default['record6']['Nwave'] = self.hermes['Nwavel'] - 1
-        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], self.hermes['Nwavel'])
+        self.default['record6']['Nwave'] = 16
+        self.default['record6']['bands'] = np.linspace(self.default['record1']['Parmin'], self.default['record1']['Parmax'], 17)
         self.default['record6']['bands_str'] = ','.join([str(int(i)) for i in self.default['record6']['bands']])
 
     def set_record7(self):

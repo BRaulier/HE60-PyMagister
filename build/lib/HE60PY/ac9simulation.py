@@ -31,7 +31,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         # EnvironmentBuilder needed parameters, only needed for sea_ice mode TODO: Remove this part and activate it only for the proper mode
         self.wavelengths = None
         self.n_wavelengths = None
-        self.set_wavelengths(wvelgths=self.batchmaker.meta['record6']['bands'])
+        self.wavelength_header = None
         self.z_max = None
         self.delta_z = None
         self.z_grid = None
@@ -59,12 +59,24 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.create_run_delete_bash_file(print_output=printoutput)
 
     def add_layer(self, z1, z2, abs, scat, bb):
-        c = abs + scat
-        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
-        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
-        self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+        if isinstance(abs, float):
+            c = abs + scat
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
+            self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+        elif isinstance(abs, dict):
+            for wavelength in abs.keys():
+                abs_wv = abs[wavelength]
+                c_wv = abs_wv + scat
+                indexes, = np.where(self.wavelength_header == int(wavelength))
+                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
+                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
+                self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def set_z_grid(self, z_max, delta_z=0.001):
+    def set_z_grid(self, z_max, delta_z=0.001, wavelength_list=None):
+        if wavelength_list is None:
+            wavelength_list = self.batchmaker.meta['record6']['bands']
+        self.set_wavelengths(wvelgths=wavelength_list)
         self.z_max = z_max
         self.delta_z = delta_z
         nz = int(z_max/delta_z)+1
@@ -75,6 +87,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
     def set_wavelengths(self, wvelgths):
         self.n_wavelengths = len(wvelgths)
         self.wavelengths = np.array(wvelgths)
+        self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
 
 
 if __name__ == "__main__":

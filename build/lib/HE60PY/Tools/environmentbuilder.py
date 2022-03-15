@@ -87,6 +87,6 @@ class EnvironmentBuilder:
         with open(path + '/ac9_file.txt', 'w+') as file:
             file.write(header)
             file.write(first_line)
-            np.savetxt(file, self.z_ac_grid, fmt='%1.5e', delimiter='\t')
+            np.savetxt(file, self.z_ac_grid, fmt='%1.9e', delimiter='\t')
             file.write(footer)
 

@@ -42,24 +42,32 @@ class DataFinder:
         self.wavelength_binwidth = self.hermes['bands'][1] - self.hermes['bands'][0]
         self.Eu = self.get_Eu()
         self.Ed = self.get_Ed()
+        self.Eo = self.get_Eo()
         self.transmittance = self.Ed[1:]/self.Ed[1]
         self.reflectance = self.Eu[1:]/self.Ed[1:]  # In the water
         self.albedo = self.Eu[0]/self.Ed[0]*np.ones(self.Eu[1:].shape)  # In the air
-        result_array = np.zeros((100,4))
+
+        result_array = np.zeros((100, 7))
         result_array[:,0], result_array[:,1] = self.hermes['zetanom'], self.albedo
         result_array[:,2], result_array[:,3] = self.transmittance, self.reflectance
-        result_df = pd.DataFrame(data=result_array, columns=['depths', 'albedo', 'transmittance', 'reflectance'])
+        result_array[:, 4], result_array[:, 5], result_array[:, 6] = self.Ed, self.Eu, self.Eo
+        result_df = pd.DataFrame(data=result_array, columns=['depths', 'albedo', 'transmittance', 'reflectance', 'Ed', 'Eu', 'Eo'])
         return result_df
 
     def get_Eu(self):
-        E_u_lambda = self.hercule_poirot(sheet='Eu').T
-        E_u = np.sum(E_u_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
-        return E_u
+        Eu_lambda = self.hercule_poirot(sheet='Eu').T
+        Eu = np.sum(Eu_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
+        return Eu
 
     def get_Ed(self):
-        E_d_lambda = self.hercule_poirot(sheet='Ed').T
-        E_d = np.sum(E_d_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
-        return E_d
+        Ed_lambda = self.hercule_poirot(sheet='Ed').T
+        Ed = np.sum(Ed_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
+        return Ed
+
+    def get_Eo(self):
+        Eo_lambda = self.hercule_poirot(sheet='Ed').T
+        Eo = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
+        return Eo
 
 
 if __name__ == "__main__":
