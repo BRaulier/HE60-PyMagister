@@ -59,21 +59,23 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.create_run_delete_bash_file(print_output=printoutput)
 
     def add_layer(self, z1, z2, abs, scat, bb):
-        if isintance(abs, float):
+        if isinstance(abs, float):
             c = abs + scat
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
-        elif istance(abs, dict):
+        elif isinstance(abs, dict):
             for wavelength in abs.keys():
                 abs_wv = abs[wavelength]
                 c_wv = abs_wv + scat
-                wavelength_index_in_array = self.wavelength_header == wavelength
-                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), wavelength_index_in_array] = abs_wv
-                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), wavelength_index_in_array] = c_wv
+                indexes, = np.where(self.wavelength_header == int(wavelength))
+                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
+                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
                 self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def set_z_grid(self, z_max, delta_z=0.001, wavelength_list=self.batchmaker.meta['record6']['bands']):
+    def set_z_grid(self, z_max, delta_z=0.001, wavelength_list=None):
+        if wavelength_list is None:
+            wavelength_list = self.batchmaker.meta['record6']['bands']
         self.set_wavelengths(wvelgths=wavelength_list)
         self.z_max = z_max
         self.delta_z = delta_z
@@ -85,7 +87,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
     def set_wavelengths(self, wvelgths):
         self.n_wavelengths = len(wvelgths)
         self.wavelengths = np.array(wvelgths)
-        self.wavelength_header = np.hstack(np.array([999]), self.wavelengths, self.wavelengths)
+        self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
 
 
 if __name__ == "__main__":
