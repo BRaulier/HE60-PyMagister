@@ -39,7 +39,7 @@ class DataFinder:
         self.broad_band_Kdz_df['Transmittance'] = self.transmittance
 
     def get_reflectance_and_transmittance(self):
-        self.wavelenght_binwidth = self.hermes['bands'][1] - self.hermes['bands'][0]
+        self.wavelength_binwidth = self.hermes['bands'][1] - self.hermes['bands'][0]
         self.Eu = self.get_Eu()
         self.Ed = self.get_Ed()
         self.transmittance = self.Ed[1:]/self.Ed[1]
@@ -53,12 +53,12 @@ class DataFinder:
 
     def get_Eu(self):
         E_u_lambda = self.hercule_poirot(sheet='Eu').T
-        E_u = np.sum(E_u_lambda.to_numpy()[1:, ], axis=1)*self.wavelenght_binwidth
+        E_u = np.sum(E_u_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
         return E_u
 
     def get_Ed(self):
         E_d_lambda = self.hercule_poirot(sheet='Ed').T
-        E_d = np.sum(E_d_lambda.to_numpy()[1:, ], axis=1)*self.wavelenght_binwidth
+        E_d = np.sum(E_d_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
         return E_d
 
 
