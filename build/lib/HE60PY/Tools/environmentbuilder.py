@@ -10,7 +10,7 @@ def create_irrad_file(wavelength_Ed, total_path):
              "HydroLight standard format for total (Ed_total) Irradiance \n" \
              "Total irradiance includes sun + sky sea level irradiance\n" \
              "wavelength    Ed_total\n" \
-             "(nm)    (W/m^2 nm)" \
+             "(nm)    (W/m^2 nm)\n" \
              "\\end_header\n"
     footer = "\\end_data"
     with open(total_path, 'w+') as file:

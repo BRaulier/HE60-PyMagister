@@ -38,7 +38,7 @@ class DataFinder:
         self.transmittance = np.cumprod(np.exp(-depths*Kdz))
         self.broad_band_Kdz_df['Transmittance'] = self.transmittance
 
-    def get_reflectance_and_transmittance(self):
+    def get_int_reflectance_and_transmittance(self):
         self.wavelength_binwidth = self.hermes['bands'][1] - self.hermes['bands'][0]
         self.Eu = self.get_Eu()
         self.Ed = self.get_Ed()
@@ -54,20 +54,46 @@ class DataFinder:
         result_df = pd.DataFrame(data=result_array, columns=['depths', 'albedo', 'transmittance', 'reflectance', 'Ed', 'Eu', 'Eo'])
         return result_df
 
-    def get_Eu(self):
-        Eu_lambda = self.hercule_poirot(sheet='Eu').T
-        Eu = np.sum(Eu_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
-        return Eu
+    def get_Eudos_lambda(self):
+        bands = self.hermes['bands']
+        step = bands[1] - bands[0]
+        analyzed_wavelengths = []
+        for i in range(len(bands)-1):
+            analyzed_wavelengths.append(bands[i]+step/2)
+        self.n_depths, = self.hermes['zetanom'].shape
+        result_array = np.zeros((self.n_depths+1, len(analyzed_wavelengths)*3+1))
+        columns_labels = ['depths']
+        result_array[1:, 0], result_array[0, 0] = self.hermes['zetanom'], 0.0
+        self.Eu = self.get_Eu(integrate=False)
+        self.Ed = self.get_Ed(integrate=False)
+        self.Eo = self.get_Eo(integrate=False)
+        for i, wavelength in enumerate(analyzed_wavelengths):
+            result_array[:, 3*i+1] = self.Eu[1:, i]
+            columns_labels.append(f'Eu_{wavelength}')
+            result_array[:, 3*i+2] = self.Ed[1:, i]
+            columns_labels.append(f'Ed_{wavelength}')
+            result_array[:, 3*i+3] = self.Eo[1:, i]
+            columns_labels.append(f'Eo_{wavelength}')
+        result_df = pd.DataFrame(data=result_array, columns=columns_labels)
+        return result_df
 
-    def get_Ed(self):
-        Ed_lambda = self.hercule_poirot(sheet='Ed').T
-        Ed = np.sum(Ed_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
-        return Ed
+    def get_Eu(self, integrate=True):
+        Eu = self.hercule_poirot(sheet='Eu').T
+        if integrate:
+            Eu = np.sum(Eu_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
+        return Eu.to_numpy()
 
-    def get_Eo(self):
-        Eo_lambda = self.hercule_poirot(sheet='Ed').T
-        Eo = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
-        return Eo
+    def get_Ed(self, integrate=True):
+        Ed = self.hercule_poirot(sheet='Ed').T
+        if integrate:
+            Ed = np.sum(Ed_lambda.to_numpy()[1:, ], axis=1)*self.wavelength_binwidth
+        return Ed.to_numpy()
+
+    def get_Eo(self, integrate=True):
+        Eo = self.hercule_poirot(sheet='Eo').T
+        if integrate:
+            Eo = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
+        return Eo.to_numpy()
 
 
 if __name__ == "__main__":

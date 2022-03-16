@@ -109,7 +109,7 @@ class HE60DORTDefaultBatch(RecordBuilder):
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths
         self.default['record11']['nznom'] = 100  # number of depths
-        self.default['record11']['zetanom'] = np.linspace(0.02, 2.00, 100)
+        self.default['record11']['zetanom'] = np.linspace(0.03, 3.00, 100)
 
     def set_record12(self):
         self.default['record12']['PureWaterDataFile'] = '../data/null_H2Oabsorps.txt'
