@@ -27,7 +27,7 @@ class HE60DORTDefaultBatch(RecordBuilder):
 
     def set_record4(self):
         # Record 4a
-        self.default['record4']['iOptPrnt'] = -1                        # -1: minimal output, 0: standard, 1: extensive
+        self.default['record4']['iOptPrnt'] = -1                      # -1: minimal output, 0: standard, 1: extensive
         self.default['record4']['iOptDigital'] = 0                     # Generation of Droot.txt file, 0 or 1
         self.default['record4']['iOptExcelS'] = 2                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.default['record4']['iOptExcelM'] = 1                      # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
@@ -82,8 +82,8 @@ class HE60DORTDefaultBatch(RecordBuilder):
         self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
         self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
         self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
-        self.default['record8']['cloud'] = 0.75  # 0.0: clear sky, 1.0:solid overcast
-        # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
+        self.default['record8']['cloud'] = 1.00  # 0.0: clear sky, 1.0:solid overcast
+          # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
         self.default['record8']['fjday'] = 180.0  # Julian day (for earth-sun distance)
         self.default['record8']['rlat'] = 76.0  # latitude (degrees)
         self.default['record8']['rlon'] = -83.0  # longitude (degrees)
@@ -92,15 +92,15 @@ class HE60DORTDefaultBatch(RecordBuilder):
         self.default['record8']['rh'] = 75  # relative humidity (percents), educated guess
         self.default['record8']['wv'] = 0.05  # precipitable content: the amount of moisture there is above a fixed point, see https://earth.nullschool.net
         self.default['record8']['vi'] = 15  # average horizontal visibility (km) https://essd.copernicus.org/articles/12/805/2020/
-        self.default['record8']['wsm'] = 6.0  # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
+        self.default['record8']['wsm'] = 15.0  # average wind speed (m/s) https://essd.copernicus.org/articles/12/805/2020/
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9']['windspd'] = 15.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
         self.default['record9']['refr'] = 1.355  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
         self.default['record9']['temp'] = -1.8  # water temperature
         self.default['record9']['salinty'] = 35.0  # salinity (PSU)
-        self.default['record9']['iSurfaceModelFlag'] = 3  # azimuthally averaged Cox-Munk surfaces
+        self.default['record9']['iSurfaceModelFlag'] = 2  # azimuthally averaged Cox-Munk surfaces
 
     def set_record10(self):
         self.default['record10']['ibotm'] = 0  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
@@ -108,8 +108,8 @@ class HE60DORTDefaultBatch(RecordBuilder):
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths
-        self.default['record11']['nznom'] = 100  # number of depths
-        self.default['record11']['zetanom'] = np.linspace(0.03, 3.00, 100)
+        self.default['record11']['nznom'] = 5  # number of depths
+        self.default['record11']['zetanom'] = np.linspace(0.0, 3.0, 301)
 
     def set_record12(self):
         self.default['record12']['PureWaterDataFile'] = '../data/null_H2Oabsorps.txt'
