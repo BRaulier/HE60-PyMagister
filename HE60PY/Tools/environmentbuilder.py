@@ -4,6 +4,8 @@ import subprocess
 import numpy as np
 import datetime
 
+from .olympus import ThisNeedToExist
+
 
 def create_irrad_file(wavelength_Ed, total_path):
     header = "\\begin_header\n" \
@@ -17,6 +19,7 @@ def create_irrad_file(wavelength_Ed, total_path):
         file.write(header)
         np.savetxt(file, wavelength_Ed, fmt='%1.9e', delimiter='\t')
         file.write(footer)
+
 
 def create_null_pure_water_file(path):
     H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
@@ -43,8 +46,13 @@ def create_null_water_file_if_needed():
 
 class EnvironmentBuilder:
     def create_simulation_environnement(self):
-        self.create_backscattering_file(self.path)
-        self.create_ac9_file(self.path)
+        if self.whoamI == 'AC9Simulation':
+            self.create_backscattering_file(self.path)
+            self.create_ac9_file(self.path)
+
+        elif self.whoamI == 'SeaIceSimulation':
+            self.create_dddpf_file(folder_path='/Applications/HE60.app/Contents/data/phase_functions/')
+            self.create_ac9_file(self.path)
         create_null_water_file_if_needed()
 
     def create_run_delete_bash_file(self, print_output):
@@ -102,6 +110,17 @@ class EnvironmentBuilder:
             file.write(first_line)
             np.savetxt(file, self.z_ac_grid, fmt='%1.9e', delimiter='\t')
             file.write(footer)
+            
+    def create_dddpf_file(self, folder_path):
+        with open(folder_path + 'Py_DDDPF_list.txt', 'w+') as file:
+            for i, boundary in enumerate(self.z_boundaries_dddpf):
+                dpf_filename = self.dpf_filenames[i]
+                # First verify that this boundary is different then the previous one, to avoid error from user input
+                if i != 0 and np.isclose(self.z_boundaries_dddpf[i-1], boundary, atol=1e-6):
+                    boundary += 0.00001         # To avoid two boundaries that are equals to each other.
+                # Verify that the dpf file the user gave exists, if it does not, an error is raised
+                ThisNeedToExist(filepath=f'{folder_path}HydroLight/{dpf_filename}')
+                file.write(f"{boundary:.5f}    {dpf_filename}\n")
 
 
 

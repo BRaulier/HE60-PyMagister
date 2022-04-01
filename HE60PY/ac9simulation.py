@@ -10,6 +10,8 @@ from HE60PY.Tools.olympus import Hermes
 class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
     def __init__(self, path, root_name, run_title, mode='sea_ice', **kwargs):
         # General initialisation
+        self.whoamI = 'AC9Simulation'
+
         self.usr_path = pathlib.Path.home()
         self.path = path
         self.kwargs = kwargs
@@ -92,6 +94,5 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
 
 if __name__ == "__main__":
     print('\n')
-    plt.scatter()
 
 
