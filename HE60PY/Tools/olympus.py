@@ -18,7 +18,14 @@ class Hermes:
 class InvalidFile(Exception):
     def __init__(self, filename, ):
         self.filename = filename
-        self.message = 'This user provided file does not exist: ' + filename
+        self.message = 'This user provided file does not exist: ' + self.filename
+        super().__init__(self.message)
+
+
+class InvalidMode(Exception):
+    def __init__(self, mode,):
+        self.mode = mode
+        self.message = 'This mode is invalid: ' + self.mode 
         super().__init__(self.message)
 
 
