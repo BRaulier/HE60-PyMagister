@@ -21,7 +21,7 @@ Download zip file and use the package manager [pip](https://pip.pypa.io/en/stabl
 #### Examples
 ```python
 from HE60PY.seaicesimulation import SeaIceSimulation
-
+path_to_user_files = r'/Users/usr/Documents/HE60/run'
 simple_example_SeaIce =SeaIceSimulation(path=path_to_user_files, run_title='simple_example_SeaIce', 
                                         root_name='simple_example_SeaIce')
 simple_example_SeaIce.set_z_grid(z_max=2.0)
@@ -33,7 +33,7 @@ simple_example_SeaIce.run_simulation(printoutput=True)
 
 ```python
 from HE60PY.seaicesimulation import SeaIceSimulation
-
+path_to_user_files = r'/Users/usr/Documents/HE60/run'
 example_SeaIce = SeaIceSimulation(path=path_to_user_files, run_title='example_SeaIce',
                                                  root_name='example_SeaIce')
 example_SeaIce.set_z_grid(z_max=3.00, wavelength_list=[484, 544, 602])
