@@ -1,8 +1,10 @@
 import numpy as np
 import pathlib
-from .sea_ice_default_batch import SeaIceDefaultBatch
-from .lisa_default_batch import LisaDefaultBatch
-from .HE60DORT_default_batch import HE60DORTDefaultBatch
+from .default_batch_sea_ice import SeaIceDefaultBatch
+from .default_batch_lisa import LisaDefaultBatch
+from .default_batch_HE60DORT import HE60DORTDefaultBatch
+from .default_batch_open_water import OpenWaterDefaultBatch
+from .olympus import InvalidMode
 
 
 class BatchMaker:
@@ -35,8 +37,10 @@ class BatchMaker:
             default_batch = HE60DORTDefaultBatch(self.hermes)
         elif self.mode == 'Lisa':
             default_batch = LisaDefaultBatch(self.hermes)
+        elif self.mode == 'open_water':
+            default_batch = OpenWaterDefaultBatch(self.hermes)
         else:
-            default_batch = None
+            raise InvalidMode(self.mode)
         self.meta = default_batch.build_records()
         self.prepare_record_strings()
 

@@ -7,17 +7,18 @@ from HE60PY.Tools.environmentbuilder import EnvironmentBuilder
 from HE60PY.Tools.olympus import Hermes
 
 
-class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
+class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
     def __init__(self, path, root_name, run_title, mode='sea_ice', **kwargs):
         # General initialisation
-        self.whoamI = 'AC9Simulation'
-
+        self.whoamI = 'SeaIceSimulation'
+        
         self.usr_path = pathlib.Path.home()
         self.path = path
         self.kwargs = kwargs
         self.root_name = root_name
         self.run_title = run_title
         self.mode = mode
+
 
         # Hermes initialisation (used to pass information all over the module)
         hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
@@ -40,6 +41,9 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.z_ac_grid = None
         self.z_bb_grid = None
 
+        self.z_boundaries_dddpf = []  # Boundaries for the Discretized Depth Dependant Phase Function
+        self.dpf_filenames = []  # Filenames for the Discredized Depth Dependant Phase Function
+
     def build_and_run_mobley_1998_example(self):
         """
         Four-layer model of sea ice, from Mobley et al. 1998 : MODELING LIGHT PROPAGATION IN SEA ICE
@@ -55,12 +59,13 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         print('Preparing files...')
         self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
-        if self.mode == 'sea_ice' or 'HE60DORT':  # TODO: Change this
-            self.create_simulation_environnement()
+        self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
 
-    def add_layer(self, z1, z2, abs, scat, bb):
+    def add_layer(self, z1, z2, abs, scat, bb=0, dpf=''):
+        self.z_boundaries_dddpf.extend([z1, z2])
+        self.dpf_filenames.extend([dpf, dpf])
         if isinstance(abs, float):
             c = abs + scat
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
