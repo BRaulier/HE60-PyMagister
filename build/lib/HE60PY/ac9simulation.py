@@ -20,8 +20,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.mode = mode
 
         # Hermes initialisation (used to pass information all over the module)
-        hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
-        self.hermes = hermes.dict
+        self.hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
 
         self.ac9_path = self.path + '/ac9_file.txt'
         self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'

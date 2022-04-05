@@ -9,23 +9,23 @@ class Hermes:
         if rebirth_path:
             self.rebirth(path=rebirth_path)
         else:
-            self.dict = {}
+            self.get = {}
             self.birth(root_name, run_title, mode, kwargs)
 
     def birth(self, root_name, run_title, mode, kwargs):
-        self.dict['root_name'] = root_name
-        self.dict['run_title'] = run_title
-        self.dict['mode'] = mode
-        self.dict.update(kwargs)
+        self.get['root_name'] = root_name
+        self.get['run_title'] = run_title
+        self.get['mode'] = mode
+        self.get.update(kwargs)
 
     def rebirth(self, path):
         ThisNeedToExist(path)
         with open(path, 'rb') as handle:
-            self.dict = pickle.load(handle)
+            self.get = pickle.load(handle)
 
     def save_dict(self, path):
         with open(path, 'wb') as handle:
-            pickle.dump(self.dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.get, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 class InvalidFile(Exception):
