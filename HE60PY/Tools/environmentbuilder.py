@@ -83,7 +83,10 @@ class EnvironmentBuilder:
             file.write(footer)
             
     def create_dddpf_file(self, folder_path):
+        
         with open(folder_path + 'Py_DDDPF_list.txt', 'w+') as file:
+            self.hermes.get['z_boundaries_dddpf'] = self.z_boundaries_dddpf
+            self.hermes.get['dpf_filenames'] = self.dpf_filenames
             for i, boundary in enumerate(self.z_boundaries_dddpf):
                 dpf_filename = self.dpf_filenames[i]
                 # First verify that this boundary is different then the previous one, to avoid error from user input

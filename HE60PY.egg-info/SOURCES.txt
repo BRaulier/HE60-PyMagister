@@ -3,7 +3,7 @@ README.md
 setup.py
 HE60PY/__init__.py
 HE60PY/ac9simulation.py
-HE60PY/data_manager.py
+HE60PY/dataparser.py
 HE60PY/seaicesimulation.py
 HE60PY.egg-info/PKG-INFO
 HE60PY.egg-info/SOURCES.txt
