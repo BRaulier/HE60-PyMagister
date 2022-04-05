@@ -16,6 +16,7 @@ HE60PY/Tools/default_batch_lisa.py
 HE60PY/Tools/default_batch_open_water.py
 HE60PY/Tools/default_batch_sea_ice.py
 HE60PY/Tools/environmentbuilder.py
+HE60PY/Tools/header_library.py
 HE60PY/Tools/olympus.py
 HE60PY/Tools/phase_function_discretizer.py
 HE60PY/Tools/recordbuilder.py

@@ -27,9 +27,9 @@ class SeaIceDefaultBatch(RecordBuilder):
 
     def set_record4(self):
         # Record 4a
-        self.default['record4']['iOptPrnt'] = -1                        # -1: minimal output, 0: standard, 1: extensive
+        self.default['record4']['iOptPrnt'] = 0                       # -1: minimal output, 0: standard, 1: extensive
         self.default['record4']['iOptDigital'] = 0                     # Generation of Droot.txt file, 0 or 1
-        self.default['record4']['iOptExcelS'] = 2                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
+        self.default['record4']['iOptExcelS'] = 0                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.default['record4']['iOptExcelM'] = 1                      # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
         self.default['record4']['iOptRad'] = 0                         # Generation of the full radiance printout Lroot.txt (0 or 1)
         # Record 4b

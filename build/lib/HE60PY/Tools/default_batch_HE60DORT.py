@@ -27,13 +27,13 @@ class HE60DORTDefaultBatch(RecordBuilder):
 
     def set_record4(self):
         # Record 4a
-        self.default['record4']['iOptPrnt'] = -1                      # -1: minimal output, 0: standard, 1: extensive
+        self.default['record4']['iOptPrnt'] = 1                      # -1: minimal output, 0: standard, 1: extensive
         self.default['record4']['iOptDigital'] = 0                     # Generation of Droot.txt file, 0 or 1
-        self.default['record4']['iOptExcelS'] = 2                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
+        self.default['record4']['iOptExcelS'] = 0                     # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.default['record4']['iOptExcelM'] = 1                      # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
-        self.default['record4']['iOptRad'] = 0                         # Generation of the full radiance printout Lroot.txt (0 or 1)
+        self.default['record4']['iOptRad'] = 1                        # Generation of the full radiance printout Lroot.txt (0 or 1)
         # Record 4b
-        self.default['record4']['iIOPmodel'] = 3                       # User data IOP model
+        self.default['record4']['iIOPmodel'] = 6                       # User data IOP model
         self.default['record4']['iSkyRadmodel'] = 1                    # Harrison and Coombes 1998 semi-empirical model
         self.default['record4']['iSkyIrradmodel'] = 1                  # Calls RADTRANX to obtain direct and direct irradiances
         self.default['record4']['iIOPTS'] = 0                          # For pure water IOP's independent of temperature and salinity
@@ -59,10 +59,10 @@ class HE60DORTDefaultBatch(RecordBuilder):
         self.default['record5']['_5f_line2'] = 'dummybstar.txt'              # Dummy
         # record 5g: type of concentrations and phase functions
         self.default['record5']['_5g_line1'] = '0,0,550,0.01,0'              # Dummy values phase functions
-        self.default['record5']['_5g_line2'] = '0,0,550,0.01,0'              # Dummy values phase functions
+        self.default['record5']['_5g_line2'] = '4,0,550,0.01,0'              # Dummy values phase functions
         # record 5h: discretized phase functions file names
         self.default['record5']['_5h_line1'] = 'dpf_pure_H2O.txt'               # First component phase function
-        self.default['record5']['_5h_line2'] = 'dpf_OTHG_0_98.txt'    # Second component phase function
+        self.default['record5']['_5h_line2'] = 'user_defined/backscattering_file.txt'    # Second component phase function
 
     def set_record6(self):
         self.default['record6']['Nwave'] = 3
@@ -108,7 +108,7 @@ class HE60DORTDefaultBatch(RecordBuilder):
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths
-        self.default['record11']['nznom'] = 5  # number of depths
+        self.default['record11']['nznom'] = 301  # number of depths
         self.default['record11']['zetanom'] = np.linspace(0.0, 3.0, 301)
 
     def set_record12(self):

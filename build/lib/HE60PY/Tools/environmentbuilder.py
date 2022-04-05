@@ -5,16 +5,11 @@ import numpy as np
 import datetime
 
 from .olympus import ThisNeedToExist
+from . import header_library
 
 
 def create_irrad_file(wavelength_Ed, total_path):
-    header = "\\begin_header\n" \
-             "HydroLight standard format for total (Ed_total) Irradiance \n" \
-             "Total irradiance includes sun + sky sea level irradiance\n" \
-             "wavelength    Ed_total\n" \
-             "(nm)    (W/m^2 nm)\n" \
-             "\\end_header\n"
-    footer = "\\end_data"
+    header, footer = header_library.irrad()
     with open(total_path, 'w+') as file:
         file.write(header)
         np.savetxt(file, wavelength_Ed, fmt='%1.9e', delimiter='\t')
@@ -25,13 +20,7 @@ def create_null_pure_water_file(path):
     H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
     H2O_NULL_WATER_PROP[:, 1], H2O_NULL_WATER_PROP[:, 2], H2O_NULL_WATER_PROP[:, 3] = 0.0, 0.0, 0.0
-    header = "\\begin_header \n" \
-             "This null pure water data file is used when simulating a non immersed in water medium using the \n" \
-             "measured IOP option. This way, Hydro Light will add null IOP's when addind the water contribution to\n " \
-             "the scattering and absorption. See section 2.7 of HydroLight technical documentation.\n" \
-             "wavelen[nm]  aref[1/m]  PsiT[(1/m)/deg C] PsiS[(1/m)/ppt] \n" \
-             "\\end_header\n"
-    footer = "\\end_data"
+    header, footer = header_library.null_water()
     with open(path, 'w+') as file:
         file.write(header)
         np.savetxt(file, H2O_NULL_WATER_PROP, fmt='%1.5e', delimiter='\t')
@@ -77,18 +66,9 @@ class EnvironmentBuilder:
         os.remove(bash_file_path)
 
     def create_backscattering_file(self, path):
-        header = "\\begin_header\n" \
-                 "Backscattering file used to find a corresponding Fournier-Forand phase \n" \
-                 "function. As described in https://www.oceanopticsbook.info/view/scattering/the-fournier-forand-phase-function\n" \
-                 "Column headers (depth in m and bb in 1/m):\n" \
-                 "depth {} ".format('\tbb'.join([str(int(i)) for i in self.wavelengths])) + "\n" \
-                                                                                            "The first data record gives the number of wavelengths and the wavelengths.\n" \
-                                                                                            "\\end_header\n"
-        first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
-        footer = "\\end_data"
+        header, footer = header_library.backscattering_file(self.wavelengths)
         with open(path + '/backscattering_file.txt', 'w') as file:
             file.write(header)
-            file.write(first_line)
             np.savetxt(file, self.z_bb_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
 
@@ -96,18 +76,9 @@ class EnvironmentBuilder:
                     dst=r'/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt')
 
     def create_ac9_file(self, path):
-        header = "\\begin_header\n" \
-                 "ac9 file used to describe the arbitrary chosen medium \n" \
-                 "Column headers (depth in m; and and c in 1/m): \n" \
-                 "depth {} {} ".format('a\t'.join([str(int(i)) for i in self.wavelengths]),
-                                       '\tc'.join([str(int(i)) for i in self.wavelengths])) + "\n" \
-                                                                                              "The first data record gives the number of wavelengths and the wavelengths.\n" \
-                                                                                              "\\end_header\n"
-        first_line = "{}\t{}\n".format(int(self.n_wavelengths), '\t'.join([str(i) for i in self.wavelengths]))
-        footer = "\\end_data"
+        header, footer = header_library.ac9_file(self.wavelengths)
         with open(path + '/ac9_file.txt', 'w+') as file:
             file.write(header)
-            file.write(first_line)
             np.savetxt(file, self.z_ac_grid, fmt='%1.9e', delimiter='\t')
             file.write(footer)
             
@@ -119,7 +90,7 @@ class EnvironmentBuilder:
                 if i != 0 and np.isclose(self.z_boundaries_dddpf[i-1], boundary, atol=1e-6):
                     boundary += 0.00001         # To avoid two boundaries that are equals to each other.
                 # Verify that the dpf file the user gave exists, if it does not, an error is raised
-                ThisNeedToExist(filepath=f'{folder_path}HydroLight/{dpf_filename}')
+                ThisNeedToExist(path=f'{folder_path}HydroLight/{dpf_filename}')
                 file.write(f"{boundary:.5f}    {dpf_filename}\n")
 
 
