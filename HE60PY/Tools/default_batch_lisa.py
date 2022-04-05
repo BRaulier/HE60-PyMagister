@@ -21,10 +21,10 @@ class LisaDefaultBatch(RecordBuilder):
         # see HydroLight Technical Note 10
 
     def set_record2(self):
-        self.default['record2']['ititle'] = f"{self.hermes['run_title']}\n"
+        self.default['record2']['ititle'] = f"{self.hermes.get['run_title']}\n"
 
     def set_record3(self):
-        self.default['record3']['rootname'] = self.hermes['root_name']
+        self.default['record3']['rootname'] = self.hermes.get['root_name']
 
     def set_record4(self):
         # Record 4a
@@ -122,14 +122,14 @@ class LisaDefaultBatch(RecordBuilder):
         self.default['record12']['nac9Files'] = 1  # Number of ac9 files to read
         self.default['record12']['ac9DataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
                                                'SensitivityAnalysis/Data_Greenedge/Matlab/Hydrolight_modelled_SCMod/' \
-                                               f"{self.hermes['station_filename']}/{self.hermes['ac9_filename']}"
+                                               f"{self.hermes.get['station_filename']}/{self.hermes.get['ac9_filename']}"
         self.default['record12']['Ac9FilteredDataFile'] = 'dummyFilteredAc9.txt'
         self.default['record12']['HydroScatDataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
                                                      'SensitivityAnalysis/Data_Greenedge/GreenEdge_cruise2016/' \
                                                      'Hydrolight_input_files_Cruise2016/Hydroscat6_withH2O_G100.txt'
         self.default['record12']['ChlzDataFile'] = '/Users/lisamatthes/Documents/aaPost-doc/Takuvik_MarcelBabin/' \
                                                 'SensitivityAnalysis/Data_Greenedge/Matlab/Hydrolight_modelled_SCMod/' \
-                                               f"{self.hermes['station_filename']}/{self.hermes['chlaz_filename']}"
+                                               f"{self.hermes.get['station_filename']}/{self.hermes.get['chlaz_filename']}"
         self.default['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['RbottomFile'] = 'dummyR.bot'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['TxtDataFile(i)'] = 'dummyComp.txt\n' \

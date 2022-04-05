@@ -26,7 +26,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
 
         self.ac9_path = self.path + '/ac9_file.txt'
         self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
-        self.hermes['ac9_path'], self.hermes['bb_path'] = self.ac9_path, self.bb_path
+        self.hermes.get['ac9_path'], self.hermes.get['bb_path'] = self.ac9_path, self.bb_path
 
         # BatchMaker  initialisation
         self.batchmaker = BatchMaker(self.hermes)

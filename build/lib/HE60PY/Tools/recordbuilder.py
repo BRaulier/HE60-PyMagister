@@ -30,5 +30,5 @@ class RecordBuilder:
             for record in self.default.keys():
                 default_param_key_list = list(self.default[record].keys())
                 if param_to_update_key in default_param_key_list:
-                    udated_dict[record][param_to_update_key] = self.hermes[param_to_update_key]
+                    udated_dict[record][param_to_update_key] = self.hermes.get[param_to_update_key]
         return udated_dict

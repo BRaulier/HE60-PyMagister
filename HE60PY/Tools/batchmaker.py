@@ -12,9 +12,9 @@ class BatchMaker:
         # General initialisation
         self.usr_path = pathlib.Path.home()
         self.hermes = hermes
-        self.mode = hermes['mode']
-        self.root_name = hermes['root_name']
-        self.run_title = hermes['run_title']
+        self.mode = hermes.get['mode']
+        self.root_name = hermes.get['root_name']
+        self.run_title = hermes.get['run_title']
 
         # Record initialisation
         self.record1_str, self.record2_str, self.record3_str, self.record4_str = None, None, None, None
@@ -65,11 +65,11 @@ class BatchMaker:
                                           '\n{HydroScatDataFile}\n{ChlzDataFile}\n{CDOMDataFile}\n{RbottomFile}\n{TxtDataFile(i)}\n' \
                                           '{IrradDataFile}\n{S0biolumFile}\n{LskyDataFile}\n'.format(**self.meta['record12'])
 
-        self.hermes['bands'] = self.meta['record6']['bands']
-        self.hermes['Nwave'] = self.meta['record6']['Nwave']
-        self.hermes['Parmin'] = self.meta['record1']['Parmin']
-        self.hermes['Parmax'] = self.meta['record1']['Parmax']  # TODO Hermes could save all the data from the meta
-        self.hermes['zetanom'] = self.meta['record11']['zetanom'] # (once updated) dictionnary, would be usefull for data_managing afterwarDs
+        self.hermes.get['bands'] = self.meta['record6']['bands']
+        self.hermes.get['Nwave'] = self.meta['record6']['Nwave']
+        self.hermes.get['Parmin'] = self.meta['record1']['Parmin']
+        self.hermes.get['Parmax'] = self.meta['record1']['Parmax']  # TODO Hermes could save all the data from the meta
+        self.hermes.get['zetanom'] = self.meta['record11']['zetanom'] # (once updated) dictionnary, would be usefull for data_managing afterwarDs
 
     def write_batch_file(self):
         path = f"{self.usr_path}/Documents/HE60/run/batch/"

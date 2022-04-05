@@ -13,7 +13,7 @@ class DataFinder:
         # This class is initialized either by passing hermes or root_name, in the latter it is used to initialize hermes
         if hermes:
             self.hermes = hermes
-            self.root_name = self.hermes['root_name']
+            self.root_name = self.hermes.get['root_name']
             self.hermes.save_dict(path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
         elif root_name:
             self.root_name = root_name
@@ -26,8 +26,8 @@ class DataFinder:
         self.xlpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/excel/M{self.root_name}.xlsx'
         self.lrootpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/digital/L{self.root_name}.txt'
         
-        self.bands = self.hermes['bands']
-        self.depths = self.hermes['zetanom']
+        self.bands = self.hermes.get['bands']
+        self.depths = self.hermes.get['zetanom']
         self.n_depths, = self.depths.shape
         self.Eu, self.Ed, self.Eo = None, None, None
         self.results_df = None  # Pandas dataframe to store and save results
@@ -54,7 +54,7 @@ class DataFinder:
             analyzed_wavelengths.append(self.bands[i]+step/2)
         result_array = np.zeros((self.n_depths+1, len(analyzed_wavelengths)*3+1))
         columns_labels = ['depths']
-        result_array[1:, 0], result_array[0, 0] = self.hermes['zetanom'], 0.0
+        result_array[1:, 0], result_array[0, 0] = self.hermes.get['zetanom'], 0.0
 
         for i, wavelength in enumerate(analyzed_wavelengths):
             result_array[:, 3*i+1] = self.Eu[1:, i]

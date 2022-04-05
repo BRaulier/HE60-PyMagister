@@ -20,10 +20,10 @@ class SeaIceDefaultBatch(RecordBuilder):
                                                                         # see HydroLight Technical Note 10
 
     def set_record2(self):
-        self.default['record2']['ititle'] = f"{self.hermes['run_title']}\n"
+        self.default['record2']['ititle'] = f"{self.hermes.get['run_title']}\n"
 
     def set_record3(self):
-        self.default['record3']['rootname'] = self.hermes['root_name']
+        self.default['record3']['rootname'] = self.hermes.get['root_name']
 
     def set_record4(self):
         # Record 4a
@@ -50,7 +50,7 @@ class SeaIceDefaultBatch(RecordBuilder):
         self.default['record5']['_5c_lines'] = '0, 0, 440, 1, 0.014\n' \
                                               '2, -666, 440, 1, 0.014'      # Measured IOP line
         # record 5d: Specific absorption data file names
-        self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes['ac9_path']}"  # Null water properties
+        self.default['record5']['abs_files'] = f"../data/null_H2Oabsorps.txt\n{self.hermes.get['ac9_path']}"  # Null water properties
         # record 5e: Specific scattering parameters
         self.default['record5']['_5e_line1'] = '0, -999, -999, -999, -999, -999'   # Pure water
         self.default['record5']['_5e_line2'] = '-666, -999, -999, -999, -999, -999'   # Measured IOP line
@@ -114,9 +114,9 @@ class SeaIceDefaultBatch(RecordBuilder):
     def set_record12(self):
         self.default['record12']['PureWaterDataFile'] = '../data/null_H2Oabsorps.txt'
         self.default['record12']['nac9Files'] = 1  # Number of ac9 files to read
-        self.default['record12']['ac9DataFile'] = self.hermes['ac9_path']
+        self.default['record12']['ac9DataFile'] = self.hermes.get['ac9_path']
         self.default['record12']['Ac9FilteredDataFile'] = 'dummyFilteredAc9.txt'
-        self.default['record12']['HydroScatDataFile'] = self.hermes['bb_path']  # backscattering file
+        self.default['record12']['HydroScatDataFile'] = self.hermes.get['bb_path']  # backscattering file
         self.default['record12']['ChlzDataFile'] = 'dummyCHLdata.txt'  # Standard-format chlorophyll profile
         self.default['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['RbottomFile'] = 'dummyR.bot'  # file containing values of CDOM absorption at a given reference wavelength
