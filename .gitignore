@@ -2,5 +2,6 @@
 .idea/
 .build/
 .Untitled.ipynb/
-*DS_Store/
+.DS_Store/
+.DS_Store
 *.egg-info/
