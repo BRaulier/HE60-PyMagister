@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 .idea/
-.build/*
+build/*
+.build
 .Untitled.ipynb/
 .DS_Store/
 .DS_Store
