@@ -2,5 +2,5 @@
 .idea/
 .build/
 .Untitled.ipynb/
-.DS_Store/
-.HE60PY.egg-info/
+*DS_Store/
+*.egg-info/

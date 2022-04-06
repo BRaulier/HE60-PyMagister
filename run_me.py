@@ -11,7 +11,7 @@ if __name__ == "__main__":
     # results = mobley_results.get_Eudos_lambda()
     # results.to_csv('TEMPORARY_example_results.txt')
 
-    simple_example_SeaIce =SeaIceSimulation(path=path_to_user_files,mode='HE60DORT', run_title='test', Nwave=2, root_name='simple_built_example')
+    simple_example_SeaIce =SeaIceSimulation(mode='HE60DORT', run_title='test', root_name='simple_built_example')
     simple_example_SeaIce.set_z_grid(z_max=2.0)
     simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
     simple_example_SeaIce.add_layer(z1=0.10, z2=0.5, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
