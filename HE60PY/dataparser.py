@@ -28,7 +28,7 @@ class DataParser:
         self.lrootpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/digital/L{self.root_name}.txt'
         
         self.depths = self.hermes.get['zetanom']
-        self.run_bands = self.run_bands()
+        self.run_bands = self.hermes.get['run_bands']
         self.n_depths, = self.depths.shape
         self.Eu, self.Ed, self.Eo = None, None, None
         self.a, self.b, self.bb = None, None, None
@@ -130,14 +130,6 @@ class DataParser:
         self.zenith_radiance = self.zenith_radiance[:, (0, 1, 3, 4, 5, 6)]
         header, data_fmt = header_library.zenith_file()
         np.savetxt(f'{self.wd}/zenith_profiles.txt', self.zenith_radiance, fmt=data_fmt, header=header)
-        
-    def run_bands(self):
-        bands = self.hermes.get['bands']
-        step = bands[1] - bands[0]
-        run_bands = []
-        for i in range(len(bands) - 1):
-            run_bands.append(bands[i] + step / 2)
-        return run_bands
         
 
 if __name__ == "__main__":
