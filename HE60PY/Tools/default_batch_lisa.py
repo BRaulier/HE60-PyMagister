@@ -1,6 +1,6 @@
 import pathlib
 import numpy as np
-from .recordbuilder import RecordBuilder
+from .builderrecord import RecordBuilder
 
 
 class LisaDefaultBatch(RecordBuilder):

@@ -1,16 +1,34 @@
+import pandas as pd
+from .Tools import olympus
+from .Tools.builderdata import BuilderData
 
 
-class DataViewer:
+class DataViewer(BuilderData):
     def __init__(self, hermes=None, root_name=None):
-        # This class is initialized either by passing hermes or root_name, in the latter it is used to initialize hermes
-        if hermes:
-            self.hermes = hermes
-            self.root_name = self.hermes.get['root_name']
-            self.hermes.save_dict(path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
-        elif root_name:
-            self.root_name = root_name
-            self.hermes = olympus.Hermes(rebirth_path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
-            
-    def draw_Eudos_profiles(self, desired_wavelenghts):
+        super(BuilderData, self).__init__(hermes, root_name)
+        olympus.ThisNeedToExist(self.wd)
         
+    def load_Eudos_profiles(self):
+        if not self.Ed:
+            self.load_Eudos_IOP_df()
+        else:
+            pass
+        
+    def load_IOP_profiles(self):
+        if not self.a:
+            self.load_Eudos_IOP_df()
+        else:
+            pass
+    
+    def load_zenith_radiance(self):
+            
+    def draw_Eudos_profiles(self, desired_wavelenghts=None):
+        
+    def load_Eudos_IOP_df(self):
+        # Only loads the df if doesn't already exists
+        if not self.Eudos_IOPs_df:
+            self.Eudos_IOPs_df = pd.read_csv(f'{self.wd}/eudos_iops.csv')
+        else:
+            pass
+    
     

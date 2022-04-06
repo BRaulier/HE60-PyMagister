@@ -25,15 +25,15 @@ class RecordBuilder:
         return self.default
 
     def update_parameters(self):
-        udated_dict = self.default.copy()
+        updated_dict = self.default.copy()
         for param_to_update_key in self.hermes.get.keys():
             for record in self.default.keys():
                 default_param_key_list = list(self.default[record].keys())
                 if param_to_update_key in default_param_key_list:
                     updated_dict[record][param_to_update_key] = self.hermes.get[param_to_update_key]
-                self.hermes.get.update(updated_dict[record])
+        [self.hermes.get.update(updated_dict[record]) for record in self.default.keys()]
         self.update_bands()
-        return udated_dict
+        return updated_dict
     
     def update_bands(self):
         bands = self.hermes.get['bands']

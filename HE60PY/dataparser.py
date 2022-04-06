@@ -7,32 +7,17 @@ import warnings
 
 from .Tools import header_library
 from .Tools import olympus
+from .Tools.builderdata import BuilderData
 
 
-class DataParser:
+class DataParser(BuilderData):
     def __init__(self, hermes=None, root_name=None):
-        # This class is initialized either by passing hermes or root_name, in the latter it is used to initialize hermes
-        if hermes:
-            self.hermes = hermes
-            self.root_name = self.hermes.get['root_name']
-            self.hermes.save_dict(path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
-        elif root_name:
-            self.root_name = root_name
-            self.hermes = olympus.Hermes(rebirth_path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
-
-        self.usr_path = os.path.expanduser('~')
-        self.wd = f'{os.getcwd()}/data/{self.root_name}'
+        super(BuilderData, self).__init__(hermes, root_name)
         olympus.CreateIfDoesntExist(self.wd)
 
         self.xlpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/excel/M{self.root_name}.xlsx'
         self.lrootpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/digital/L{self.root_name}.txt'
         
-        self.depths = self.hermes.get['zetanom']
-        self.run_bands = self.hermes.get['run_bands']
-        self.n_depths, = self.depths.shape
-        self.Eu, self.Ed, self.Eo = None, None, None
-        self.a, self.b, self.bb = None, None, None
-        self.results_df = None  # Pandas dataframe to store and save results
         self.zenith_radiance = np.zeros(((len(list(self.depths))+1) * len(list(self.run_bands)) * 20, 7))
 
     def hercule_poirot(self, sheet):
@@ -73,9 +58,9 @@ class DataParser:
             result_array[:, 6*i+6] = self.bb[:, i]
             columns_labels.append(f'bb_{wavelength}')
             
-        self.results_df = pd.DataFrame(data=result_array, columns=columns_labels)
-        self.results_df.to_csv(f'{self.wd}/eudos_iops.csv')
-        return self.results_df
+        self.Eudos_IOPs_df = pd.DataFrame(data=result_array, columns=columns_labels)
+        self.Eudos_IOPs_df.to_csv(f'{self.wd}/eudos_iops.csv')
+        return self.Eudos_IOPs_df
 
     def get_Eu(self, integrate=False):
         self.Eu = self.hercule_poirot(sheet='Eu').T.to_numpy()
