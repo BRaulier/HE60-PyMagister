@@ -21,8 +21,7 @@ Download zip file and use the package manager [pip](https://pip.pypa.io/en/stabl
 #### Examples
 ```python
 from HE60PY.seaicesimulation import SeaIceSimulation
-path_to_user_files = r'/Users/usr/Documents/HE60/run'
-simple_example_SeaIce =SeaIceSimulation(path=path_to_user_files, run_title='simple_example_SeaIce', 
+simple_example_SeaIce =SeaIceSimulation(run_title='simple_example_SeaIce', 
                                         root_name='simple_example_SeaIce')
 simple_example_SeaIce.set_z_grid(z_max=2.0)
 simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
@@ -33,9 +32,8 @@ simple_example_SeaIce.run_simulation(printoutput=True)
 
 ```python
 from HE60PY.seaicesimulation import SeaIceSimulation
-path_to_user_files = r'/Users/usr/Documents/HE60/run'
-example_SeaIce = SeaIceSimulation(path=path_to_user_files, run_title='example_SeaIce',
-                                                 root_name='example_SeaIce')
+example_SeaIce = SeaIceSimulation(run_title='example_SeaIce', 
+                                  root_name='example_SeaIce')
 example_SeaIce.set_z_grid(z_max=3.00, wavelength_list=[484, 544, 602])
 example_SeaIce.add_layer(z1=0.0, z2=0.20, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=2277, dpf='dpf_OTHG_0_95.txt')
 example_SeaIce.add_layer(z1=0.20, z2=0.80, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=303, dpf='dpf_OTHG_0_98.txt')

@@ -7,12 +7,12 @@ import warnings
 
 from .Tools import header_library
 from .Tools import olympus
-from .Tools.builderdata import BuilderData
+from .Tools.builderdata import DataBuilder
 
 
-class DataParser(BuilderData):
+class DataParser(DataBuilder):
     def __init__(self, hermes=None, root_name=None):
-        super(BuilderData, self).__init__(hermes, root_name)
+        super().__init__(hermes, root_name)
         olympus.CreateIfDoesntExist(self.wd)
 
         self.xlpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/excel/M{self.root_name}.xlsx'

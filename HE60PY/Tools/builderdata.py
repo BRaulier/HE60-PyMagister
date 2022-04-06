@@ -2,7 +2,7 @@ import os
 from . import olympus
 
 
-class GrandData:
+class DataBuilder:
     def __init__(self, hermes=None, root_name=None):
         """
         This class is used to build data classes
