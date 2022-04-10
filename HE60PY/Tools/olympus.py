@@ -47,6 +47,9 @@ class InvalidMode(Exception):
     # As Ronald Reagan, using a Soviet proverb that Lenin oftenly used
     # Trust, but verify!                        Doveryai, no proveryai!
 
+def DeleteFile(path):
+    if DoesThisExist(path):
+        os.remove(path)
 
 def CreateIfDoesntExist(path):
     if not DoesThisExist(path):

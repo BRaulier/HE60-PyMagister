@@ -32,6 +32,14 @@ class DataParser(DataBuilder):
             df = pd.read_excel(self.xlpath, sheet, header=3, engine="openpyxl")
         return df
 
+    def run_data_parsing(self, delete_HE_outputs=True):
+        self.compute_Eudos_and_IOPs()
+        self.compute_zenith_radiance()
+        if delete_HE_outputs:
+            # Usefull to avoid filling the computer's memory
+            olympus.DeleteFile(self.xlpath)
+            olympus.DeleteFile(self.lrootpath)
+        
     def compute_Eudos_and_IOPs(self):
         self.Eu = self.get_Eu(integrate=False)
         self.Ed = self.get_Ed(integrate=False)

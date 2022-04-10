@@ -20,7 +20,15 @@ class DataViewer(DataBuilder):
         self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
         self.colors = ['#004599', '#0097b7', '#5ccc0c']
 
-    def draw_Eudos_profiles(self, reduced=True, depth_interval=None, desired_wavelengths=None, subplots=True):
+    def run_figure_routine(self, save_binaries=True, save_png=True):
+        fig1 = self.draw_Eudos_profiles()
+        fig2 = self.draw_IOP_profiles()
+        fig3 = self.draw_zenith_radiance_maps()
+        if save_binaries
+
+
+
+    def draw_Eudos_profiles(self, depth_interval=None, desired_wavelengths=None, subplots=True):
         if desired_wavelengths is None:
             desired_wavelengths = self.run_bands
         # if no list of desired wavelengths is given, assume all are needed
@@ -33,14 +41,14 @@ class DataViewer(DataBuilder):
             ax = [ax]*len(desired_wavelengths)
             ls = np.arange(len(desired_wavelengths))
         for i, wavelength in enumerate(desired_wavelengths):
-            self.draw_Eudos_IOP_profile('Ed', wavelength, reduced, ax[i], ci=0, li=ls[i])
-            self.draw_Eudos_IOP_profile('Eu', wavelength, reduced, ax[i], ci=1, li=ls[i])
-            self.draw_Eudos_IOP_profile('Eo', wavelength, reduced, ax[i], ci=2, li=ls[i])
+            self.draw_Eudos_IOP_profile('Ed', wavelength, ax[i], ci=0, li=ls[i])
+            self.draw_Eudos_IOP_profile('Eu', wavelength, ax[i], ci=1, li=ls[i])
+            self.draw_Eudos_IOP_profile('Eo', wavelength, ax[i], ci=2, li=ls[i])
             self.format_profile_plot(ax[i], depth_interval)
         fig.tight_layout()
-        plt.show()
-        
-    def draw_IOP_profiles(self, reduced=False, depth_interval=None, desired_wavelengths=None):
+        return fig
+
+    def draw_IOP_profiles(self, depth_interval=None, desired_wavelengths=None):
         if desired_wavelengths is None:
             desired_wavelengths = self.run_bands
         # if no list of desired wavelengths is given, assume all are to be plotted
@@ -50,25 +58,22 @@ class DataViewer(DataBuilder):
         for i, condition in enumerate(to_be_plotted):
             for j, wavelength in enumerate(desired_wavelengths):
                 title = f'{condition}'
-                self.draw_Eudos_IOP_profile(condition, wavelength, reduced, ax[i], ci=j, li=0)
+                self.draw_Eudos_IOP_profile(condition, wavelength, ax[i], ci=j, li=0)
                 self.format_profile_plot(ax[i], depth_interval, title)
         fig.tight_layout()
-        plt.show()
+        return fig
 
-    def draw_zenith_radiance_maps(self, reduced=False, depth_interval=None, desired_wavelengths=None):
+    def draw_zenith_radiance_maps(self, depth_interval=None, desired_wavelengths=None):
         if desired_wavelengths is None:
             desired_wavelengths = self.run_bands
         # if no list of desired wavelengths is given, assume all are to be plotted
         self.load_zenith_radiance()
         fig, ax = plt.subplots(1, len(desired_wavelengths), figsize=(12, 12))
         for i, wavelength in enumerate(desired_wavelengths):
-            self.draw_zenith_radiance_map(wavelength, reduced, ax[i], depth_interval)
+            self.draw_zenith_radiance_map(wavelength, ax[i], depth_interval)
+        return fig
             
-    def draw_zenith_radiance_map(self, wavelength, reduced, ax, depth_interval):
-        if reduced:
-            correction_factor = self.hermes.get['refr'] ** 2
-        else:
-            correction_factor = 1
+    def draw_zenith_radiance_map(self, wavelength, ax, depth_interval):
         # top_idx, bottom_idx = 
         to_be_reshaped = self.zenith_radiance[self.zenith_radiance[:, 2] == wavelength, :]
         total_radiance_image = to_be_reshaped[:, 3].reshape(len(self.depths)+1, 20)
@@ -76,11 +81,7 @@ class DataViewer(DataBuilder):
         ax.imshow(total_radiance_image, aspect='auto', norm=matplotlib.colors.LogNorm(),
                      cmap='hot')
 
-    def draw_Eudos_IOP_profile(self, cond, wavelength, reduced, ax, ci, li, ):
-        if reduced:
-            correction_factor = self.hermes.get['refr'] ** 2
-        else:
-            correction_factor = 1
+    def draw_Eudos_IOP_profile(self, cond, wavelength, ax, ci, li, ):
         if cond[0] == 'E':
             label = f'{cond[0]}$_{cond[1]}$ $\lambda=$ {wavelength:.0f}'
         else:

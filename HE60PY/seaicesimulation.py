@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from HE60PY.Tools.batchmaker import BatchMaker
 from HE60PY.Tools.environmentbuilder import EnvironmentBuilder
 from HE60PY.Tools.olympus import Hermes
+from .dataparser import DataParser
+from .dataviewer import DataViewer
 
 
 class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
@@ -60,6 +62,15 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
+
+    def analyse_results(self, save_binaries=True):
+        parser = DataParser(hermes=self.hermes)
+        print('Parsing Hydro Light results...')
+        parser.run_data_parsing(delete_HE_outputs=True)
+        viewer = DataViewer(hermes=self.hermes)
+        print('Making figures...')
+        viewer.
+
 
     def add_layer(self, z1, z2, abs, scat, bb=0, dpf=''):
         self.z_boundaries_dddpf.extend([z1, z2])
