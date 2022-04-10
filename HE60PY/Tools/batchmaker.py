@@ -55,8 +55,12 @@ class BatchMaker:
                                          '{_5g_line1}\n{_5g_line2}\n{_5h_line1}\n{_5h_line2}\n'.format(**self.meta['record5'])
         self.meta['record6']['string'] = '{Nwave}\n{bands_str}\n'.format(**self.meta['record6'])
         self.meta['record7']['string'] = '{ibiolum},{ichlfl},{icdomfl},{iraman},{icompchl}\n'.format(**self.meta['record7'])
-        self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
-                                         '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
+        if self.meta['record8']['iflagsky'] == 2:
+            self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
+                                             '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
+        if self.meta['record8']['iflagsky'] == 1.0:
+            self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {C}, {rsky}, {Edtotal}\n' \
+                                             '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
         self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
         self.meta['record10']['string'] = '{ibotm}, {rflbot}\n'.format(**self.meta['record10'])
         self.meta['record11']['zetanom_str'] = ','.join([str(i) for i in self.meta['record11']['zetanom']])

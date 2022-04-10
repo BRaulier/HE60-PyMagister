@@ -13,12 +13,15 @@ class DataBuilder:
         if hermes:
             self.hermes = hermes
             self.root_name = self.hermes.get['root_name']
+            self.wd = f'{os.getcwd()}/data/{self.root_name}'
+            olympus.CreateIfDoesntExist(self.wd)
             self.hermes.save_dict(path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
         elif root_name:
             self.root_name = root_name
+            self.wd = f'{os.getcwd()}/data/{self.root_name}'
+            olympus.CreateIfDoesntExist(self.wd)
             self.hermes = olympus.Hermes(rebirth_path=f'{os.getcwd()}/data/{self.root_name}/hermes.pickle')
 
-        self.wd = f'{os.getcwd()}/data/{self.root_name}'
         self.usr_path = os.path.expanduser('~')
         self.run_bands = self.hermes.get['run_bands']
         self.depths = self.hermes.get['zetanom']
