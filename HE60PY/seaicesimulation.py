@@ -63,14 +63,15 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
 
-    def analyse_results(self, save_binaries=True):
+    def parse_results(self):
         parser = DataParser(hermes=self.hermes)
         print('Parsing Hydro Light results...')
         parser.run_data_parsing(delete_HE_outputs=True)
+
+    def draw_figures(self, save_binaries=False, save_png=True):
         viewer = DataViewer(hermes=self.hermes)
         print('Making figures...')
-        viewer.
-
+        viewer.run_figure_routine(save_binaries, save_png)
 
     def add_layer(self, z1, z2, abs, scat, bb=0, dpf=''):
         self.z_boundaries_dddpf.extend([z1, z2])
