@@ -42,6 +42,11 @@ class InvalidMode(Exception):
         super().__init__(self.message)
 
 
+class Invalid(Exception):
+    def __init__(self, element,):
+        self.message = f'This {element} is invalid.'
+        super().__init__(self.message)
+
 # class Pistis:
     # Pistis is the greek god of good faith, trust and reliability
     # As Ronald Reagan, using a Soviet proverb that Lenin oftenly used

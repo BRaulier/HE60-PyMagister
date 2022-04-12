@@ -83,7 +83,7 @@ class HE60DORTDefaultBatch(RecordBuilder):
             self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
-            self.default['record8']['cloud'] = 0.5  # 0.0: clear sky, 1.0:solid overcast
+            self.default['record8']['cloud'] = 1.0  # 0.0: clear sky, 1.0: solid overcast
         elif self.default['record8']['iflagsky'] == 1:
             self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
             self.default['record8']['nsky'] = 5 
@@ -104,7 +104,7 @@ class HE60DORTDefaultBatch(RecordBuilder):
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9']['windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['windspd'] = 15.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
         self.default['record9']['refr'] = 1.355  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
         self.default['record9']['temp'] = -1.8  # water temperature
         self.default['record9']['salinty'] = 35.0  # salinity (PSU)
