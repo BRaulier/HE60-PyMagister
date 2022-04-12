@@ -32,6 +32,7 @@ class DataViewer(DataBuilder):
         fig1 = self.draw_Eudos_profiles()
         fig2 = self.draw_IOP_profiles()
         fig3 = self.draw_zenith_radiance_maps()
+        fig4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.40, 1.60, 1.80, 2.00])
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
@@ -100,6 +101,7 @@ class DataViewer(DataBuilder):
         for i, wavelength in enumerate(desired_wavelengths):
             self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i])
         self.format_zenith_radiance_profiles(ax)
+        return fig
 
     # ================================================= #
     # Auxiliary functions used to draw complete figures #
@@ -159,7 +161,7 @@ class DataViewer(DataBuilder):
             if depth == -1.:  # Depth -1 is the incoming radiation, just above the interface
                 i_depth = -1
             else:
-                raise olympus.Invalid(f"Requested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
+                print(f"Warning: Could not find resquested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
         phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
                       92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
         print(i_depth, depth)
