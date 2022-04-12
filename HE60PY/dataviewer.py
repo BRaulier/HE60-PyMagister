@@ -37,10 +37,12 @@ class DataViewer(DataBuilder):
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
             pickle.dump(fig3, open(f'{self.wd}/zenith_maps.fig.pickle', 'wb'))
+            pickle.dump(fig4, open(f'{self.wd}/zenith_profiles.fig.pickle', 'wb'))
         if save_png:
             fig1.savefig(f'{self.wd}/eudos_profiles.png', dpi=600)
             fig2.savefig(f'{self.wd}/iop_profiles.png', dpi=600)
             fig3.savefig(f'{self.wd}/zenith_maps.png', dpi=600)
+            fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
 
     # ================================== #
     # Complete figures drawing functions #
