@@ -31,17 +31,22 @@ class DataViewer(DataBuilder):
     def run_figure_routine(self, save_binaries, save_png):
         fig1 = self.draw_Eudos_profiles()
         fig2 = self.draw_IOP_profiles()
-        fig3 = self.draw_zenith_radiance_maps()
-        fig4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.40, 1.60, 1.80, 2.00])
+        try:
+            fig3 = self.draw_zenith_radiance_maps()
+            fig3.savefig(f'{self.wd}/zenith_maps.png', dpi=600)
+            pickle.dump(fig3, open(f'{self.wd}/zenith_maps.fig.pickle', 'wb'))
+
+
+        except:
+            pass
+        fig4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
-            pickle.dump(fig3, open(f'{self.wd}/zenith_maps.fig.pickle', 'wb'))
             pickle.dump(fig4, open(f'{self.wd}/zenith_profiles.fig.pickle', 'wb'))
         if save_png:
             fig1.savefig(f'{self.wd}/eudos_profiles.png', dpi=600)
             fig2.savefig(f'{self.wd}/iop_profiles.png', dpi=600)
-            fig3.savefig(f'{self.wd}/zenith_maps.png', dpi=600)
             fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
 
     # ================================== #
@@ -156,6 +161,7 @@ class DataViewer(DataBuilder):
                 self.zenith_radiance[:, :, i] = total_radiance_image
 
     def get_zenith_radiance_profile_at_depth(self, depth, wavelength, interpolate=True):
+        self.load_zenith_radiance()
         i_wavelength = list(self.run_bands).index(wavelength)
         try:
             i_depth = list(self.depths).index(depth)
@@ -166,7 +172,6 @@ class DataViewer(DataBuilder):
                 print(f"Warning: Could not find resquested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
         phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
                       92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
-        print(i_depth, depth)
         zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]
         if interpolate:
             f = interp1d(phi_angles, zenith_radiance)
