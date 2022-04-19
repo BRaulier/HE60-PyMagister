@@ -31,12 +31,7 @@ if __name__ == "__main__":
                        dpf='dpf_OTHG_0_98.txt')
     new_mode.run_simulation(printoutput=True)
     new_mode.parse_results()
-    test_draw = DataViewer(root_name='test')
-    test_draw.draw_Eudos_profiles()
-    test_draw.draw_zenith_radiance_maps()
-    plt.show()
-    test_draw.draw_zenith_radiance_profiles(requested_depths=[-1.0, 0., 0.05, 0.10, 0.15, .20, .40])
-    plt.show()
+    new_mode.draw_figures()
 
     # for station_file_name in station_file_names:
     #     for input_file in input_files:
