@@ -28,18 +28,18 @@ class DataViewer(DataBuilder):
     # Available figure routines #
     # ========================= #
 
-    def run_figure_routine(self, save_binaries, save_png):
+    def run_figure_routine(self, save_binaries, save_png, close=True):
         fig1 = self.draw_Eudos_profiles()
         fig2 = self.draw_IOP_profiles()
         try:
             fig3 = self.draw_zenith_radiance_maps()
             fig3.savefig(f'{self.wd}/zenith_maps.png', dpi=600)
             pickle.dump(fig3, open(f'{self.wd}/zenith_maps.fig.pickle', 'wb'))
-
-
         except:
+            fig3, ax = plt.subplots()
             pass
         fig4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
+        
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
@@ -48,6 +48,7 @@ class DataViewer(DataBuilder):
             fig1.savefig(f'{self.wd}/eudos_profiles.png', dpi=600)
             fig2.savefig(f'{self.wd}/iop_profiles.png', dpi=600)
             fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
+        [fig.close() for fig in [fig1, fig2, fig3, fig4]]
 
     # ================================== #
     # Complete figures drawing functions #
@@ -181,6 +182,14 @@ class DataViewer(DataBuilder):
         else:
             return phi_angles, zenith_radiance
 
+    def get_RT(self, wavelength):
+        self.load_Eudos_IOP_df()
+        surf_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][0]  # In air
+        surf_Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][0]  # In air
+        ice_bot_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][202]
+        R = surf_Eu / surf_Ed  # Surf Reflectance
+        T = ice_bot_Ed / surf_Ed
+        return R, T
 
     # ========================================== #
     # Auxiliary functions used to format figures #
@@ -188,11 +197,7 @@ class DataViewer(DataBuilder):
 
     def include_extended_legend(self, figtype, wavelength, ax):
         if figtype == 'Eudos':
-            surf_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength}'][0]  # In air
-            surf_Eu = self.Eudos_IOPs_df[f'Eu_{wavelength}'][0]  # In air
-            ice_bot_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength}'][202]
-            R = surf_Eu/surf_Ed # Surf Reflectance
-            T = ice_bot_Ed/surf_Ed
+            R, T = self.get_RT(wavelength)
             extd_label = f'$\\lambda$={wavelength:.0f}nm\nT={T:.2E}\nR={R:.2E}'
             ax.plot([], [], color="white", label=extd_label)
             
