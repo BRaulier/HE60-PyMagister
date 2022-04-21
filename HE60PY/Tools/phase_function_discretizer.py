@@ -15,11 +15,11 @@ def henvey_greenstein_pf(phi_deg, g):
 def create_tabulated_file(angle_beta_array, tab_filename, pf_type):
     path = '/Applications/HE60.app/Contents/source_code/Phase_Function_code/PF_user_data/Py_Magister_PF/'+tab_filename+'.txt'
     header = "/begin_header \n" \
-             "{} phase function \n"\
+             f"{pf_type} phase function \n"\
              "This file is on the HSF95 format for phase function discretization. \n" \
              "deg   1/(m sr)\n" \
              "/end_header\n" \
-             "1.00\n".format(pf_type)
+             "1.00\n"
     footer = "    -1.0    -1.0"
     with open(path, 'w+') as file:
         file.write(header)
@@ -67,6 +67,18 @@ def create_OTHG_discretized_files():
         run_executable_discretizer(input_filename=input_filename)
 
 
+def create_brine_discretized_files():
+    create_executable_discretizer()
+    path = "/Users/braulier/Documents/HE60_PY/ressources/PF_tab_brine_196_.txt"
+    n, angle_values, beta_values = np.loadtxt(path, skiprows=1, delimiter=",").T
+    beta_values = beta_values/0.988216
+    tab_filename = "brine_1_96"
+    input_filename = 'brine_1_96'
+    angle_beta_array = np.vstack((angle_values.T, beta_values.T))
+    create_tabulated_file(angle_beta_array=angle_beta_array, tab_filename=tab_filename, pf_type=tab_filename)
+    create_input_file(input_filename=input_filename, dpf_filename=tab_filename, tab_filename=tab_filename)
+    run_executable_discretizer(input_filename=input_filename)
+
 
 if __name__ == '__main__':
     # create_executable_discretizer()
@@ -78,5 +90,5 @@ if __name__ == '__main__':
     # plt.plot(HE_angles, HE_beta)
     # plt.plot(angles, my_beta)
     # plt.show()
-    create_OTHG_discretized_files()
-
+    # create_OTHG_discretized_files()
+    create_brine_discretized_files()
