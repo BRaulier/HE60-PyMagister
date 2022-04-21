@@ -36,7 +36,7 @@ class DataParser(DataBuilder):
         self.compute_Eudos_and_IOPs()
         self.compute_zenith_radiance()
         if delete_HE_outputs:
-            # Usefull to avoid filling the computer's memory
+            # Useful to avoid filling the computer's memory
             olympus.DeleteFile(self.xlpath)
             olympus.DeleteFile(self.lrootpath)
         
