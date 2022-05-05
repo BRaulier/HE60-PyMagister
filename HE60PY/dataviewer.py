@@ -48,7 +48,7 @@ class DataViewer(DataBuilder):
             fig1.savefig(f'{self.wd}/eudos_profiles.png', dpi=600)
             fig2.savefig(f'{self.wd}/iop_profiles.png', dpi=600)
             fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
-        [fig.close() for fig in [fig1, fig2, fig3, fig4]]
+        [plt.close(fig) for fig in [fig1, fig2, fig3, fig4]]
 
     # ================================== #
     # Complete figures drawing functions #
@@ -161,6 +161,15 @@ class DataViewer(DataBuilder):
                 total_radiance_image = to_be_reshaped[:, 3].reshape(len(self.depths) + 1, 20)
                 self.zenith_radiance[:, :, i] = total_radiance_image
 
+    def get_Eudos_at_depth(self, depth, wavelength):
+        self.load_Eudos_IOP_df()
+        i_depth = list(self.depths).index(depth) + 1 # 0 is above the interface,
+        Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][i_depth]
+        Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][i_depth]
+        Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
+        return Eu, Ed, Eo
+
+
     def get_zenith_radiance_profile_at_depth(self, depth, wavelength, interpolate=True):
         self.load_zenith_radiance()
         i_wavelength = list(self.run_bands).index(wavelength)
@@ -173,7 +182,7 @@ class DataViewer(DataBuilder):
                 print(f"Warning: Could not find resquested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
         phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
                       92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
-        zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]
+        zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]/1.355**2
         if interpolate:
             f = interp1d(phi_angles, zenith_radiance)
             x_new_angles = np.arange(181)

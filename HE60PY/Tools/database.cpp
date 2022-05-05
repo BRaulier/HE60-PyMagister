@@ -59,9 +59,9 @@ class DataBase {
             else {
                 std::cout << pathToResultsFolder;
                 
-                if (IsPathExist(pathToResultsFolder+"/hermes.pickle") == 1 &&
-                    IsPathExist(pathToResultsFolder+"/zenith_profiles.txt") == 1 &&
-                    IsPathExist(pathToResultsFolder+"/eudos_iops.csv") == 1 ){
+                if (IsPathExist(pathToResultsFolder+"/hermes.pickle") &&
+                    IsPathExist(pathToResultsFolder+"/zenith_profiles.txt") &&
+                    IsPathExist(pathToResultsFolder+"/eudos_iops.csv")){
                     newLogFile << i << std::endl;
                     i = i + 1;
                 }
