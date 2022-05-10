@@ -74,6 +74,10 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         viewer.run_figure_routine(save_binaries, save_png)
 
     def add_layer(self, z1, z2, abs, scat, bb=0, dpf=''):
+        if type(dpf) is not str:
+            dpf.discretize_if_needed()
+            dpf = dpf.dpf_name
+
         self.z_boundaries_dddpf.extend([z1, z2])
         self.dpf_filenames.extend([dpf, dpf])
         if isinstance(abs, float):

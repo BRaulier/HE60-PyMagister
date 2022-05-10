@@ -3,7 +3,7 @@ import os
 import subprocess
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
-import olympus
+from .olympus import *
 from scipy.interpolate import interp1d
 from scipy import integrate
 
@@ -52,7 +52,7 @@ def create_executable_discretizer():
     path = '/Applications/HE60.app/Contents/source_code/Phase_function_code'
     path_to_PFdis = '/Applications/HE60.app/Contents/backend/PFdiscretization6'
     cmd = ['sudo', './make_PFdiscretization6.sh']
-    if olympus.DoesThisExist(path_to_PFdis):
+    if DoesThisExist(path_to_PFdis):
         pass  # Do not run this time consuming command if the file already exists.
     else:
          subprocess.run(cmd, cwd=path, capture_output=True, check=True)
