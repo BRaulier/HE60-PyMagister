@@ -3,8 +3,14 @@ import scipy.integrate as integrate
 from scipy.special import eval_legendre
 import matplotlib.pyplot as plt
 
-import Tools.olympus as olympus
-from Tools.phase_function_discretizer import *
+from HE60PY.Tools import olympus
+from HE60PY.Tools.phase_function_discretizer import *
+
+
+
+def calculate_assym(theta, pf):
+    theta_rad = theta * np.pi / 180
+    return 2 * np.pi * integrate.simps(pf * np.cos(theta_rad) * np.sin(theta_rad), x=theta_rad)
 
 class PhaseFunction:
     def __init__(self):
@@ -36,7 +42,7 @@ class PhaseFunction:
 
     def already_discretized(self):
         path_to_dpf = f"/Applications/HE60.app/Contents/data/phase_functions/HydroLight/{self.dpf_name}.txt"
-        return olympus.DoesThisExist(path_to_dpf)
+        return DoesThisExist(path_to_dpf)
 
     def discretize_if_needed(self):
         if self.already_discretized() is False:
@@ -180,14 +186,19 @@ def run_tests():
 
 
 
+
+
+
 if __name__ == "__main__":
-    test_dis = TwoTHG(g=0.98, g1=0.8, a=0.98)
-    test_dis.discretize_if_needed()
-    plt.semilogy(test_dis.theta, test_dis.p)
+    test_dis = TwoTHG(g=0.95, g1=0.99, a=0.975)
+    # test_dis.discretize_if_needed()
+    test_hg = OTHG(g=0.99)
+    plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
+    plt.semilogy(test_dis.theta, test_dis.p, label=f"g={test_dis.moment(n=1)}, g2={test_dis.g2}")
+    plt.legend()
     plt.show()
     # # run_tests()
-    # test_hg = HenyeyGreenstein(g=0.98)
-    # plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.98")
+
     # test_hgstar = HGStar(g=0.98)
     # plt.semilogy(test_hgstar.theta, test_hgstar.p)
     # plt.show()
