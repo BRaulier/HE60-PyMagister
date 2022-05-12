@@ -62,6 +62,17 @@ def zenith_file():
              f'\end_header'
     data_fmt = '%1.2f    %2.1f    %3.2f    %1.7E    %1.7E    %1.7E'
     return header, data_fmt
+
+def surface_file():
+    header = '\\begin_header' \
+             'HydroLight air-water surface file for U =  0.0 m/s and refr = 1.00 ' \
+             'The surface model is Cox-Munk with azimuthally dependent slope statistics of Light and Water Eq. (4.32)' \
+             'The data are the discretized spectral amplitudes of Light and Water Eqs (8.50) and (8.51) in the order' \
+             'that1(a,w), that2(a,w), rhat1(w,a), rhat2(w,a), that1(w,a), that2(w,a), rhat1(a,w), rhat2(a,w)' \
+             'This is the order expected by the HydroLight load_surface routine.' \
+             '\end_header'
+    footer = '\end_data'
+    return header, footer
     
     
     

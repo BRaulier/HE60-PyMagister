@@ -44,11 +44,13 @@ class DataParser(DataBuilder):
         self.Eu = self.get_Eu(integrate=False)
         self.Ed = self.get_Ed(integrate=False)
         self.Eo = self.get_Eo(integrate=False)
+        self.Eod = self.get_Eod(integrate=False)
+        self.Eou = self.get_Eou(integrate=False)
         self.a = self.get_a()
         self.b = self.get_b()
         self.bb = self.get_bb()
                 
-        result_array = np.zeros((self.n_depths+1, len(self.run_bands)*6+1))
+        result_array = np.zeros((self.n_depths+1, len(self.run_bands)*8+1))
         columns_labels = ['depths']
         result_array[1:, 0], result_array[0, 0] = self.hermes.get['zetanom'], 0.0
 
@@ -59,11 +61,15 @@ class DataParser(DataBuilder):
             columns_labels.append(f'Ed_{wavelength}')
             result_array[:, 6*i+3] = self.Eo[1:, i]
             columns_labels.append(f'Eo_{wavelength}')
-            result_array[:, 6*i+4] = self.a[:, i]
+            result_array[:, 6*i+4] = self.Eod[1:, i]
+            columns_labels.append(f'Eod_{wavelength}')
+            result_array[:, 6*i+5] = self.Eou[1:, i]
+            columns_labels.append(f'Eou_{wavelength}')
+            result_array[:, 6*i+6] = self.a[:, i]
             columns_labels.append(f'a_{wavelength}')
-            result_array[:, 6*i+5] = self.b[:, i]
+            result_array[:, 6*i+7] = self.b[:, i]
             columns_labels.append(f'b_{wavelength}')
-            result_array[:, 6*i+6] = self.bb[:, i]
+            result_array[:, 6*i+8] = self.bb[:, i]
             columns_labels.append(f'bb_{wavelength}')
             
         self.Eudos_IOPs_df = pd.DataFrame(data=result_array, columns=columns_labels)
@@ -87,6 +93,18 @@ class DataParser(DataBuilder):
         if integrate:
             self.Eo = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
         return self.Eo
+
+    def get_Eod(self, integrate=False):
+        self.Eod = self.hercule_poirot(sheet='Eod').T.to_numpy()
+        if integrate:
+            self.Eod = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
+        return self.Eod
+
+    def get_Eou(self, integrate=False):
+        self.Eou = self.hercule_poirot(sheet='Eou').T.to_numpy()
+        if integrate:
+            self.Eou = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
+        return self.Eou
     
     def get_a(self, integrate=False):
         self.a = self.hercule_poirot(sheet='a').T.to_numpy()

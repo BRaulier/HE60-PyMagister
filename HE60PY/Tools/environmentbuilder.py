@@ -32,6 +32,9 @@ def create_null_water_file_if_needed():
     if not os.path.isfile(path_null_water_properties):
         create_null_pure_water_file(path_null_water_properties)
 
+# def create_inert_surface_file():
+
+
 
 class EnvironmentBuilder:
     def create_simulation_environnement(self):

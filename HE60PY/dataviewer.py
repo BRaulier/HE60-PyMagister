@@ -28,7 +28,7 @@ class DataViewer(DataBuilder):
     # Available figure routines #
     # ========================= #
 
-    def run_figure_routine(self, save_binaries, save_png, close=True):
+    def run_figure_routine(self, save_binaries=False, save_png=True, close=True):
         fig1 = self.draw_Eudos_profiles()
         fig2 = self.draw_IOP_profiles()
         try:
@@ -107,7 +107,7 @@ class DataViewer(DataBuilder):
         self.load_zenith_radiance()
         fig, ax = plt.subplots(1, len(desired_wavelengths), figsize=(12, 6))
         for i, wavelength in enumerate(desired_wavelengths):
-            self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i])
+            self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i], interpolate)
         self.format_zenith_radiance_profiles(ax)
         return fig
 
@@ -133,13 +133,13 @@ class DataViewer(DataBuilder):
         ax.plot(x_to_plot, y_to_plot, color=self.colors[ci],
                  linestyle=self.linestyles[li], label=label)
 
-    def draw_zenith_radiance_at_depths(self, depths, wavelength, ax):
+    def draw_zenith_radiance_at_depths(self, depths, wavelength, ax, interpolate):
         i_wavelength = list(self.run_bands).index(wavelength)
         cm = self.color_maps[i_wavelength]
         cmap = matplotlib.cm.get_cmap(cm)
         intensities = np.linspace(0.40, 1.00, len(depths))
         for i, depth in enumerate(depths):
-            x_angle, y_radiance = self.get_zenith_radiance_profile_at_depth(depth, wavelength)
+            x_angle, y_radiance = self.get_zenith_radiance_profile_at_depth(depth, wavelength, interpolate=interpolate)
             ax.plot(x_angle, y_radiance, color=cmap(intensities[i]), label=f'{depth} m')
 
     # ============ #
@@ -169,6 +169,14 @@ class DataViewer(DataBuilder):
         Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
         return Eu, Ed, Eo
 
+    def get_scalar_Eudos_at_depth(self, depth, wavelength):
+        self.load_Eudos_IOP_df()
+        i_depth = list(self.depths).index(depth) + 1 # 0 is above the interface,
+        Eou = self.Eudos_IOPs_df[f'Eou_{wavelength:.1f}'][i_depth]
+        Eod = self.Eudos_IOPs_df[f'Eod_{wavelength:.1f}'][i_depth]
+        Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
+        return Eou, Eod, Eo
+
 
     def get_zenith_radiance_profile_at_depth(self, depth, wavelength, interpolate=True):
         self.load_zenith_radiance()
@@ -184,7 +192,7 @@ class DataViewer(DataBuilder):
                       92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
         zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]/1.355**2
         if interpolate:
-            f = interp1d(phi_angles, zenith_radiance)
+            f = interp1d(phi_angles, zenith_radiance, kind='cubic')
             x_new_angles = np.arange(181)
             y_new_radiance = f(x_new_angles)
             return x_new_angles, y_new_radiance
