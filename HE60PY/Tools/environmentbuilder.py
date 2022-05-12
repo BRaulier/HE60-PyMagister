@@ -4,8 +4,8 @@ import subprocess
 import numpy as np
 import datetime
 
-from .olympus import ThisNeedToExist
-from . import header_library
+from HE60PY.Tools.olympus import ThisNeedToExist
+from HE60PY.Tools import header_library
 
 
 def create_irrad_file(wavelength_Ed, total_path):
@@ -32,8 +32,31 @@ def create_null_water_file_if_needed():
     if not os.path.isfile(path_null_water_properties):
         create_null_pure_water_file(path_null_water_properties)
 
-# def create_inert_surface_file():
-
+def create_inert_surface_file():
+    path_inert_surface_file = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/surface_1000.0"
+    t = np.ravel(np.diag(np.diag(np.ones((130,130)))))
+    r = np.ravel(np.zeros((130,130)).ravel())
+    header, footer = header_library.surface_file()
+    with open(path_inert_surface_file, 'w+') as file:
+        file.write(header)
+        print(t[0*10:(0+1)*10].shape)
+        for i in range(1690): # that1
+            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # that2
+            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # rhat1
+            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # rhat2
+            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # that1
+            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # that2
+            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # rhat1
+            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        for i in range(1690): # rhat2
+            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        file.write(footer)
 
 
 class EnvironmentBuilder:
@@ -101,3 +124,5 @@ class EnvironmentBuilder:
 
 
 
+if __name__ == "__main__":
+    create_inert_surface_file()

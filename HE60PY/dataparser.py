@@ -55,21 +55,21 @@ class DataParser(DataBuilder):
         result_array[1:, 0], result_array[0, 0] = self.hermes.get['zetanom'], 0.0
 
         for i, wavelength in enumerate(self.run_bands):
-            result_array[:, 6*i+1] = self.Eu[1:, i]
+            result_array[:, 8*i+1] = self.Eu[1:, i]
             columns_labels.append(f'Eu_{wavelength}')
-            result_array[:, 6*i+2] = self.Ed[1:, i]
+            result_array[:, 8*i+2] = self.Ed[1:, i]
             columns_labels.append(f'Ed_{wavelength}')
-            result_array[:, 6*i+3] = self.Eo[1:, i]
+            result_array[:, 8*i+3] = self.Eo[1:, i]
             columns_labels.append(f'Eo_{wavelength}')
-            result_array[:, 6*i+4] = self.Eod[1:, i]
+            result_array[:, 8*i+4] = self.Eod[1:, i]
             columns_labels.append(f'Eod_{wavelength}')
-            result_array[:, 6*i+5] = self.Eou[1:, i]
+            result_array[:, 8*i+5] = self.Eou[1:, i]
             columns_labels.append(f'Eou_{wavelength}')
-            result_array[:, 6*i+6] = self.a[:, i]
+            result_array[:, 8*i+6] = self.a[:, i]
             columns_labels.append(f'a_{wavelength}')
-            result_array[:, 6*i+7] = self.b[:, i]
+            result_array[:, 8*i+7] = self.b[:, i]
             columns_labels.append(f'b_{wavelength}')
-            result_array[:, 6*i+8] = self.bb[:, i]
+            result_array[:, 8*i+8] = self.bb[:, i]
             columns_labels.append(f'bb_{wavelength}')
             
         self.Eudos_IOPs_df = pd.DataFrame(data=result_array, columns=columns_labels)

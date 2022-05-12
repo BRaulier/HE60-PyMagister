@@ -177,7 +177,6 @@ class DataViewer(DataBuilder):
         Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
         return Eou, Eod, Eo
 
-
     def get_zenith_radiance_profile_at_depth(self, depth, wavelength, interpolate=True):
         self.load_zenith_radiance()
         i_wavelength = list(self.run_bands).index(wavelength)
