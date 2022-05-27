@@ -62,6 +62,7 @@ class DataViewer(DataBuilder):
         if subplots:
             fig, ax = plt.subplots(1, len(desired_wavelengths), figsize=(12, 12))
             ls = [0]*len(desired_wavelengths)
+            if len(desired_wavelengths) == 1: ax = [ax] # So the loop below can run for 1 wavelength
         else:
             fig, ax = plt.subplots(1, 1, figsize=(7, 10))
             ax = [ax]*len(desired_wavelengths)
@@ -106,6 +107,7 @@ class DataViewer(DataBuilder):
             desired_wavelengths = self.run_bands
         self.load_zenith_radiance()
         fig, ax = plt.subplots(1, len(desired_wavelengths), figsize=(12, 6))
+        if len(desired_wavelengths) == 1: ax=[ax]
         for i, wavelength in enumerate(desired_wavelengths):
             self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i], interpolate)
         self.format_zenith_radiance_profiles(ax)
@@ -189,7 +191,7 @@ class DataViewer(DataBuilder):
                 print(f"Warning: Could not find resquested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
         phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
                       92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
-        zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]/1.355**2
+        zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]
         if interpolate:
             f = interp1d(phi_angles, zenith_radiance, kind='cubic')
             x_new_angles = np.arange(181)

@@ -23,6 +23,8 @@ class Hermes:
         with open(path, 'rb') as handle:
             self.get = pickle.load(handle)
 
+    # def update(self):
+
     def save_dict(self, path):
         with open(path, 'wb') as handle:
             pickle.dump(self.get, handle, protocol=pickle.HIGHEST_PROTOCOL)

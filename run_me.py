@@ -11,24 +11,20 @@ if __name__ == "__main__":
     # mobley_results = DataFinder(mobley_sim.hermes)
     # results = mobley_results.get_Eudos_lambda()
     # results.to_csv('TEMPORARY_example_results.txt')
+    #
+    # simple_example_SeaIce =SeaIceSimulation(mode='HE60DORT', run_title='test', root_name='simple_built_example')
+    # simple_example_SeaIce.set_z_grid(z_max=2.0)
+    # simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
+    # simple_example_SeaIce.add_layer(z1=0.10, z2=0.5, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
+    # simple_example_SeaIce.add_layer(z1=0.5, z2=2.01, abs=0.4, scat=200, dpf='dpf_OTHG_0_98.txt')
+    # simple_example_SeaIce.run_simulation(printoutput=True)
 
-    simple_example_SeaIce =SeaIceSimulation(mode='HE60DORT', run_title='test', root_name='simple_built_example')
-    simple_example_SeaIce.set_z_grid(z_max=2.0)
-    simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
-    simple_example_SeaIce.add_layer(z1=0.10, z2=0.5, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
-    simple_example_SeaIce.add_layer(z1=0.5, z2=2.01, abs=0.4, scat=200, dpf='dpf_OTHG_0_98.txt')
-    simple_example_SeaIce.run_simulation(printoutput=True)
-
-    new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='HE60DORT', windspd=0.0)
-    new_mode.set_z_grid(z_max=3.00, wavelength_list=[484, 544, 602])
-    new_mode.add_layer(z1=0.0, z2=0.20, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=.0,
-                       dpf='dpf_OTHG_0_98.txt')  # 2277 # bb arg is not relevent since we use a discretized phase function in a file indepêdnant of depth (g=0.98)
-    new_mode.add_layer(z1=0.20, z2=0.80, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=.0,
-                       dpf='dpf_OTHG_0_98.txt')  # 303
-    new_mode.add_layer(z1=0.80, z2=2.00, abs={'484': 0.0430, '544': 0.0683, '602': 0.12}, scat=.0,
-                       dpf='dpf_OTHG_0_98.txt')  # 79
-    new_mode.add_layer(z1=2.0, z2=3.01, abs={'484': 1.36e-2, '544': 5.11e-2, '602': 2.224e-1}, scat=0.0,
-                       dpf='dpf_OTHG_0_98.txt')
+    new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='HE60DORT', wavelength_list=[602])
+    new_mode.set_z_grid(z_max=3.00)
+    new_mode.add_layer(z1=0.0, z2=0.20, abs={'544': 0.0683, '602': 0.12, '484': 0.0430}, scat=.1, dpf='dpf_OTHG_0_98.txt')  # 2277 # bb arg is not relevent since we use a discretized phase function in a file indepêdnant of depth (g=0.98)
+    new_mode.add_layer(z1=0.20, z2=0.80, abs={'544': 0.0683, '484': 0.0430,  '602': 0.12}, scat=.1, dpf='dpf_OTHG_0_98.txt')  # 303
+    new_mode.add_layer(z1=0.80, z2=2.00, abs={'544': 0.0683, '484': 0.0430,  '602': 0.12}, scat=.1, dpf='dpf_OTHG_0_98.txt')  # 79
+    new_mode.add_layer(z1=2.0, z2=3.01, abs={'484': 1.36e-2, '544': 500, '602': 2.224e-1}, scat=0.1, dpf='dpf_OTHG_0_98.txt')
     new_mode.run_simulation(printoutput=True)
     new_mode.parse_results()
     new_mode.draw_figures()

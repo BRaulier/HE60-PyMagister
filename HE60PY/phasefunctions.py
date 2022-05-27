@@ -15,8 +15,8 @@ def calculate_assym(theta, pf):
 class PhaseFunction:
     def __init__(self):
         self.p = None
-        self.theta = np.linspace(0, np.pi, 1000)
-        self.theta_deg = np.linspace(0, np.pi, 1000) * 180 / np.pi
+        self.theta = np.linspace(0, np.pi, 10000)
+        self.theta_deg = np.linspace(0, np.pi, 10000) * 180 / np.pi
 
     def moment(self, n):
         to_integrate = lambda mu: mu**n * self.density(mu)*self.normalization_factor
@@ -51,6 +51,7 @@ class PhaseFunction:
             create_tabulated_file(angle_beta_array=np.vstack((self.theta_deg, self.p_deg)), tab_filename=self.tab_name, pf_type=self.pf_type)
             create_input_file(input_filename=self.tab_name, dpf_filename=self.tab_name, tab_filename=self.tab_name)
             run_executable_discretizer(input_filename=self.tab_name)
+            assert self.already_discretized() == True, "Discretization failed!"
             print(f"Discretization completed, available in HE library as '{self.dpf_name}.txt'!")
 
 
@@ -78,6 +79,7 @@ class OTHGStar(PhaseFunction):
         self.p =  self.density(mu=np.cos(self.theta))
         self.normalize(p_mu=self.density)
         self.p_deg = self.p/(2*np.pi)
+
 
         self.dpf_name = f'dpf_OTHG_star_{self.g:.2f}'.replace('.', '_')
         self.tab_name = f'OTHG_star_{self.g:.2f}'.replace('.', '_')
@@ -190,13 +192,13 @@ def run_tests():
 
 
 if __name__ == "__main__":
-    test_dis = TwoTHG(g=0.95, g1=0.99, a=0.975)
     # test_dis.discretize_if_needed()
     test_hg = OTHG(g=0.99)
-    plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
-    plt.semilogy(test_dis.theta, test_dis.p, label=f"g={test_dis.moment(n=1)}, g2={test_dis.g2}")
-    plt.legend()
-    plt.show()
+    print(test_hg.normalize(p_mu=test_hg.density))
+    # plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
+    # plt.semilogy(test_dis.theta, test_dis.p, label=f"g={test_dis.moment(n=1)}, g2={test_dis.g2}")
+    # plt.legend()
+    # plt.show()
     # # run_tests()
 
     # test_hgstar = HGStar(g=0.98)

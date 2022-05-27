@@ -64,7 +64,7 @@ def zenith_file():
     return header, data_fmt
 
 def surface_file():
-    header = '\\begin_header' \
+    header = '\\begin_header\n' \
              'HydroLight air-water surface file for U =  0.0 m/s and refr = 1.00 \n' \
              'The surface model is Cox-Munk with azimuthally dependent slope statistics of Light and Water Eq. (4.32)\n' \
              'The data are the discretized spectral amplitudes of Light and Water Eqs (8.50) and (8.51) in the order\n' \

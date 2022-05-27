@@ -104,11 +104,11 @@ class HE60DORTDefaultBatch(RecordBuilder):
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9']['windspd'] = 15.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
-        self.default['record9']['refr'] = 1.355  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
+        self.default['record9']['windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['refr'] = 1.000 # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
         self.default['record9']['temp'] = -1.8  # water temperature
         self.default['record9']['salinty'] = 35.0  # salinity (PSU)
-        self.default['record9']['iSurfaceModelFlag'] = 2  # azimuthally averaged Cox-Munk surfaces
+        self.default['record9']['iSurfaceModelFlag'] = 3  # azimuthally averaged Cox-Munk surfaces
 
     def set_record10(self):
         self.default['record10']['ibotm'] = 0  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto

@@ -39,23 +39,16 @@ def create_inert_surface_file():
     header, footer = header_library.surface_file()
     with open(path_inert_surface_file, 'w+') as file:
         file.write(header)
-        print(t[0*10:(0+1)*10].shape)
-        for i in range(1690): # that1
-            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # that2
-            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # rhat1
-            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # rhat2
-            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # that1
-            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # that2
-            np.savetxt(file, t[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # rhat1
-            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
-        for i in range(1690): # rhat2
-            np.savetxt(file, r[i*10:(i+1)*10].T, fmt='%1.5e', delimiter='\t')
+        format = '   %1.5E0'
+        np.savetxt(file, [t[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [t[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [r[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [r[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [t[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [t[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [r[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+        np.savetxt(file, [r[i*10:(i+1)*10].T for i in range(1690)], fmt=format, delimiter='') # that1
+
         file.write(footer)
 
 

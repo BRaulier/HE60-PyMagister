@@ -17,11 +17,15 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.usr_path = pathlib.Path.home()
         self.path = f'{self.usr_path}/Documents/HE60/run'
         self.kwargs = kwargs
+
         self.root_name = root_name
         self.run_title = run_title
         self.mode = mode
 
-        # Hermes initialisation (used to pass information all over the module)
+        # Wavelengths initialisation
+        self.initialize_wavelengths()
+
+        # Hermes's initialisation (used to pass information all over the module)
         self.hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
 
         self.ac9_path = self.path + '/ac9_file.txt'
@@ -32,9 +36,6 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.batchmaker = BatchMaker(self.hermes)
 
         # EnvironmentBuilder needed parameters, only needed for sea_ice mode TODO: Remove this part and activate it only for the proper mode
-        self.wavelengths = None
-        self.n_wavelengths = None
-        self.wavelength_header = None
         self.z_max = None
         self.delta_z = None
         self.z_grid = None
@@ -61,6 +62,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         print('Creating simulation environnement...')
         self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
+        print(self.kwargs['bands'], self.hermes.get['bands'])
         self.create_run_delete_bash_file(print_output=printoutput)
 
     def parse_results(self):
@@ -74,30 +76,35 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         viewer.run_figure_routine(save_binaries, save_png)
 
     def add_layer(self, z1, z2, abs, scat, bb=0, dpf=''):
+        # If dpf is a string, suppose it gives the filename of the discretized phase function
         if type(dpf) is not str:
+            # If it is not a string, suppose it is a class that has the attribute "discretize_if_needed"
             dpf.discretize_if_needed()
             dpf = dpf.dpf_name + '.txt'
-
+        # Boundaries for the depth dependant phase function
         self.z_boundaries_dddpf.extend([z1, z2])
         self.dpf_filenames.extend([dpf, dpf])
+        # If the abs parameter is a float, absorption is assumed wavelength independent (rarely the case in reality)
         if isinstance(abs, float):
             c = abs + scat
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+        # If the abs parameter is a dict, suppose the keys are the wavelengths and the value is the abs coeff [m^-1]
         elif isinstance(abs, dict):
-            for wavelength in abs.keys():
-                abs_wv = abs[wavelength]
+            for wavelength in sorted(self.wavelengths):
+                wavelength_key = f"{wavelength:d}"
+                abs_wv = abs[wavelength_key]
                 c_wv = abs_wv + scat
                 indexes, = np.where(self.wavelength_header == int(wavelength))
                 self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
                 self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
                 self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def set_z_grid(self, z_max, delta_z=0.001, wavelength_list=None):
-        if wavelength_list is None:
+    def set_z_grid(self, z_max, delta_z=0.001):
+        if self.wavelengths is None: # If wavelengths aren't already initialized, do it with default parameters
             wavelength_list = self.batchmaker.meta['record6']['bands']
-        self.set_wavelengths(wvelgths=wavelength_list)
+            self.initialize_wavelengths(mode='default', wvelgths=wavelength_list)
         self.z_max = z_max
         self.delta_z = delta_z
         nz = int(z_max/delta_z)+1
@@ -105,9 +112,23 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.z_ac_grid, self.z_bb_grid = np.zeros((nz, self.n_wavelengths*2 + 1)), np.zeros((nz, self.n_wavelengths + 1))
         self.z_ac_grid[:, 0], self.z_bb_grid[:, 0] = z_mesh, z_mesh
 
-    def set_wavelengths(self, wvelgths):
-        self.n_wavelengths = len(wvelgths)
-        self.wavelengths = np.array(wvelgths)
+    def initialize_wavelengths(self, mode='init', wvelgths=False):
+        if mode == 'init':
+            if 'wavelength_list' in self.kwargs:
+                self.wavelengths = np.array(self.kwargs['wavelength_list'])
+                self.n_wavelengths = len(self.wavelengths)
+        else:
+            self.wavelengths = wvelgths
+            self.n_wavelengths = len(self.wavelengths)
+        if self.n_wavelengths == 1:
+            half_step = 10
+            bands = np.array([self.wavelengths[0]-half_step, self.wavelengths[0]+half_step])
+        else:
+            half_step = np.ones(self.wavelengths.shape) * (self.wavelengths[1]-self.wavelengths[0])/2
+            bands = np.hstack((np.array(self.wavelengths-half_step), np.array(self.wavelengths[-1]+half_step[0])))
+        self.kwargs['bands'] = bands
+        self.kwargs['Nwave'] = self.n_wavelengths
+        self.kwargs['bands_str'] = ','.join([str(int(i)) for i in self.kwargs['bands']])
         self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
 
 
