@@ -14,6 +14,7 @@ def create_irrad_file(wavelength_Ed, total_path):
         file.write(header)
         np.savetxt(file, wavelength_Ed, fmt='%1.9e', delimiter='\t')
         file.write(footer)
+    ThisNeedToExist(total_path)
 
 
 def create_null_pure_water_file(path):

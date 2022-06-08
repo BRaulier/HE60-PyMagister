@@ -3,7 +3,7 @@ import numpy as np
 from .builderrecord import RecordBuilder
 
 
-class HE60DORTDefaultBatch(RecordBuilder):
+class OdenDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
         super().__init__()
         self.hermes = hermes

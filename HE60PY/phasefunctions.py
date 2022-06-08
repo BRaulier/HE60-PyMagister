@@ -194,11 +194,10 @@ def run_tests():
 if __name__ == "__main__":
     # test_dis.discretize_if_needed()
     test_hg = OTHG(g=0.99)
-    print(test_hg.normalize(p_mu=test_hg.density))
-    # plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
+    plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
     # plt.semilogy(test_dis.theta, test_dis.p, label=f"g={test_dis.moment(n=1)}, g2={test_dis.g2}")
     # plt.legend()
-    # plt.show()
+    plt.show()
     # # run_tests()
 
     # test_hgstar = HGStar(g=0.98)

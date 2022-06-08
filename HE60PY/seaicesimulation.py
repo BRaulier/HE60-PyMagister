@@ -115,7 +115,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
     def initialize_wavelengths(self, mode='init', wvelgths=False):
         if mode == 'init':
             if 'wavelength_list' in self.kwargs:
-                self.wavelengths = np.array(self.kwargs['wavelength_list'])
+                self.wavelengths = np.array(sorted(self.kwargs['wavelength_list']))
                 self.n_wavelengths = len(self.wavelengths)
         else:
             self.wavelengths = wvelgths

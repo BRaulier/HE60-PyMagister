@@ -23,22 +23,23 @@ class DataViewer(DataBuilder):
         self.colors = ['#004599', '#0097b7', '#5ccc0c']
 
         self.color_maps = ['Reds', 'Greens', 'Blues']
+        self.load_Eudos_IOP_df()
 
     # ========================= #
     # Available figure routines #
     # ========================= #
 
     def run_figure_routine(self, save_binaries=False, save_png=True, close=True):
-        fig1 = self.draw_Eudos_profiles()
-        fig2 = self.draw_IOP_profiles()
+        fig1, ax1 = self.draw_Eudos_profiles()
+        fig2, ax2 = self.draw_IOP_profiles()
         try:
-            fig3 = self.draw_zenith_radiance_maps()
+            fig3, ax3 = self.draw_zenith_radiance_maps()
             fig3.savefig(f'{self.wd}/zenith_maps.png', dpi=600)
             pickle.dump(fig3, open(f'{self.wd}/zenith_maps.fig.pickle', 'wb'))
         except:
             fig3, ax = plt.subplots()
             pass
-        fig4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
+        fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
         
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
@@ -74,7 +75,7 @@ class DataViewer(DataBuilder):
             self.include_extended_legend('Eudos', wavelength, ax[i])
             self.format_profile_plot(ax[i], depth_interval)
         fig.tight_layout()
-        return fig
+        return fig, ax
 
     def draw_IOP_profiles(self, depth_interval=None, desired_wavelengths=None):
         if desired_wavelengths is None:
@@ -89,7 +90,7 @@ class DataViewer(DataBuilder):
                 self.draw_Eudos_IOP_profile(condition, wavelength, ax[i], ci=j, li=0)
                 self.format_profile_plot(ax[i], depth_interval, title)
         fig.tight_layout()
-        return fig
+        return fig, ax
 
     def draw_zenith_radiance_maps(self, depth_interval=None, desired_wavelengths=None):
         if desired_wavelengths is None:
@@ -100,7 +101,7 @@ class DataViewer(DataBuilder):
         for i, wavelength in enumerate(desired_wavelengths):
             cm = self.draw_zenith_radiance_map(wavelength, ax[i], depth_interval)
         self.format_zenith_radiance_maps(fig, ax, cm)
-        return fig
+        return fig, ax
 
     def draw_zenith_radiance_profiles(self, requested_depths, desired_wavelengths=None, interpolate=True):
         if desired_wavelengths is None:
@@ -111,7 +112,19 @@ class DataViewer(DataBuilder):
         for i, wavelength in enumerate(desired_wavelengths):
             self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i], interpolate)
         self.format_zenith_radiance_profiles(ax)
-        return fig
+        return fig, ax
+
+    def draw_stepped_zenith_radiance_profiles(self, requested_depths, desired_wavelengths=None, fig=None, ax=None):
+        if desired_wavelengths is None:
+            desired_wavelengths = self.run_bands
+        self.load_zenith_radiance()
+        if fig is None:
+            fig, ax = plt.subplots(1, len(desired_wavelengths), figsize=(12, 6))
+        if len(desired_wavelengths) == 1: ax=[ax]
+        for i, wavelength in enumerate(desired_wavelengths):
+            self.draw_stepped_zenith_radiance_at_depths(requested_depths, wavelength, ax[i])
+        self.format_zenith_radiance_profiles(ax)
+        return fig, ax
 
     # ================================================= #
     # Auxiliary functions used to draw complete figures #
@@ -144,6 +157,20 @@ class DataViewer(DataBuilder):
             x_angle, y_radiance = self.get_zenith_radiance_profile_at_depth(depth, wavelength, interpolate=interpolate)
             ax.plot(x_angle, y_radiance, color=cmap(intensities[i]), label=f'{depth} m')
 
+    def draw_stepped_zenith_radiance_at_depths(self, depths, wavelength, ax):
+        i_wavelength = list(self.run_bands).index(wavelength)
+        cm = self.color_maps[i_wavelength]
+        cmap = matplotlib.cm.get_cmap(cm)
+        intensities = np.linspace(0.40, 1.00, len(depths))
+        step_borders = [0, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 180]
+        for i, depth in enumerate(depths):
+            x_angle, y_radiance = self.get_zenith_radiance_profile_at_depth(depth, wavelength, interpolate=False)
+            for j, y_value  in enumerate(y_radiance):
+                ax.plot((step_borders[j], step_borders[j+1]), (y_value, y_value), color=cmap(intensities[i]))
+                if step_borders[j+1] < 180:
+                    ax.plot((step_borders[j+1], step_borders[j+1]), (y_radiance[j], y_radiance[j+1]), color=cmap(intensities[i]))
+            ax.plot([],[], color=cmap(intensities[i]), label=f'{depth} m')
+
     # ============ #
     # Data loaders #
     # ============ #
@@ -156,16 +183,26 @@ class DataViewer(DataBuilder):
 
     def load_zenith_radiance(self):
         if self.zenith_radiance is None:
-            self.zenith_radiance = np.zeros((len(self.depths) + 1, 20, len(self.run_bands))) # 3D array to store [depth, zenith angle, wvlgth]
+            self.zenith_radiance = np.zeros((len(self.depths) + 1, 19, len(self.run_bands))) # 3D array to store [depth, zenith angle, wvlgth]
             raw_zenith_radiance = np.loadtxt(f'{self.wd}/zenith_profiles.txt')
             for i, wavelength in enumerate(self.run_bands):
                 to_be_reshaped = raw_zenith_radiance[raw_zenith_radiance[:, 2] == wavelength, :]
-                total_radiance_image = to_be_reshaped[:, 3].reshape(len(self.depths) + 1, 20)
+                total_radiance_image = to_be_reshaped[:, 3].reshape(len(self.depths) + 1, 19)
                 self.zenith_radiance[:, :, i] = total_radiance_image
+
+    def get_Eudos_at_depths(self, depths, wavelength):
+        self.load_Eudos_IOP_df()
+        Eu_list, Ed_list, Eo_list = [], [], []
+        for depth in depths:
+            Eu_i, Ed_i, Eo_i = self.get_Eudos_at_depth(depth, wavelength)
+            Eu_list.append(Eu_i)
+            Ed_list.append(Ed_i)
+            Eo_list.append(Eo_i)
+        return Eu_list, Ed_list, Eo_list
 
     def get_Eudos_at_depth(self, depth, wavelength):
         self.load_Eudos_IOP_df()
-        i_depth = list(self.depths).index(depth) + 1 # 0 is above the interface,
+        i_depth = list(self.depths).index(round(depth,2)) + 1 # 0 is above the interface,
         Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][i_depth]
         Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][i_depth]
         Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
@@ -183,14 +220,15 @@ class DataViewer(DataBuilder):
         self.load_zenith_radiance()
         i_wavelength = list(self.run_bands).index(wavelength)
         try:
-            i_depth = list(self.depths).index(depth)
+            i_depth = list(self.depths).index(round(depth, 3))
         except:
             if depth == -1.:  # Depth -1 is the incoming radiation, just above the interface
                 i_depth = -1
             else:
                 print(f"Warning: Could not find resquested depth ({depth}) in: get_zenith_radiance_profile_at_depth")
-        phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
-                      92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
+        phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 90.,
+                      100., 110., 120., 130., 140., 150., 160., 170., 180.]  # Angles for which radiance is known
+
         zenith_radiance = self.zenith_radiance[i_depth+1, :, i_wavelength]
         if interpolate:
             f = interp1d(phi_angles, zenith_radiance, kind='cubic')
@@ -238,13 +276,18 @@ class DataViewer(DataBuilder):
     def format_profile_plot(self, ax, depth_interval, title=None, ylog=True):
         if depth_interval:
             ax.set_ylim(depth_interval[0], depth_interval[1])
+            interval = depth_interval[1] - depth_interval[0]
         if title:
             ax.title.set_text(title)
         if ylog:
             ax.set_xscale("log")
         ax.invert_yaxis()
         ax.legend()
-        ax.yaxis.set_major_locator(MultipleLocator(.50))
+        if interval:
+            ax.yaxis.set_major_locator(MultipleLocator(round(interval/10, 2)))
+        else:
+            ax.yaxis.set_major_locator(MultipleLocator(0.5))
+
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from HE60PY.Tools.batchmaker import BatchMaker
 from HE60PY.Tools.environmentbuilder import EnvironmentBuilder
 from HE60PY.Tools.olympus import Hermes
+from .dataparser import DataParser
+from .dataviewer import DataViewer
 
 
 class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of inheritance
@@ -54,7 +56,7 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         print('Preparing files...')
         self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
-        if self.mode == 'sea_ice' or 'HE60DORT':  # TODO: Change this
+        if self.mode == 'sea_ice' or 'HE60DORT' or 'open_water':  # TODO: Change this
             self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
@@ -90,6 +92,10 @@ class AC9Simulation(EnvironmentBuilder):  # Todo composition classes instead of 
         self.wavelengths = np.array(wvelgths)
         self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
 
+    def parse_results(self):
+        parser = DataParser(hermes=self.hermes)
+        print('Parsing Hydro Light results...')
+        parser.run_data_parsing(delete_HE_outputs=True)
 
 if __name__ == "__main__":
     print('\n')

@@ -18,7 +18,7 @@ class DataParser(DataBuilder):
         self.xlpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/excel/M{self.root_name}.xlsx'
         self.lrootpath = f'{self.usr_path}/Documents/HE60/output/HydroLight/digital/L{self.root_name}.txt'
         
-        self.zenith_radiance = np.zeros(((len(list(self.depths))+1) * len(list(self.run_bands)) * 20, 7))
+        self.zenith_radiance = np.zeros(((len(list(self.depths))+1) * len(list(self.run_bands)) * 19, 7))
 
     def hercule_poirot(self, sheet):
         """
@@ -127,15 +127,19 @@ class DataParser(DataBuilder):
     def compute_zenith_radiance(self):
         full_lroot = np.loadtxt(self.lrootpath, skiprows=16, usecols=[0, 1, 2, 3, 4, 5, 6])
         depths = [-1.00] + list(self.depths)
-        phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5,
-                      92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]
+        phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 160., 170., 180.]
         i = 0
         for band in self.run_bands:
             for depth in depths:
                 depth, band = round(depth, 2), round(band, 2)  # Rounding to avoid numerical errors messing comparison
                 _full_radiance = full_lroot[(full_lroot[:, 0] == depth) & (full_lroot[:, 3] == band), :]
                 for phi in phi_angles:
-                    self.zenith_radiance[i, :] = _full_radiance[_full_radiance[:, 1] == phi, :].mean(axis=0)
+                    if phi == 90.:
+                        _875 = _full_radiance[_full_radiance[:, 1] == 87.5, :].mean(axis=0)
+                        _925 = _full_radiance[_full_radiance[:, 1] == 92.5, :].mean(axis=0)
+                        self.zenith_radiance[i, :] = np.mean((_875, _925), axis=0)
+                    else:
+                        self.zenith_radiance[i, :] = _full_radiance[_full_radiance[:, 1] == phi, :].mean(axis=0)
                     i += 1
         del full_lroot  # Deallocate full_lroot memory
         self.zenith_radiance = self.zenith_radiance[:, (0, 1, 3, 4, 5, 6)]
@@ -145,19 +149,19 @@ class DataParser(DataBuilder):
 
 if __name__ == "__main__":
     print('\n')
-    # path_to_Lroot = '/Users/braulier/Documents/HE60/output/HydroLight/digital/Lhe60_comp_dort.txt'
-    bands = [480.0, 540.0, 600.0]
+    path_to_Lroot = '/Users/braulier/Documents/HE60/output/HydroLight/digital/LTest_John.txt'
+    bands = [550]
     # full_lroot = np.loadtxt(path_to_Lroot, skiprows=16, usecols=[0,1,2,3,4,5,6])
     depths = [-1.00] + list(np.linspace(0.0, 3.0, 301))
     # result_zenith_profiles = np.zeros((len(depths)*len(bands)*20, 7))
-    phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 87.5, 92.5, 100., 110., 120., 130., 140., 150., 160., 170., 180.]
+    phi_angles = [0., 10., 20., 30., 40, 50., 60., 70., 80., 90., 100., 110., 120., 130., 140., 150., 160., 170., 180.]
 
 
 
     result_zenith_profile = np.loadtxt('DUMMY_RESULT.txt')
     fig, ax = plt.subplots(1,3)
     to_be_reshaped = result_zenith_profile[result_zenith_profile[:, 2] == 480.0, :]
-    max = to_be_reshaped[:, 3].reshape(302, 20).max()
+    max = to_be_reshaped[:, 3].reshape(302, 19).max()
     print(max)
     for i, band in enumerate(bands):
         to_be_reshaped = result_zenith_profile[result_zenith_profile[:, 2] == band, :]
