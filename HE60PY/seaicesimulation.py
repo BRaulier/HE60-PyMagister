@@ -43,6 +43,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.z_bb_grid = None
 
         self.z_boundaries_dddpf = []  # Boundaries for the Discretized Depth Dependant Phase Function
+        self.dpf_objects = []
         self.dpf_filenames = []  # Filenames for the Discredized Depth Dependant Phase Function
 
     def build_and_run_mobley_1998_example(self):
@@ -62,7 +63,6 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         print('Creating simulation environnement...')
         self.create_simulation_environnement()
         print('Running Hydro Light simulations...')
-        print(self.kwargs['bands'], self.hermes.get['bands'])
         self.create_run_delete_bash_file(print_output=printoutput)
 
     def parse_results(self):
@@ -81,6 +81,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
             # If it is not a string, suppose it is a class that has the attribute "discretize_if_needed"
             dpf.discretize_if_needed()
             dpf = dpf.dpf_name + '.txt'
+            self.dpf_objects.append(dpf)
         # Boundaries for the depth dependant phase function
         self.z_boundaries_dddpf.extend([z1, z2])
         self.dpf_filenames.extend([dpf, dpf])

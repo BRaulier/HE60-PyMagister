@@ -273,13 +273,13 @@ class DataViewer(DataBuilder):
         fig.supylabel('Depth [m]')
         fig.supxlabel('Zenith angle [$^\circ$]')
         
-    def format_profile_plot(self, ax, depth_interval, title=None, ylog=True):
+    def format_profile_plot(self, ax, depth_interval, title=None, xlog=True):
         if depth_interval:
             ax.set_ylim(depth_interval[0], depth_interval[1])
             interval = depth_interval[1] - depth_interval[0]
         if title:
             ax.title.set_text(title)
-        if ylog:
+        if xlog:
             ax.set_xscale("log")
         ax.invert_yaxis()
         ax.legend()

@@ -49,29 +49,25 @@ class DataParser(DataBuilder):
         self.a = self.get_a()
         self.b = self.get_b()
         self.bb = self.get_bb()
+        self.g = self.get_g()
                 
-        result_array = np.zeros((self.n_depths+1, len(self.run_bands)*8+1))
+        result_array = np.zeros((self.n_depths+1, len(self.run_bands)*8+2))
         columns_labels = ['depths']
         result_array[1:, 0], result_array[0, 0] = self.hermes.get['zetanom'], 0.0
 
+        params_to_save = [self.Eu, self.Ed, self.Eo, self.Eod, self.Eou, self.a, self.b, self.bb]
+        params_tags = ['Eu', 'Ed', 'Eo', 'Eod', 'Eou', 'a', 'b', 'bb']
+
         for i, wavelength in enumerate(self.run_bands):
-            result_array[:, 8*i+1] = self.Eu[1:, i]
-            columns_labels.append(f'Eu_{wavelength}')
-            result_array[:, 8*i+2] = self.Ed[1:, i]
-            columns_labels.append(f'Ed_{wavelength}')
-            result_array[:, 8*i+3] = self.Eo[1:, i]
-            columns_labels.append(f'Eo_{wavelength}')
-            result_array[:, 8*i+4] = self.Eod[1:, i]
-            columns_labels.append(f'Eod_{wavelength}')
-            result_array[:, 8*i+5] = self.Eou[1:, i]
-            columns_labels.append(f'Eou_{wavelength}')
-            result_array[:, 8*i+6] = self.a[:, i]
-            columns_labels.append(f'a_{wavelength}')
-            result_array[:, 8*i+7] = self.b[:, i]
-            columns_labels.append(f'b_{wavelength}')
-            result_array[:, 8*i+8] = self.bb[:, i]
-            columns_labels.append(f'bb_{wavelength}')
-            
+            for j, param in enumerate(params_to_save):
+                if params_tags[j][0] == 'E':
+                    k = 1
+                else:
+                    k = 0
+                result_array[:, len(params_to_save) * i + j + 1] = param[k:, i]
+                columns_labels.append(params_tags[j]+f'_{wavelength}')
+        result_array[1:, len(self.run_bands)*len(params_to_save)+1] = self.g
+        columns_labels.append('g')
         self.Eudos_IOPs_df = pd.DataFrame(data=result_array, columns=columns_labels)
         self.Eudos_IOPs_df.to_csv(f'{self.wd}/eudos_iops.csv')
         return self.Eudos_IOPs_df
@@ -123,6 +119,15 @@ class DataParser(DataBuilder):
         if integrate:
             self.bb = np.sum(Eo_lambda.to_numpy()[1:, ], axis=1) * self.wavelength_binwidth
         return self.bb
+
+    def get_g(self):
+        self.g = np.zeros(self.hermes.get['zetanom'].shape)
+        boundaries, assym_g_list = self.hermes.get['dpf_boundaries_table']
+        for boundary, g in zip(boundaries[1:], assym_g_list):
+            mask = self.hermes.get['zetanom'] < boundary
+            self.g[mask] = g
+        return self.g
+
 
     def compute_zenith_radiance(self):
         full_lroot = np.loadtxt(self.lrootpath, skiprows=16, usecols=[0, 1, 2, 3, 4, 5, 6])

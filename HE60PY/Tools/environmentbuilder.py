@@ -103,19 +103,27 @@ class EnvironmentBuilder:
             file.write(footer)
             
     def create_dddpf_file(self, folder_path):
-        
         with open(folder_path + 'Py_DDDPF_list.txt', 'w+') as file:
             self.hermes.get['z_boundaries_dddpf'] = self.z_boundaries_dddpf
             self.hermes.get['dpf_filenames'] = self.dpf_filenames
-            for i, boundary in enumerate(self.z_boundaries_dddpf):
-                dpf_filename = self.dpf_filenames[i]
+            boundaries, assym_coeff = [], []
+            for i, (boundary, dpf_filename) in enumerate(zip(self.z_boundaries_dddpf, self.dpf_filenames)):
                 # First verify that this boundary is different then the previous one, to avoid error from user input
                 if i != 0 and np.isclose(self.z_boundaries_dddpf[i-1], boundary, atol=1e-6):
                     boundary += 0.00001         # To avoid two boundaries that are equals to each other.
                 # Verify that the dpf file the user gave exists, if it does not, an error is raised
                 ThisNeedToExist(path=f'{folder_path}HydroLight/{dpf_filename}')
                 file.write(f"{boundary:.5f}    {dpf_filename}\n")
-
+                boundaries.append(boundary)
+                try:
+                    mean_cosine = self.dpf_objects[i].moment(n=1) # assymetry g parameter will not be computed if a filename has been passed instead of the class instance
+                    assym_coeff.append(mean_cosine)
+                except:
+                    assym_coeff.append(999)
+                    print('Warning: Asymmetry coefficient could not be compiled in the results because the phase functions'
+                          'was provided with a string instead of the class. ')
+            # if 999 not in assym_coeff:
+            self.hermes.get['dpf_boundaries_table'] = [boundaries, assym_coeff] # store results if results succeeded.
 
 
 if __name__ == "__main__":

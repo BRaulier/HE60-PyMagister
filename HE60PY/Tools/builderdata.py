@@ -31,4 +31,5 @@ class DataBuilder:
 
         self.Eudos_IOPs_df = None
         self.Ed, self.Eu, self.Eo = None, None, None
+        self.Eod, self.Eou = None, None
         self.a, self.b, self.bb = None, None, None

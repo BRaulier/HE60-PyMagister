@@ -31,7 +31,7 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
         self.default['record4']['iOptDigital'] = 0                     # Generation of Droot.txt file, 0 or 1
         self.default['record4']['iOptExcelS'] = 0                      # Generation of Excel single-wavelength output Sroot.txt (0 or 2)
         self.default['record4']['iOptExcelM'] = 1                      # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
-        self.default['record4']['iOptRad'] = 0                         # Generation of the full radiance printout Lroot.txt (0 or 1)
+        self.default['record4']['iOptRad'] = 1                         # Generation of the full radiance printout Lroot.txt (0 or 1)
         # Record 4b
         self.default['record4']['iIOPmodel'] = 6                       # SeaIce IOP model
         self.default['record4']['iSkyRadmodel'] = 1                    # Harrison and Coombes 1998 semi-empirical model
@@ -83,13 +83,13 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
             self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
-            self.default['record8']['cloud'] = 0.5  # 0.0: clear sky, 1.0:solid overcast
+            self.default['record8']['cloud'] = 0.0  # 0.0: clear sky, 1.0:solid overcast
         elif self.default['record8']['iflagsky'] == 1:
             self.default['record8']['nsky'] = 5
-            self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
+            self.default['record8']['suntheta'] = 43.0  # solar zenith angle (degrees)
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['C'] = 0.0  # Cardioidal parameter, 0.0: uniform sky, 2.0: cardioidal sky, 1.25: heavy overcast
-            self.default['record8']['rsky'] = 0.5  # 0.0: black sky, 1.0:full overcast
+            self.default['record8']['rsky'] = 0.1  # 0.0: black sky, 1.0:full overcast
             self.default['record8']['Edtotal'] = 1.0 # Downwelling spectral scalar irradiance du to sun and background
         # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
         self.default['record8']['fjday'] = 180.0  # Julian day (for earth-sun distance)
@@ -104,14 +104,14 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9']['windspd'] = 15.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
-        self.default['record9']['refr'] = 1.355  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
+        self.default['record9']['windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['refr'] = 1.00  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
         self.default['record9']['temp'] = -1.8  # water temperature
         self.default['record9']['salinty'] = 35.0  # salinity (PSU)
         self.default['record9']['iSurfaceModelFlag'] = 3  # azimuthally averaged Cox-Munk surfaces
 
     def set_record10(self):
-        self.default['record10']['ibotm'] = 0  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
+        self.default['record10']['ibotm'] = 1  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
         self.default['record10']['rflbot'] = 0.2  # Bottom reflectance, only used when ibotm=1
 
     def set_record11(self):
