@@ -19,10 +19,10 @@ class DataViewer(DataBuilder):
         olympus.ThisNeedToExist(self.wd)
 
         self.zenith_radiance = None
-        self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot']
-        self.colors = ['#004599', '#0097b7', '#5ccc0c']
+        self.linestyles = ['solid', 'dotted', 'dashed', 'dashdot', 'solid', 'dotted', 'dashed', 'dashdot', 'solid', 'dotted', 'dashed', 'dashdot']
+        self.colors = ['#004599', '#0097b7', '#5ccc0c', '#004599', '#0097b7', '#5ccc0c', '#004599', '#0097b7', '#5ccc0c']
 
-        self.color_maps = ['Reds', 'Greens', 'Blues']
+        self.color_maps = ['Reds', 'Greens', 'Blues', 'Reds', 'Greens', 'Blues', 'Reds', 'Greens', 'Blues', 'Reds', 'Greens', 'Blues']
         self.load_Eudos_IOP_df()
 
     # ========================= #
@@ -208,6 +208,24 @@ class DataViewer(DataBuilder):
         Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
         return Eu, Ed, Eo
 
+    def get_abg_at_depths(self, depths, wavelength):
+        self.load_Eudos_IOP_df()
+        a_list, b_list, g_list = [], [], []
+        for depth in depths:
+            a, b, g = self.get_abg_at_depth(depth, wavelength)
+            a_list.append(a)
+            b_list.append(b)
+            g_list.append(g)
+        return np.array(a_list), np.array(b_list), np.array(g_list)
+
+    def get_abg_at_depth(self, depth, wavelength):
+        self.load_Eudos_IOP_df()
+        i_depth = list(self.depths).index(round(depth,2)) + 1 # 0 is above the interface,
+        a = self.Eudos_IOPs_df[f'a_{wavelength:.1f}'][i_depth]
+        b = self.Eudos_IOPs_df[f'b_{wavelength:.1f}'][i_depth]
+        g = self.Eudos_IOPs_df[f'g'][i_depth]
+        return a, b, g
+
     def get_scalar_Eudos_at_depth(self, depth, wavelength):
         self.load_Eudos_IOP_df()
         i_depth = list(self.depths).index(depth) + 1 # 0 is above the interface,
@@ -238,14 +256,24 @@ class DataViewer(DataBuilder):
         else:
             return phi_angles, zenith_radiance
 
-    def get_RT(self, wavelength):
+    def get_RT_at_wavelength(self, wavelength):
         self.load_Eudos_IOP_df()
+        try:
+            ice_bottom_index = list(self.depths).index(round(self.hermes.get['ice_thickness'],2)) + 1
+        except:
+            ice_bottom_index = 202
         surf_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][0]  # In air
         surf_Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][0]  # In air
-        ice_bot_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][202]
+        ice_bot_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][ice_bottom_index]
         R = surf_Eu / surf_Ed  # Surf Reflectance
         T = ice_bot_Ed / surf_Ed
         return R, T
+
+    def get_ext_coeff(self, wavelength):
+        R, T = self.get_RT_at_wavelength(wavelength)
+        thickness = self.hermes.get['ice_thickness']
+        ext_coeff = -np.log(T)/thickness
+        return ext_coeff
 
     # ========================================== #
     # Auxiliary functions used to format figures #
@@ -283,7 +311,7 @@ class DataViewer(DataBuilder):
             ax.set_xscale("log")
         ax.invert_yaxis()
         ax.legend()
-        if interval:
+        if depth_interval:
             ax.yaxis.set_major_locator(MultipleLocator(round(interval/10, 2)))
         else:
             ax.yaxis.set_major_locator(MultipleLocator(0.5))

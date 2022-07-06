@@ -60,7 +60,7 @@ class OTHG(PhaseFunction):
         super().__init__()
         self.g = g
         self.p =  self.density(mu=np.cos(self.theta))
-        self.normalize(p_mu=self.density)
+        self.normalization_factor = self.normalize(p_mu=self.density)
         self.p_deg = self.p/(2*np.pi)
 
         self.dpf_name = f'dpf_OTHG_{self.g:.2f}'.replace('.', '_')
@@ -147,22 +147,21 @@ class IDHG(PhaseFunction): # A note on double Henyey–Greenstein phase function
 
 
 class TwoTHG(PhaseFunction): # A One-parameter two-term Henyey-Greenstein phase function for light scattering in seawater
-    def __init__(self, g, g1, a):
+    def __init__(self, g2, g1, a):
         super().__init__()
-        self.g, self.g1, self.a = g, g1, a
-        self.g2 = (self.a*self.g1 - self.g)/(1-self.a)
+        self.g2, self.g1, self.a = (-1)*g2, g1, a
         self.p = self.density(mu=np.cos(self.theta))
         self.normalization_factor = self.normalize(p_mu=self.density)
         self.p_deg = self.p/(2*np.pi)
 
-        self.dpf_name = f'dpf_TwoTHG_g{self.g:.3f}_h{self.g1:.3f}_a{self.a:.3f}'.replace('.', '_')
-        self.tab_name = f'TwoTHG_g{self.g:.3f}_h{self.g1:.3f}_a{self.a:.3f}'.replace('.', '_')
+        self.dpf_name = f'dpf_TwoTHG_g1{self.g1:.3f}_g2{self.g2:.3f}_a{self.a:.3f}'.replace('.', '_')
+        self.tab_name = f'TwoTHG_g1{self.g1:.3f}_g2{self.g2:.3f}_a{self.a:.3f}'.replace('.', '_')
         self.pf_type = "Two term Henyey Greenstein (Vladimir I. Haltrin)"
 
     def density(self, mu):
         term_1 = (1-self.g1**2)/(1-2*self.g1*mu+self.g1**2)**(3/2)
         term_2 = (1-self.g2**2)/(1-2*self.g2*mu+self.g2**2)**(3/2)
-        return self.a * term_1 + (1 - self.a) * term_2
+        return (self.a * term_1 + (1 - self.a) * term_2)
 
 
 class TwoTHG_star(PhaseFunction): # A One-parameter two-term Henyey-Greenstein phase function for light scattering in seawater
@@ -193,12 +192,20 @@ def run_tests():
 
 if __name__ == "__main__":
     # test_dis.discretize_if_needed()
-    test_hg = OTHG(g=0.99)
-    plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
-    # plt.semilogy(test_dis.theta, test_dis.p, label=f"g={test_dis.moment(n=1)}, g2={test_dis.g2}")
+    # test_hg = OTHG(g=0.99)
+    # plt.semilogy(test_hg.theta, test_hg.p, label=f"g=0.99")
+
     # plt.legend()
+    # plt.show()
+    # run_tests()
+    test_othg = OTHG(g=0.99)
+    test = TwoTHG(g1=0.996, g2= 0.7083055992539212, a=0.9967182499487101)
+    plt.semilogy(test.theta, test.p, label="TwoTHG\ng={:.3f}, g1={:.3f} g2={:.3f} a ={:.3f}".format(test.moment(n=1), 0.996, 0.7083055992539212, 0.9967182499487101))
+    plt.semilogy(test_othg.theta, test_othg.p, label="OTHG\ng={:.3f}".format(test_othg.moment(n=1)))
+    plt.legend()
+    plt.xlabel("Angle [radians]")
+    plt.title("Comparison of OTHG and TwoTHG")
     plt.show()
-    # # run_tests()
 
     # test_hgstar = HGStar(g=0.98)
     # plt.semilogy(test_hgstar.theta, test_hgstar.p)

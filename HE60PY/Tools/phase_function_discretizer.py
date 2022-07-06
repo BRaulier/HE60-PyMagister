@@ -122,33 +122,7 @@ def calculate_assym(theta, pf):
 
 
 if __name__ == '__main__':
-    g1_values = np.array([0.98, 0.65, 0.70, 0.75], dtype=np.float16)
-    g2_values = np.array([-.15, -0.15, -0.25, -0.15], dtype=np.float16)
-    b_values = np.array([0.99, 0.70, 0.85, 0.80], dtype=np.float16)
-    angles = np.linspace(0, 180, 180)
-    g98 = henvey_greenstein_pf(angles, 0.98)
-    for g1, g2, b in zip(g1_values, g2_values, b_values):
-        beta = henvey_greenstein_2pf(angles, (g1, g2), b)
-        plt.semilogy(angles, beta)
-    plt.semilogy(angles, g98, color='black', label="HG 0.98")
-    plt.legend()
-    plt.show()
-    # path = "/Users/braulier/Documents/HE60_PY/ressources/PF_tab_brine_196_.txt"
-    # n, angle_values, beta_values = np.loadtxt(path, skiprows=1, delimiter=",").T
-    # interpolate_and_compute_g(angle_values, beta_values)
-    # print(calculate_assym(angle_values, beta_values))
-    # angles = np.linspace(0, 181, 100000)
-    # pf_hg = henvey_greenstein_pf(angles, 0.99)
-    # interpolate_and_compute_g(angles, pf_hg)
-    # create_executable_discretizer()
-    # # run_executable_discretizer()
-    # HE_angles, HE_beta = np.loadtxt('g0_90.txt').T
-    #
-    # angles = np.linspace(0, 180, 10000)
-    # my_beta = henvey_greenstein_pf(phi=angles, g=0.90, normalize=True)
-    # plt.plot(HE_angles, HE_beta)
-    # plt.plot(angles, my_beta)
-    # plt.show()
-    # create_OTHG_discretized_files()
-    # create_brine_discretized_files(angle_values, beta_values)
-    create_OTHG2_discretized_files()
+    n, theta, pf = np.genfromtxt("../../resources/malinka_fr025.csv", skip_header=1, delimiter=',').T
+    create_tabulated_file(np.array([theta, pf/1.002386]), tab_filename="malinka_g99", pf_type="Malinka Phase function")
+    create_input_file(input_filename="malinka_g99", dpf_filename="malinka_g99", tab_filename="malinka_g99")
+    run_executable_discretizer(input_filename="malinka_g99")

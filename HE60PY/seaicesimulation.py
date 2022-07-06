@@ -1,6 +1,9 @@
 import numpy as np
 import pathlib
 import matplotlib.pyplot as plt
+from scipy import interpolate
+import pathlib
+
 
 from HE60PY.Tools.batchmaker import BatchMaker
 from HE60PY.Tools.environmentbuilder import EnvironmentBuilder
@@ -46,6 +49,8 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.dpf_objects = []
         self.dpf_filenames = []  # Filenames for the Discredized Depth Dependant Phase Function
 
+        self.pure_ice_lut = None
+
     def build_and_run_mobley_1998_example(self):
         """
         Four-layer model of sea ice, from Mobley et al. 1998 : MODELING LIGHT PROPAGATION IN SEA ICE
@@ -80,27 +85,21 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         if type(dpf) is not str:
             # If it is not a string, suppose it is a class that has the attribute "discretize_if_needed"
             dpf.discretize_if_needed()
-            dpf = dpf.dpf_name + '.txt'
             self.dpf_objects.append(dpf)
+            dpf = dpf.dpf_name + '.txt'
         # Boundaries for the depth dependant phase function
         self.z_boundaries_dddpf.extend([z1, z2])
         self.dpf_filenames.extend([dpf, dpf])
         # If the abs parameter is a float, absorption is assumed wavelength independent (rarely the case in reality)
         if isinstance(abs, float):
-            c = abs + scat
-            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
-            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths+1::] = c
-            self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+            self.set_absorption_from_float(z1, z2, abs, scat, bb)
         # If the abs parameter is a dict, suppose the keys are the wavelengths and the value is the abs coeff [m^-1]
         elif isinstance(abs, dict):
-            for wavelength in sorted(self.wavelengths):
-                wavelength_key = f"{wavelength:d}"
-                abs_wv = abs[wavelength_key]
-                c_wv = abs_wv + scat
-                indexes, = np.where(self.wavelength_header == int(wavelength))
-                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
-                self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
-                self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+            self.set_absorption_from_dict(z1, z2, abs, scat, bb)
+        # If the abs parameter is "pure_sea_ice" string, the absorption from Warren, S. G., and R. E. Brandt (2008) is interpolated
+        elif abs == "pure_sea_ice":
+            self.set_absorption_from_sea_ice_lut(z1, z2, scat, bb)
+
 
     def set_z_grid(self, z_max, delta_z=0.001):
         if self.wavelengths is None: # If wavelengths aren't already initialized, do it with default parameters
@@ -131,6 +130,44 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.kwargs['Nwave'] = self.n_wavelengths
         self.kwargs['bands_str'] = ','.join([str(int(i)) for i in self.kwargs['bands']])
         self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
+
+    def set_absorption_from_float(self,z1, z2, abs, scat, bb):
+        c = abs + scat
+        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), 1: self.n_wavelengths + 1] = abs
+        self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), self.n_wavelengths + 1::] = c
+        self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+
+    def set_absorption_from_dict(self, z1, z2, abs, scat, bb):
+        for wavelength in sorted(self.wavelengths):
+            wavelength_key = f"{wavelength:d}"
+            abs_wv = abs[wavelength_key]
+            c_wv = abs_wv + scat
+            indexes, = np.where(self.wavelength_header == int(wavelength))
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
+            self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+
+    def set_absorption_from_sea_ice_lut(self, z1, z2, scat, bb):
+        for wavelength in sorted(self.wavelengths):
+            abs_wv = self.get_pure_ice_absorption_at_wavelength(wavelength)
+            c_wv = abs_wv + scat
+            indexes, = np.where(self.wavelength_header == int(wavelength))
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
+            self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
+            self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
+
+    def get_pure_ice_absorption_at_wavelength(self, wavelength):
+        if self.pure_ice_lut is None:
+            self.load_pure_ice_absorption_look_up_table()
+        abs_coeff = self.pure_ice_lut(wavelength)
+        return abs_coeff
+
+    def load_pure_ice_absorption_look_up_table(self):
+        um_wavelength, real_index, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/ice_absorption_spectrum.txt", skiprows=4).T
+        nm_wavelength, m_wavelength = um_wavelength * 1000, um_wavelength / 1e6
+        abs_coeff = ima_index * 4 * np.pi / m_wavelength
+        self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
+        return nm_wavelength, abs_coeff
 
 
 if __name__ == "__main__":

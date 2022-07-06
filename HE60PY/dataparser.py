@@ -53,7 +53,7 @@ class DataParser(DataBuilder):
                 
         result_array = np.zeros((self.n_depths+1, len(self.run_bands)*8+2))
         columns_labels = ['depths']
-        result_array[1:, 0], result_array[0, 0] = self.hermes.get['zetanom'], 0.0
+        result_array[1:, 0], result_array[0, 0] = np.around(self.hermes.get['zetanom'],4), 0.0
 
         params_to_save = [self.Eu, self.Ed, self.Eo, self.Eod, self.Eou, self.a, self.b, self.bb]
         params_tags = ['Eu', 'Ed', 'Eo', 'Eod', 'Eou', 'a', 'b', 'bb']
@@ -123,9 +123,10 @@ class DataParser(DataBuilder):
     def get_g(self):
         self.g = np.zeros(self.hermes.get['zetanom'].shape)
         boundaries, assym_g_list = self.hermes.get['dpf_boundaries_table']
-        for boundary, g in zip(boundaries[1:], assym_g_list):
-            mask = self.hermes.get['zetanom'] < boundary
-            self.g[mask] = g
+        for i, g in enumerate(assym_g_list):
+            top_boundary, bot_boundary = boundaries[2*i], boundaries[2*i+1]
+            mask = (self.hermes.get['zetanom'] < bot_boundary) * (self.hermes.get['zetanom'] >= round(top_boundary,2))
+            self.g[mask] = round(g, 3)
         return self.g
 
 
