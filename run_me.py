@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # new_mode_analyze.draw_stepped_zenith_radiance_profiles(requested_depths=[ 2.00, 3.00], fig=fig, ax=ax)
     # plt.show()
 
-    new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='HE60DORT', wavelength_list=[480])
+    new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='Oden', wavelength_list=[480])
     new_mode.set_z_grid(z_max=3.00)
     new_mode.add_layer(z1=0.0, z2=0.20, abs={'540': 0.0683, '600': 0.01, '480': 0.01}, scat=100, dpf=OTHG(0.99))  # 2277 # bb arg is not relevent since we use a discretized phase function in a file indepêdnant of depth (g=0.98)
     new_mode.add_layer(z1=0.20, z2=0.80, abs={'540': 0.0683, '480': 0.01,  '600': 0.12}, scat=100, dpf='dpf_OTHG_0_99.txt')  # 303

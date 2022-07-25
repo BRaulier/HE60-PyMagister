@@ -16,7 +16,7 @@ Download zip file and use the package manager [pip](https://pip.pypa.io/en/stabl
  pip3 install [path/to/extracted/zip]
 ```
 ## Classes calling scheme
-![image info](./ressources/pymagister_scheme.png)
+![image info](resources/pymagister_scheme.png)
 ### SeaIceSimulation
 #### Examples
 ```python

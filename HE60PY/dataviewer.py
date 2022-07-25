@@ -281,7 +281,7 @@ class DataViewer(DataBuilder):
 
     def include_extended_legend(self, figtype, wavelength, ax):
         if figtype == 'Eudos':
-            R, T = self.get_RT(wavelength)
+            R, T = self.get_RT_at_wavelength(wavelength)
             extd_label = f'$\\lambda$={wavelength:.0f}nm\nT={T:.2E}\nR={R:.2E}'
             ax.plot([], [], color="white", label=extd_label)
             

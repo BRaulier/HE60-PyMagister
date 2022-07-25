@@ -156,19 +156,26 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def get_pure_ice_absorption_at_wavelength(self, wavelength):
+    def get_pure_ice_absorption_at_wavelength(self, wavelength, reference="perovich"):
         if self.pure_ice_lut is None:
-            self.load_pure_ice_absorption_look_up_table()
+            if reference is "perovich":
+                self.load_perovich_ice_absorption_look_up_table()
+            elif reference is "warren":
+                self.load_warren_pure_ice_absorption_look_up_table()
         abs_coeff = self.pure_ice_lut(wavelength)
         return abs_coeff
 
-    def load_pure_ice_absorption_look_up_table(self):
-        um_wavelength, real_index, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/ice_absorption_spectrum.txt", skiprows=4).T
+    def load_warren_pure_ice_absorption_look_up_table(self):
+        um_wavelength, real_index, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/warren_ice_absorption_spectrum.txt", skiprows=4).T
         nm_wavelength, m_wavelength = um_wavelength * 1000, um_wavelength / 1e6
         abs_coeff = ima_index * 4 * np.pi / m_wavelength
         self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
         return nm_wavelength, abs_coeff
 
+    def load_perovich_ice_absorption_look_up_table(self):
+        nm_wavelength, abs_coeff, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/perovich_ice_absorption_spectrum.txt", skiprows=4).T
+        self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
+        return nm_wavelength, abs_coeff
 
 if __name__ == "__main__":
     print('\n')
