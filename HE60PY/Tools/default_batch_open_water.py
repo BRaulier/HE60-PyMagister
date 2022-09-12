@@ -33,7 +33,7 @@ class OpenWaterDefaultBatch(RecordBuilder):
         self.default['record4']['iOptExcelM'] = 1  # Generation of Excel multi-wavelength output Mroot.txt (0 or 1)
         self.default['record4']['iOptRad'] = 1  # Generation of the full radiance printout Lroot.txt (0 or 1)
         # Record 4b
-        self.default['record4']['iIOPmodel'] = 3  # User data IOP model
+        self.default['record4']['iIOPmodel'] = 3  #
         self.default['record4']['iSkyRadmodel'] = 1  # Harrison and Coombes 1998 semi-empirical model
         self.default['record4']['iSkyIrradmodel'] = 1  # Calls RADTRANX to obtain direct and direct irradiances
         self.default['record4']['iIOPTS'] = 0  # For pure water IOP's independent of temperature and salinity

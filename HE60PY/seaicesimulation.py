@@ -31,7 +31,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         # Hermes's initialisation (used to pass information all over the module)
         self.hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
 
-        self.ac9_path = self.path + '/ac9_file.txt'
+        self.ac9_path = self.path + '/' + root_name + 'ac9_file.txt'
         self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
         self.hermes.get['ac9_path'], self.hermes.get['bb_path'] = self.ac9_path, self.bb_path
 
@@ -70,10 +70,10 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
 
-    def parse_results(self):
+    def parse_results(self, delete_HE_outputs=True):
         parser = DataParser(hermes=self.hermes)
         print('Parsing Hydro Light results...')
-        parser.run_data_parsing(delete_HE_outputs=True)
+        parser.run_data_parsing(delete_HE_outputs=delete_HE_outputs)
 
     def draw_figures(self, save_binaries=False, save_png=True):
         viewer = DataViewer(hermes=self.hermes)

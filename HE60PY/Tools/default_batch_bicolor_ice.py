@@ -3,7 +3,7 @@ import numpy as np
 from .builderrecord import RecordBuilder
 
 
-class OdenDefaultBatch(RecordBuilder):
+class BicolorIceDefaultBatch(RecordBuilder):
     def __init__(self, hermes):
         super().__init__()
         self.hermes = hermes
@@ -35,7 +35,7 @@ class OdenDefaultBatch(RecordBuilder):
         # Record 4b
         self.default['record4']['iIOPmodel'] = 6  # User data IOP model
         self.default['record4']['iSkyRadmodel'] = 1  # Harrison and Coombes 1998 semi-empirical model
-        self.default['record4']['iSkyIrradmodel'] = 1  # Calls RADTRANX to obtain direct and direct irradiances
+        self.default['record4']['iSkyIrradmodel'] = -1  # Calls RADTRANX to obtain direct and direct irradiances
         self.default['record4']['iIOPTS'] = 0  # For pure water IOP's independent of temperature and salinity
         self.default['record4']['iChl'] = 0
         self.default['record4']['iCDOM'] = 0
@@ -81,12 +81,12 @@ class OdenDefaultBatch(RecordBuilder):
         # record 8a
         self.default['record8']['iflagsky'] = 2  # 1: idealized sky, 2 (3): semi analytic, zenith angle or (time and location)
         if self.default['record8']['iflagsky'] == 2:
-            self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
+            self.default['record8']['suntheta'] = 0.0  # solar zenith angle (degrees)
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
-            self.default['record8']['cloud'] = 1.0  # 0.0: clear sky, 1.0: solid overcast
+            self.default['record8']['cloud'] = 0.0  # 0.0: clear sky, 1.0: solid overcast
         elif self.default['record8']['iflagsky'] == 1:
-            self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
+            self.default['record8']['suntheta'] = 0.0  # solar zenith angle (degrees)
             self.default['record8']['nsky'] = 5
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['C'] = 0.0  # Cardioidal parameter, 0.0: uniform sky, 2.0: cardioidal sky, 1.25: heavy overcast
@@ -107,18 +107,15 @@ class OdenDefaultBatch(RecordBuilder):
         self.default['record8']['ro3'] = 300  # ozone (Dobson units) https://ozonewatch.gsfc.nasa.gov/NH.html
 
     def set_record9(self):
-        self.default['record9'][
-            'windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
-        self.default['record9'][
-            'refr'] = 1.000  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
+        self.default['record9']['windspd'] = 0.0  # Wind speed (m/s), value from Mobley et al. Modeling Light Propagation in Sea Ice
+        self.default['record9']['refr'] = 1.000  # Refraction index: Maykut & Light, Refractive-index measurements in freezing sea-ice and sodium chloride brines
         self.default['record9']['temp'] = -1.8  # water temperature
         self.default['record9']['salinty'] = 35.0  # salinity (PSU)
         self.default['record9']['iSurfaceModelFlag'] = 3  # azimuthally averaged Cox-Munk surfaces
 
     def set_record10(self):
-        self.default['record10'][
-            'ibotm'] = 0  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
-        self.default['record10']['rflbot'] = 0.2  # Bottom reflectance, only used when ibotm=1
+        self.default['record10']['ibotm'] = 1  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
+        self.default['record10']['rflbot'] = 0.0  # Bottom reflectance, only used when ibotm=1
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths
@@ -135,7 +132,7 @@ class OdenDefaultBatch(RecordBuilder):
         self.default['record12']['CDOMDataFile'] = 'dummyCDOMdata.txt'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['RbottomFile'] = 'dummyR.bot'  # file containing values of CDOM absorption at a given reference wavelength
         self.default['record12']['TxtDataFile(i)'] = 'dummyComp.txt\ndummyComp.txt'  # Concentration profile data files for component i
-        self.default['record12']['IrradDataFile'] = 'HE60DORT_irrad_trios_.txt'  # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
+        self.default['record12']['IrradDataFile'] = 'bicolor_ice_irrad_trios_.txt'  # Standard-format data file containing sea-surface total Ed (if not using RADTRAN-X model)
         self.default['record12']['S0biolumFile'] = 'dummyBiolum.txt'  # file containing bioluminescentsource strength (in W m-3 nm)
         self.default['record12'][ 'LskyDataFile'] = 'dummyLsky.txt'  # file containing sky radiance data to be used instead of the RADTRAN-X and Harrison and Coombes sky models
 

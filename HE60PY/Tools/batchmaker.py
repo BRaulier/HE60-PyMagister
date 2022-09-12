@@ -5,6 +5,7 @@ from .default_batch_lisa import LisaDefaultBatch
 from .default_batch_baie_des_chaleurs import BaieDesChaleursDefaultBatch
 from .default_batch_oden import OdenDefaultBatch
 from .default_batch_open_water import OpenWaterDefaultBatch
+from .default_batch_bicolor_ice import BicolorIceDefaultBatch
 from .olympus import InvalidMode
 
 
@@ -42,6 +43,8 @@ class BatchMaker:
             default_batch = LisaDefaultBatch(self.hermes)
         elif self.mode == 'open_water':
             default_batch = OpenWaterDefaultBatch(self.hermes)
+        elif self.mode == 'bicolor_ice':
+            default_batch = BicolorIceDefaultBatch(self.hermes)
         else:
             raise InvalidMode(self.mode)
         self.meta = default_batch.build_records()

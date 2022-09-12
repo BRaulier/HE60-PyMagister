@@ -52,16 +52,31 @@ def create_inert_surface_file():
 
         file.write(footer)
 
+def load_surface_file(surface_filename="surface_1000.0", skip_header=5):
+    path = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
+    unshaped_surface_matrix = np.genfromtxt(path, skip_header=skip_header, skip_footer=1)
+    return unshaped_surface_matrix
+
+def save_surface_file(surface_matrix, surface_filename="surface_1000.0"):
+    path = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
+    header, footer = header_library.surface_file()
+    with open(path, 'w+') as file:
+        file.write(header)
+        np.savetxt(file, surface_matrix, fmt='   %1.5E0', delimiter='')
+        file.write(footer)
+    ThisNeedToExist(path)
+
+
 
 class EnvironmentBuilder:
     def create_simulation_environnement(self):
         if self.whoamI == 'AC9Simulation':
             self.create_backscattering_file(self.path)
-            self.create_ac9_file(self.path)
+            self.create_ac9_file(self.ac9_path )
 
         elif self.whoamI == 'SeaIceSimulation':
             self.create_dddpf_file(folder_path='/Applications/HE60.app/Contents/data/phase_functions/')
-            self.create_ac9_file(self.path)
+            self.create_ac9_file(self.ac9_path )
         create_null_water_file_if_needed()
 
     def create_run_delete_bash_file(self, print_output):
@@ -83,7 +98,8 @@ class EnvironmentBuilder:
                     print(line, end='')
         else:
             HE60_process.communicate()
-        os.remove(bash_file_path)
+        # os.remove(bash_file_path)
+        # os.remove(self.ac9_path)
 
     def create_backscattering_file(self, path):
         header, footer = header_library.backscattering_file(self.wavelengths)
@@ -97,7 +113,7 @@ class EnvironmentBuilder:
 
     def create_ac9_file(self, path):
         header, footer = header_library.ac9_file(self.wavelengths)
-        with open(path + '/ac9_file.txt', 'w+') as file:
+        with open(path, 'w+') as file:
             file.write(header)
             np.savetxt(file, self.z_ac_grid, fmt='%1.9e', delimiter='\t')
             file.write(footer)
@@ -129,4 +145,12 @@ class EnvironmentBuilder:
 
 
 if __name__ == "__main__":
-    create_inert_surface_file()
+    john_surface_file = load_surface_file(surface_filename="john_surface_1000.0")
+    bastian_surface_file = load_surface_file(surface_filename="#surface_1000.0", skip_header=7)
+    john_surface_file[john_surface_file < 0.1] = 0.0
+    print(john_surface_file.sum(), bastian_surface_file.sum())
+    save_surface_file(john_surface_file, surface_filename="surface_1001.0")
+    save_surface_file(bastian_surface_file, surface_filename="surface_1000.0")
+    # create_inert_surface_file()
+    current_surface_file = load_surface_file(surface_filename="surface_1000.0", skip_header=7)
+    print("current surface file",current_surface_file.sum())

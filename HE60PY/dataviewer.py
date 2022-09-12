@@ -40,7 +40,8 @@ class DataViewer(DataBuilder):
             fig3, ax = plt.subplots()
             pass
         fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
-        
+        fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20])
+
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
@@ -103,7 +104,7 @@ class DataViewer(DataBuilder):
         self.format_zenith_radiance_maps(fig, ax, cm)
         return fig, ax
 
-    def draw_zenith_radiance_profiles(self, requested_depths, desired_wavelengths=None, interpolate=True):
+    def draw_zenith_radiance_profiles(self, requested_depths, desired_wavelengths=None, interpolate=False):
         if desired_wavelengths is None:
             desired_wavelengths = self.run_bands
         self.load_zenith_radiance()
@@ -111,6 +112,7 @@ class DataViewer(DataBuilder):
         if len(desired_wavelengths) == 1: ax=[ax]
         for i, wavelength in enumerate(desired_wavelengths):
             self.draw_zenith_radiance_at_depths(requested_depths, wavelength, ax[i], interpolate)
+            ax[i].set_title(f'{wavelength} nm')
         self.format_zenith_radiance_profiles(ax)
         return fig, ax
 
