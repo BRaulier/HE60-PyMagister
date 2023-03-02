@@ -39,6 +39,13 @@ class DataParser(DataBuilder):
             # Useful to avoid filling the computer's memory
             olympus.DeleteFile(self.xlpath)
             olympus.DeleteFile(self.lrootpath)
+
+    def run_light_data_parsing(self, delete_HE_outputs=True):
+        self.compute_Eudos_and_IOPs()
+        if delete_HE_outputs:
+            # Useful to avoid filling the computer's memory
+            olympus.DeleteFile(self.xlpath)
+            olympus.DeleteFile(self.lrootpath)
         
     def compute_Eudos_and_IOPs(self):
         self.Eu = self.get_Eu(integrate=False)

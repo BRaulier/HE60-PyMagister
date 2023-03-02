@@ -39,17 +39,20 @@ class DataViewer(DataBuilder):
         except:
             fig3, ax = plt.subplots()
             pass
-        fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.41, 1.60, 1.80, 2.00])
-        fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20])
-
+        try:
+            fig4, ax4 = self.draw_zenith_radiance_profiles([0., 0.20, 0.40, 0.60, 0.80, 1.00, 1.20])
+            pickle.dump(fig4, open(f'{self.wd}/zenith_profiles.fig.pickle', 'wb'))
+            fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
+            plt.close(fig4)
+        except:
+            fig4, ax = plt.subplots()
+            pass
         if save_binaries:
             pickle.dump(fig1, open(f'{self.wd}/eudos_profiles.fig.pickle', 'wb'))
             pickle.dump(fig2, open(f'{self.wd}/iop_profiles.fig.pickle', 'wb'))
-            pickle.dump(fig4, open(f'{self.wd}/zenith_profiles.fig.pickle', 'wb'))
         if save_png:
             fig1.savefig(f'{self.wd}/eudos_profiles.png', dpi=600)
             fig2.savefig(f'{self.wd}/iop_profiles.png', dpi=600)
-            fig4.savefig(f'{self.wd}/zenith_profiles.png', dpi=600)
         [plt.close(fig) for fig in [fig1, fig2, fig3, fig4]]
 
     # ================================== #
@@ -128,6 +131,17 @@ class DataViewer(DataBuilder):
         self.format_zenith_radiance_profiles(ax)
         return fig, ax
 
+    def draw_integrated_Eudos_profiles(self):
+        depths, Eu, Ed, E0 = self.get_integrated_Eudos_profiles()
+        fig, ax = plt.subplots(1, 1, figsize=(7, 10))
+        ax.plot(Eu, depths, label='Eu')
+        ax.plot(Ed, depths, label='Ed')
+        ax.plot(E0, depths, label='E0')
+        ax.set_xlabel('Integrated Irradiance [W/m2]')
+        ax.set_ylabel('Depth [m]')
+        self.format_profile_plot(ax, depth_interval=(depths[0], depths[-1]), title='Integrated Eudos')
+        return fig, ax
+
     # ================================================= #
     # Auxiliary functions used to draw complete figures #
     # ================================================= #
@@ -173,6 +187,13 @@ class DataViewer(DataBuilder):
                     ax.plot((step_borders[j+1], step_borders[j+1]), (y_radiance[j], y_radiance[j+1]), color=cmap(intensities[i]))
             ax.plot([],[], color=cmap(intensities[i]), label=f'{depth} m')
 
+    # def draw_Eudos_spectrum_at_depths(self, depths, ax, ci, li):
+    #     for i, depth in enumerate(depths):
+    #         x_wavelength, Eu_w, Ed_w, Eo_w = self.get_Eudos_spectrum_at_depth(depth)
+    #         ax.plot(x_wavelength, Eu_w, color=self.colors[ci], linestyle=self.linestyles[li], label=f'{depth} m')
+    #         ax.plot(x_wavelength, Ed_w, color=self.colors[ci], linestyle=self.linestyles[li])
+    #         ax.plot(x_wavelength, Eo_w, color=self.colors[ci], linestyle=self.linestyles[li])
+    #
     # ============ #
     # Data loaders #
     # ============ #
@@ -204,7 +225,10 @@ class DataViewer(DataBuilder):
 
     def get_Eudos_at_depth(self, depth, wavelength):
         self.load_Eudos_IOP_df()
-        i_depth = list(self.depths).index(round(depth,2)) + 1 # 0 is above the interface,
+        try:
+            i_depth = list(self.depths).index(round(depth,2)) + 1 # 0 is above the interface,
+        except:
+            print(f'Error: depth {depth} not found in Eudos IOPs, available depths are {self.depths}')
         Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][i_depth]
         Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][i_depth]
         Eo = self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth]
@@ -227,6 +251,13 @@ class DataViewer(DataBuilder):
         b = self.Eudos_IOPs_df[f'b_{wavelength:.1f}'][i_depth]
         g = self.Eudos_IOPs_df[f'g'][i_depth]
         return a, b, g
+
+    def get_bg_profiles(self):
+        self.load_Eudos_IOP_df()
+        wavelength = self.run_bands[0] # because b and g are wavelength independent
+        b = self.Eudos_IOPs_df[f'b_{wavelength:.1f}'].to_numpy()[1:]
+        g = self.Eudos_IOPs_df[f'g'].to_numpy()[1:]
+        return b, g
 
     def get_scalar_Eudos_at_depth(self, depth, wavelength):
         self.load_Eudos_IOP_df()
@@ -260,10 +291,10 @@ class DataViewer(DataBuilder):
 
     def get_RT_at_wavelength(self, wavelength):
         self.load_Eudos_IOP_df()
-        try:
-            ice_bottom_index = list(self.depths).index(round(self.hermes.get['ice_thickness'],2)) + 1
-        except:
-            ice_bottom_index = 202
+        ice_bottom_index = list(self.depths).index(round(self.hermes.get['ice_thickness'],2)) + 1
+        # except:
+        #     ice_bottom_index = list(self.depths).index(round(self.hermes.get['ice_thickness']-0.01, 2)) + 1
+        #     print(f"Error in analysis for rootname: {self.hermes.get['rootname']}", f"Could not find ice bottom index {self.hermes.get['ice_thickness']}")
         surf_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][0]  # In air
         surf_Eu = self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][0]  # In air
         ice_bot_Ed = self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][ice_bottom_index]
@@ -271,11 +302,54 @@ class DataViewer(DataBuilder):
         T = ice_bot_Ed / surf_Ed
         return R, T
 
+    def get_R1R2_ratio(self, wavelength1, wavelength2):
+        R1, T1 = self.get_RT_at_wavelengtexith(wavelength1)
+        R2, T2 = self.get_RT_at_wavelength(wavelength2)
+        return R1/R2
+
+    def get_integrated_T_at_depth(self, depth):
+        self.load_Eudos_IOP_df()
+        sur_Eu, sur_Ed, sur_Eo = self.get_integrated_Eudos_at_depth(0)
+        depth_Eu, depth_Ed, depth_Eo = self.get_integrated_Eudos_at_depth(depth)
+        return depth_Ed / sur_Ed
+
     def get_ext_coeff(self, wavelength):
         R, T = self.get_RT_at_wavelength(wavelength)
         thickness = self.hermes.get['ice_thickness']
         ext_coeff = -np.log(T)/thickness
         return ext_coeff
+
+    def get_integrated_ext_coeff_at_depth(self, depth):
+        self.load_Eudos_IOP_df()
+        sur_Eu, sur_Ed, sur_Eo = self.get_integrated_Eudos_at_depth(0)
+        depth_Eu, depth_Ed, depth_Eo = self.get_integrated_Eudos_at_depth(round(depth,2))
+        return -np.log(depth_Ed/sur_Ed)/depth
+
+    def get_integrated_Eudos_profiles(self):
+        self.load_Eudos_IOP_df()
+        Eu_profile, Ed_profile, Eo_profile = [], [], []
+        for depth in self.depths:
+            Eu, Ed, Eo = self.get_integrated_Eudos_at_depth(depth)
+            Eu_profile.append(Eu)
+            Ed_profile.append(Ed)
+            Eo_profile.append(Eo)
+        return self.depths, np.array(Eu_profile), np.array(Ed_profile), np.array(Eo_profile)
+
+    def get_integrated_Eudos_at_depth(self, depth):
+        self.load_Eudos_IOP_df()
+        bands, Eu_spectra, Ed_spectra, Eo_spectra = self.get_Eudos_spectra_at_depth(depth)
+        int_Eu = np.trapz(Eu_spectra, bands)
+        int_Ed = np.trapz(Ed_spectra, bands)
+        int_Eo = np.trapz(Eo_spectra, bands)
+        return int_Eu, int_Ed, int_Eo
+
+    def get_Eudos_spectra_at_depth(self, depth):
+        self.load_Eudos_IOP_df()
+        i_depth = list(self.depths).index(depth) + 1
+        Eu_spectra = np.array([self.Eudos_IOPs_df[f'Eu_{wavelength:.1f}'][i_depth] for wavelength in self.run_bands])
+        Ed_spectra = np.array([self.Eudos_IOPs_df[f'Ed_{wavelength:.1f}'][i_depth] for wavelength in self.run_bands])
+        Eo_spectra = np.array([self.Eudos_IOPs_df[f'Eo_{wavelength:.1f}'][i_depth] for wavelength in self.run_bands])
+        return self.run_bands, Eu_spectra, Ed_spectra, Eo_spectra
 
     # ========================================== #
     # Auxiliary functions used to format figures #
@@ -319,7 +393,10 @@ class DataViewer(DataBuilder):
             ax.yaxis.set_major_locator(MultipleLocator(0.5))
 
 
+def integrate(x, y):
+    return np.trapz(y, x)
 
 if __name__ == "__main__":
+
     print('\n')
 

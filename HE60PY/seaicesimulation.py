@@ -34,9 +34,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.ac9_path = self.path + '/' + root_name + 'ac9_file.txt'
         self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
         self.hermes.get['ac9_path'], self.hermes.get['bb_path'] = self.ac9_path, self.bb_path
-
-        # BatchMaker  initialisation
-        self.batchmaker = BatchMaker(self.hermes)
+        self.batchmaker = None
 
         # EnvironmentBuilder needed parameters, only needed for sea_ice mode TODO: Remove this part and activate it only for the proper mode
         self.z_max = None
@@ -50,6 +48,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.dpf_filenames = []  # Filenames for the Discredized Depth Dependant Phase Function
 
         self.pure_ice_lut = None
+        self.pure_water_lut = None
 
     def build_and_run_mobley_1998_example(self):
         """
@@ -63,6 +62,9 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.run_simulation(True)
 
     def run_simulation(self, printoutput=False):
+        if self.batchmaker is None:
+            # BatchMaker  initialisation
+            self.batchmaker = BatchMaker(self.hermes)
         print('Preparing files...')
         self.batchmaker.write_batch_file()
         print('Creating simulation environnement...')
@@ -70,10 +72,13 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         print('Running Hydro Light simulations...')
         self.create_run_delete_bash_file(print_output=printoutput)
 
-    def parse_results(self, delete_HE_outputs=True):
+    def parse_results(self, light_parsing=False, delete_HE_outputs=True):
         parser = DataParser(hermes=self.hermes)
         print('Parsing Hydro Light results...')
-        parser.run_data_parsing(delete_HE_outputs=delete_HE_outputs)
+        if light_parsing:
+            parser.run_light_data_parsing(delete_HE_outputs=delete_HE_outputs)
+        else:
+            parser.run_data_parsing(delete_HE_outputs=delete_HE_outputs)
 
     def draw_figures(self, save_binaries=False, save_png=True):
         viewer = DataViewer(hermes=self.hermes)
@@ -96,13 +101,15 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         # If the abs parameter is a dict, suppose the keys are the wavelengths and the value is the abs coeff [m^-1]
         elif isinstance(abs, dict):
             self.set_absorption_from_dict(z1, z2, abs, scat, bb)
-        # If the abs parameter is "pure_sea_ice" string, the absorption from Warren, S. G., and R. E. Brandt (2008) is interpolated
-        elif abs == "pure_sea_ice":
-            self.set_absorption_from_sea_ice_lut(z1, z2, scat, bb)
+        # If the abs parameter is string, the absorption from a lut is used
+        elif isinstance(abs, str):
+            self.set_absorption_from_lut(z1, z2, scat, bb, abs)
 
 
     def set_z_grid(self, z_max, delta_z=0.001):
         if self.wavelengths is None: # If wavelengths aren't already initialized, do it with default parameters
+            # BatchMaker  initialisation
+            self.batchmaker = BatchMaker(self.hermes)
             wavelength_list = self.batchmaker.meta['record6']['bands']
             self.initialize_wavelengths(mode='default', wvelgths=wavelength_list)
         self.z_max = z_max
@@ -111,6 +118,10 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         z_mesh = np.linspace(0, z_max, nz)
         self.z_ac_grid, self.z_bb_grid = np.zeros((nz, self.n_wavelengths*2 + 1)), np.zeros((nz, self.n_wavelengths + 1))
         self.z_ac_grid[:, 0], self.z_bb_grid[:, 0] = z_mesh, z_mesh
+
+        self.hermes.get['nznom'] = int(round(z_max/0.01 + 1,0))
+        self.hermes.get['zetanom'] = np.arange(0,self.hermes.get['nznom'])*0.01
+
 
     def initialize_wavelengths(self, mode='init', wvelgths=False):
         if mode == 'init':
@@ -147,35 +158,48 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def set_absorption_from_sea_ice_lut(self, z1, z2, scat, bb):
+    def set_absorption_from_lut(self, z1, z2, scat, bb, abs_flag):
         for wavelength in sorted(self.wavelengths):
-            abs_wv = self.get_pure_ice_absorption_at_wavelength(wavelength)
+            abs_wv = self.get_absorption_at_wavelength(wavelength, abs_flag)
             c_wv = abs_wv + scat
             indexes, = np.where(self.wavelength_header == int(wavelength))
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[0]] = abs_wv
             self.z_ac_grid[(self.z_ac_grid[:, 0] >= z1) & (self.z_ac_grid[:, 0] < z2), indexes[1]] = c_wv
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
-    def get_pure_ice_absorption_at_wavelength(self, wavelength, reference="perovich"):
-        if self.pure_ice_lut is None:
+    def get_absorption_at_wavelength(self, wavelength, abs_flag, reference="perovich"):
+        if abs_flag is "pure_sea_ice":
             if reference is "perovich":
                 self.load_perovich_ice_absorption_look_up_table()
             elif reference is "warren":
                 self.load_warren_pure_ice_absorption_look_up_table()
-        abs_coeff = self.pure_ice_lut(wavelength)
+            abs_coeff = self.pure_ice_lut(wavelength)
+        elif abs_flag is "pure_water":
+            self.load_pope_and_fry_pure_water_absorption_look_up_table()
+            abs_coeff = self.pure_water_lut(wavelength)
+
         return abs_coeff
 
     def load_warren_pure_ice_absorption_look_up_table(self):
-        um_wavelength, real_index, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/warren_ice_absorption_spectrum.txt", skiprows=4).T
+        um_wavelength, real_index, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/ressources/warren_ice_absorption_spectrum.txt", skiprows=4).T
         nm_wavelength, m_wavelength = um_wavelength * 1000, um_wavelength / 1e6
         abs_coeff = ima_index * 4 * np.pi / m_wavelength
         self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
         return nm_wavelength, abs_coeff
 
     def load_perovich_ice_absorption_look_up_table(self):
-        nm_wavelength, abs_coeff, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/resources/perovich_ice_absorption_spectrum.txt", skiprows=4).T
-        self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
-        return nm_wavelength, abs_coeff
+        if self.pure_ice_lut is None:
+            nm_wavelength, abs_coeff, ima_index = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/ressources/perovich_ice_absorption_spectrum.txt", skiprows=4).T
+            self.pure_ice_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
+        else:
+            pass
+
+    def load_pope_and_fry_pure_water_absorption_look_up_table(self):
+        if self.pure_water_lut is None:
+            nm_wavelength, abs_coeff = np.loadtxt(f"{pathlib.Path.home()}/Documents/HE60_PY/ressources/pope_fry_pure_water_absorption_spectrum.txt", usecols=[0,1], skiprows=4).T
+            self.pure_water_lut = interpolate.interp1d(nm_wavelength, abs_coeff, kind='cubic')
+        else:
+            pass
 
 if __name__ == "__main__":
     print('\n')

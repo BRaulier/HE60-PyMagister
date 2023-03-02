@@ -25,7 +25,7 @@ class DataBuilder:
 
         self.usr_path = os.path.expanduser('~')
         self.run_bands = self.hermes.get['run_bands']
-        self.depths = np.array([round(depth,4) for depth in self.hermes.get['zetanom']])
+        self.depths = np.array([round(depth,2) for depth in self.hermes.get['zetanom']])
         self.run_bands = self.hermes.get['run_bands']
         self.n_depths, = self.depths.shape
 

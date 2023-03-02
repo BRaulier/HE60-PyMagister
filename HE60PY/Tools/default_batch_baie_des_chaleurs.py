@@ -112,7 +112,7 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
 
     def set_record10(self):
         self.default['record10']['ibotm'] = 1  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
-        self.default['record10']['rflbot'] = 0.2  # Bottom reflectance, only used when ibotm=1
+        self.default['record10']['rflbot'] = 0.1  # Bottom reflectance, only used when ibotm=1
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths

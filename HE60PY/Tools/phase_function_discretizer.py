@@ -122,7 +122,7 @@ def calculate_assym(theta, pf):
 
 
 if __name__ == '__main__':
-    n, theta, pf = np.genfromtxt("../../resources/malinka_fr025.csv", skip_header=1, delimiter=',').T
-    create_tabulated_file(np.array([theta, pf/1.002386]), tab_filename="malinka_g99", pf_type="Malinka Phase function")
-    create_input_file(input_filename="malinka_g99", dpf_filename="malinka_g99", tab_filename="malinka_g99")
-    run_executable_discretizer(input_filename="malinka_g99")
+    n, theta, pf = np.genfromtxt("../../ressources/malinka_085.csv", skip_header=1, delimiter=',').T
+    create_tabulated_file(np.array([theta, pf/1.464466]), tab_filename="malinka_g85", pf_type="Malinka Phase function")
+    create_input_file(input_filename="malinka_g85", dpf_filename="malinka_g85", tab_filename="malinka_g85")
+    run_executable_discretizer(input_filename="malinka_g85")

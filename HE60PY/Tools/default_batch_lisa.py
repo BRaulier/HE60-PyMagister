@@ -47,7 +47,7 @@ class LisaDefaultBatch(RecordBuilder):
         # record 5b: component concentrations
         self.default['record5']['compconc'] = '0, 0, 0, 0'  # Component concentrations
         # record 5c: Specific absorption parameters
-        self.default['record5']['5c_lines'] = '0, 0, 440, 1, 0.014\n' \
+        self.default['record5']['_5c_lines'] = '0, 0, 440, 1, 0.014\n' \
                                               '2, -666, 440, 1, 0.014\n' \
                                               '0, 1, 440, 1, 0.014\n' \
                                               '2, 0, 440, 1, 0.014'  # Measured IOP line

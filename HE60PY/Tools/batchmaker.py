@@ -6,6 +6,8 @@ from .default_batch_baie_des_chaleurs import BaieDesChaleursDefaultBatch
 from .default_batch_oden import OdenDefaultBatch
 from .default_batch_open_water import OpenWaterDefaultBatch
 from .default_batch_bicolor_ice import BicolorIceDefaultBatch
+from .default_batch_bare_ice import BareIceDefaultBatch
+from .default_batch_melt_pond import MeltPondDefaultBatch
 from .olympus import InvalidMode
 
 
@@ -45,6 +47,10 @@ class BatchMaker:
             default_batch = OpenWaterDefaultBatch(self.hermes)
         elif self.mode == 'bicolor_ice':
             default_batch = BicolorIceDefaultBatch(self.hermes)
+        elif self.mode == 'bare_ice':
+            default_batch = BareIceDefaultBatch(self.hermes)
+        elif self.mode == 'melt_pond':
+            default_batch = MeltPondDefaultBatch(self.hermes)
         else:
             raise InvalidMode(self.mode)
         self.meta = default_batch.build_records()

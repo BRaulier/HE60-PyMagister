@@ -60,14 +60,14 @@ class OpenWaterDefaultBatch(RecordBuilder):
         self.default['record5']['_5f_line2'] = 'dummybstar.txt'  # Dummy
         # record 5g: type of concentrations and phase functions
         self.default['record5']['_5g_line1'] = '0,0,550,0.01,0'  # Dummy values phase functions
-        self.default['record5']['_5g_line2'] = '4,0,550,0.01,0'  # Dummy values phase functions
+        self.default['record5']['_5g_line2'] = '0,0,550,0.01,0'  # Dummy values phase functions
         # record 5h: discretized phase functions file names
         self.default['record5']['_5h_line1'] = 'dpf_pure_H2O.txt'  # First component phase function
-        self.default['record5']['_5h_line2'] = 'user_defined/backscattering_file.txt'  # Second component phase function
+        self.default['record5']['_5h_line2'] = 'dpf_OTHG_0_90.txt'  # Second component phase function
 
     def set_record6(self):
-        self.default['record6']['Nwave'] = 3
-        self.default['record6']['bands'] = np.linspace(450, 630, 4)
+        self.default['record6']['Nwave'] = 1
+        self.default['record6']['bands'] = [450, 500]
         self.default['record6']['bands_str'] = ','.join([str(int(i)) for i in self.default['record6']['bands']])
 
     def set_record7(self):
@@ -122,8 +122,8 @@ class OpenWaterDefaultBatch(RecordBuilder):
 
     def set_record10(self):
         self.default['record10'][
-            'ibotm'] = 0  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
-        self.default['record10']['rflbot'] = 0.2  # Bottom reflectance, only used when ibotm=1
+            'ibotm'] = 1  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
+        self.default['record10']['rflbot'] = 0.0  # Bottom reflectance, only used when ibotm=1
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths

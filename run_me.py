@@ -8,9 +8,8 @@ from HE60PY.phasefunctions import *
 
 if __name__ == "__main__":
     path_to_user_files = r'/Users/braulier/Documents/HE60/run'
-    #
-    # mobley_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='Mobley_1998_example', mode='sea_ice')
-    # mobley_sim.build_and_run_mobley_1998_example()
+    mobley_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='Mobley_1998_example', mode='sea_ice')
+    mobley_sim.build_and_run_mobley_1998_example()
     # mobley_results = DataFinder(mobley_sim.hermes)
     # results = mobley_results.get_Eudos_lambda()
     # results.to_csv('TEMPORARY_example_results.txt')
@@ -33,13 +32,13 @@ if __name__ == "__main__":
     # new_mode_analyze.draw_stepped_zenith_radiance_profiles(requested_depths=[ 2.00, 3.00], fig=fig, ax=ax)
     # plt.show()
 
-    new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='Oden', wavelength_list=[480])
-    wv1, warren1 = new_mode.load_warren_pure_ice_absorption_look_up_table()
-    wv2, perovich1 = new_mode.load_perovich_ice_absorption_look_up_table()
-    plt.plot(wv1[90:], warren1[90:], label="warren")
-    plt.semilogy(wv2, perovich1, label="perovich")
-    plt.legend()
-    plt.show()
+    # new_mode = SeaIceSimulation(run_title='test', root_name='test', mode='Oden', wavelength_list=[480])
+    # wv1, warren1 = new_mode.load_warren_pure_ice_absorption_look_up_table()
+    # wv2, perovich1 = new_mode.load_perovich_ice_absorption_look_up_table()
+    # plt.plot(wv1[90:], warren1[90:], label="warren")
+    # plt.semilogy(wv2, perovich1, label="perovich")
+    # plt.legend()
+    # plt.show()
     # new_mode.set_z_grid(z_max=3.00)
     # new_mode.add_layer(z1=0.0, z2=0.20, abs={'540': 0.0683, '600': 0.01, '480': 0.01}, scat=100, dpf=OTHG(0.99))  # 2277 # bb arg is not relevent since we use a discretized phase function in a file indepêdnant of depth (g=0.98)
     # new_mode.add_layer(z1=0.20, z2=0.80, abs={'540': 0.0683, '480': 0.01,  '600': 0.12}, scat=100, dpf='dpf_OTHG_0_99.txt')  # 303
@@ -60,11 +59,12 @@ if __name__ == "__main__":
 
     # for station_file_name in station_file_names:
     #     for input_file in input_files:
-    #         lisa_sim = AC9Simulation(path=path_to_user_files,
-    #                                  mode='Lisa',
-    #                                  root_name='RG100od_C10',
-    #                                  run_title='Chl a profiles based on real data: b - baseline, 10 - 10% to 100 - 100% ',
-    #                                  station_filename='RG100od',
-    #                                  ac9_filename='aActot_homChl10.txt',
-    #                                  chlaz_filename='Chlaz_homChl10.txt')
+    lisa_sim = AC9Simulation(path=path_to_user_files,
+                             mode='Lisa',
+                             root_name='RG100od_C10',
+                             run_title='Chl a profiles based on real data: b - baseline, 10 - 10% to 100 - 100% ',
+                             station_filename='RG100od',
+                             ac9_filename='aActot_homChl10.txt',
+                             chlaz_filename='Chlaz_homChl10.txt')
+    lisa_sim.run_simulation(printoutput=True)
     #         lisa_sim.run_simulation(printoutput=True)
