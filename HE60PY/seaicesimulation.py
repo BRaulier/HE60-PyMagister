@@ -140,7 +140,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.kwargs['bands'] = bands
         self.kwargs['Nwave'] = self.n_wavelengths
         self.kwargs['bands_str'] = ','.join([str(int(i)) for i in self.kwargs['bands']])
-        self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=np.int)
+        self.wavelength_header = np.array(np.hstack((np.array([100000]), self.wavelengths, self.wavelengths)), dtype=int)
 
     def set_absorption_from_float(self,z1, z2, abs, scat, bb):
         c = abs + scat
