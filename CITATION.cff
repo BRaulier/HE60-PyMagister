@@ -1,0 +1,9 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Raulier
+    given-names: Bastian
+    orcid: https://orcid.org/0000-0002-3901-2522
+title: "HE60-PyMagister: A Python package for the control of HydroLight software."
+version: 2.0.4
+date-released: 2023-01-01

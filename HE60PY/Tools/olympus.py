@@ -1,6 +1,7 @@
 # Olympus is where gods are created
 import os
 import pickle
+from .path import Path
 
 class Hermes:
     # Hermes is used everywhere to be an almighty information transmitter. It can be modified by any scripts
@@ -11,6 +12,9 @@ class Hermes:
         else:
             self.get = {}
             self.birth(root_name, run_title, mode, kwargs)
+        self.path = Path()
+        self.root_to_HE60 = self.path.to_HE60
+        self.usr_path = self.path.to_usr
 
     def birth(self, root_name, run_title, mode, kwargs):
         self.get['root_name'] = root_name
@@ -57,6 +61,7 @@ class Invalid(Exception):
 def DeleteFile(path):
     if DoesThisExist(path):
         os.remove(path)
+
 
 def CreateIfDoesntExist(path):
     if not DoesThisExist(path):

@@ -9,7 +9,7 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
         self.hermes = hermes
 
     def set_record1(self):
-        self.default['record1']['sOutDir'] = f'"{pathlib.Path.home()}/Documents/HE60/output"'
+        self.default['record1']['sOutDir'] = f'"{self.hermes.usr_path}/Documents/HE60/output"'
         self.default['record1']['Parmin'] = 300                            # lowest wavelength included in PAR calculations
         self.default['record1']['Parmax'] = 700                            # highest wavelength included in PAR calculations
         self.default['record1']['PhiChl'] = 0.02                           # chlorophyll fluorescence efficiency
@@ -112,7 +112,7 @@ class BaieDesChaleursDefaultBatch(RecordBuilder):
 
     def set_record10(self):
         self.default['record10']['ibotm'] = 1  # 0: infinitely deep column, 1: opaque Lambertian reflect=rflbot, 2: opaque Lambertiant, reflectance auto
-        self.default['record10']['rflbot'] = 0.1  # Bottom reflectance, only used when ibotm=1
+        self.default['record10']['rflbot'] = 0.05  # Bottom reflectance, only used when ibotm=1
 
     def set_record11(self):
         self.default['record11']['iop'] = 0  # Flag, 0, (1): indicating geometrical (optical) depths

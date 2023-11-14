@@ -6,6 +6,10 @@ import datetime
 
 from HE60PY.Tools.olympus import ThisNeedToExist
 from HE60PY.Tools import header_library
+from HE60PY.Tools.path import Path
+
+_path = Path()
+path_to_HE60 = _path.to_HE60
 
 
 def create_irrad_file(wavelength_Ed, total_path):
@@ -18,7 +22,7 @@ def create_irrad_file(wavelength_Ed, total_path):
 
 
 def create_null_pure_water_file(path):
-    H2O_default_data = np.genfromtxt('/Applications/HE60.app/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
+    H2O_default_data = np.genfromtxt(f'{path_to_HE60}/Contents/data/H2OabsorpTS.txt', skip_header=16, skip_footer=1)
     H2O_NULL_WATER_PROP = np.array(H2O_default_data, dtype=np.float16)
     H2O_NULL_WATER_PROP[:, 1], H2O_NULL_WATER_PROP[:, 2], H2O_NULL_WATER_PROP[:, 3] = 0.0, 0.0, 0.0
     header, footer = header_library.null_water()
@@ -29,12 +33,12 @@ def create_null_pure_water_file(path):
 
 
 def create_null_water_file_if_needed():
-    path_null_water_properties = "/Applications/HE60.app/Contents/data/null_H2Oabsorps.txt"
+    path_null_water_properties = f"{path_to_HE60}/Contents/data/null_H2Oabsorps.txt"
     if not os.path.isfile(path_null_water_properties):
         create_null_pure_water_file(path_null_water_properties)
 
 def create_inert_surface_file():
-    path_inert_surface_file = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/surface_1000.0"
+    path_inert_surface_file = f"{path_to_HE60}/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/surface_1000.0"
     t = np.ravel(np.diag(np.diag(np.ones((130,130)))))
     r = np.ravel(np.zeros((130,130)).ravel())
     header, footer = header_library.surface_file()
@@ -53,12 +57,12 @@ def create_inert_surface_file():
         file.write(footer)
 
 def load_surface_file(surface_filename="surface_1000.0", skip_header=5):
-    path = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
+    path = f"{path_to_HE60}/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
     unshaped_surface_matrix = np.genfromtxt(path, skip_header=skip_header, skip_footer=1)
     return unshaped_surface_matrix
 
 def save_surface_file(surface_matrix, surface_filename="surface_1000.0"):
-    path = "/Applications/HE60.app/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
+    path = f"{path_to_HE60}/Contents/data/sea_surfaces/HydroLight/CoxMunk_iso/" + surface_filename
     header, footer = header_library.surface_file()
     with open(path, 'w+') as file:
         file.write(header)
@@ -75,18 +79,18 @@ class EnvironmentBuilder:
             self.create_ac9_file(self.ac9_path )
 
         elif self.whoamI == 'SeaIceSimulation':
-            self.create_dddpf_file(folder_path='/Applications/HE60.app/Contents/data/phase_functions/')
+            self.create_dddpf_file(folder_path=f'{path_to_HE60}/Contents/data/phase_functions/')
             self.create_ac9_file(self.ac9_path )
         create_null_water_file_if_needed()
 
     def create_run_delete_bash_file(self, print_output):
         time_stamp = str(datetime.datetime.now()).replace('.', '_').replace(' ', '_').replace(':', '_')
-        bash_file_path = f"/Applications/HE60.app/Contents/backend/{time_stamp}.sh"
+        bash_file_path = f"{path_to_HE60}/Contents/backend/{time_stamp}.sh"
         with open(bash_file_path, "w+") as file:
             file.write("#!/bin/bash\n"
                        f"./HydroLight6 < {self.usr_path}/Documents/HE60/run/batch/{self.root_name}.txt")
         bash_command = f'./{time_stamp}.sh'
-        path_to_he60 = '/Applications/HE60.app/Contents/backend'
+        path_to_he60 = f'{path_to_HE60}/Contents/backend'
         command_chmod = 'chmod u+x ' + bash_file_path
         chmod_process = subprocess.Popen(command_chmod.split(), stdout=subprocess.PIPE)
         chmod_process.communicate()
@@ -107,9 +111,9 @@ class EnvironmentBuilder:
             file.write(header)
             np.savetxt(file, self.z_bb_grid, fmt='%1.5e', delimiter='\t')
             file.write(footer)
-
+        _path_to_HE60 = f"{path_to_HE60}/Contents/data/phase_functions/HydroLight/user_defined/"
         shutil.copy(src=path + '/backscattering_file.txt',
-                    dst=r'/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt')
+                    dst=_path_to_HE60+'backscattering_file.txt')
 
     def create_ac9_file(self, path):
         header, footer = header_library.ac9_file(self.wavelengths)

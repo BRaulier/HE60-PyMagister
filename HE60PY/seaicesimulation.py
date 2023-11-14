@@ -32,7 +32,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
         self.hermes = Hermes(self.root_name, self.run_title, self.mode, self.kwargs)
 
         self.ac9_path = self.path + '/' + root_name + 'ac9_file.txt'
-        self.bb_path = '/Applications/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
+        self.bb_path = f'{self.hermes.root_to_HE60}/HE60.app/Contents/data/phase_functions/HydroLight/user_defined/backscattering_file.txt'
         self.hermes.get['ac9_path'], self.hermes.get['bb_path'] = self.ac9_path, self.bb_path
         self.batchmaker = None
 
@@ -168,16 +168,15 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
             self.z_bb_grid[(self.z_bb_grid[:, 0] >= z1) & (self.z_bb_grid[:, 0] < z2), 1::] = bb * scat
 
     def get_absorption_at_wavelength(self, wavelength, abs_flag, reference="perovich"):
-        if abs_flag is "pure_sea_ice":
-            if reference is "perovich":
+        if abs_flag == "pure_sea_ice":
+            if reference == "perovich":
                 self.load_perovich_ice_absorption_look_up_table()
-            elif reference is "warren":
+            elif reference == "warren":
                 self.load_warren_pure_ice_absorption_look_up_table()
             abs_coeff = self.pure_ice_lut(wavelength)
-        elif abs_flag is "pure_water":
+        elif abs_flag == "pure_water":
             self.load_pope_and_fry_pure_water_absorption_look_up_table()
             abs_coeff = self.pure_water_lut(wavelength)
-
         return abs_coeff
 
     def load_warren_pure_ice_absorption_look_up_table(self):
@@ -202,6 +201,7 @@ class SeaIceSimulation(EnvironmentBuilder):  # Todo composition classes instead 
             pass
 
 if __name__ == "__main__":
+
     print('\n')
 
 

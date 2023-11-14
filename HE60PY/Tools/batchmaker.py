@@ -14,7 +14,6 @@ from .olympus import InvalidMode
 class BatchMaker:
     def __init__(self, hermes):
         # General initialisation
-        self.usr_path = pathlib.Path.home()
         self.hermes = hermes
         self.mode = hermes.get['mode']
         self.root_name = hermes.get['root_name']
@@ -70,7 +69,7 @@ class BatchMaker:
         if self.meta['record8']['iflagsky'] == 2:
             self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {cloud}\n' \
                                              '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
-        if self.meta['record8']['iflagsky'] == 1.0:
+        if self.meta['record8']['iflagsky'] == 1:
             self.meta['record8']['string'] = '{iflagsky}, {nsky}, {suntheta}, {sunphi}, {C}, {rsky}, {Edtotal}\n' \
                                              '{fjday}, {rlat}, {rlon}, {pres}, {am}, {rh}, {wv}, {vi}, {wsm}, {ro3}\n'.format(**self.meta['record8'])
         self.meta['record9']['string'] = '{windspd}, {refr}, {temp}, {salinty}, {iSurfaceModelFlag}\n'.format(**self.meta['record9'])
@@ -88,7 +87,7 @@ class BatchMaker:
         self.hermes.get['zetanom'] = self.meta['record11']['zetanom'] # (once updated) dictionnary, would be usefull for data_managing afterwarDs
 
     def write_batch_file(self):
-        path = f"{self.usr_path}/Documents/HE60/run/batch/"
+        path = f"{self.hermes.usr_path}/Documents/HE60/run/batch/"
         with open(path + self.root_name + '.txt', "w+") as file:
             file.writelines([self.meta['record{}'.format(i)]['string'] for i in range(1, 13)])
 

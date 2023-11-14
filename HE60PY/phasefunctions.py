@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from HE60PY.Tools import olympus
 from HE60PY.Tools.phase_function_discretizer import *
+from HE60PY.Tools.path import Path
 
 
 
@@ -17,6 +18,7 @@ class PhaseFunction:
         self.p = None
         self.theta = np.linspace(0, np.pi, 10000)
         self.theta_deg = np.linspace(0, np.pi, 10000) * 180 / np.pi
+        self.path = Path()
 
     def moment(self, n):
         to_integrate = lambda mu: mu**n * self.density(mu)*self.normalization_factor
@@ -41,7 +43,7 @@ class PhaseFunction:
         return 1/res
 
     def already_discretized(self):
-        path_to_dpf = f"/Applications/HE60.app/Contents/data/phase_functions/HydroLight/{self.dpf_name}.txt"
+        path_to_dpf = f"{self.path.to_HE60}/Contents/data/phase_functions/HydroLight/{self.dpf_name}.txt"
         return DoesThisExist(path_to_dpf)
 
     def discretize_if_needed(self):

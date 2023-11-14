@@ -7,19 +7,22 @@ from HE60PY.phasefunctions import *
 
 
 if __name__ == "__main__":
-    path_to_user_files = r'/Users/braulier/Documents/HE60/run'
-    mobley_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='Mobley_1998_example', mode='sea_ice')
-    mobley_sim.build_and_run_mobley_1998_example()
+    # path_to_user_files = r'/Users/braulier/self.hermes./HE60/run'
+    # mobley_sim = AC9Simulation(path=path_to_user_files, run_title='test', root_name='Mobley_1998_example', mode='sea_ice')
+    # mobley_sim.build_and_run_mobley_1998_example()
     # mobley_results = DataFinder(mobley_sim.hermes)
     # results = mobley_results.get_Eudos_lambda()
     # results.to_csv('TEMPORARY_example_results.txt')
     #
-    # simple_example_SeaIce =SeaIceSimulation(mode='HE60DORT', run_title='test', root_name='simple_built_example')
-    # simple_example_SeaIce.set_z_grid(z_max=2.0)
-    # simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
-    # simple_example_SeaIce.add_layer(z1=0.10, z2=0.5, abs=0.5, scat=100, dpf='dpf_OTHG_0_98.txt')
-    # simple_example_SeaIce.add_layer(z1=0.5, z2=2.01, abs=0.4, scat=200, dpf='dpf_OTHG_0_98.txt')
-    # simple_example_SeaIce.run_simulation(printoutput=True)
+    simple_example_SeaIce = SeaIceSimulation(mode='bare_ice', run_title='test', root_name='simple_built_example', wavelength_list=[500], ice_thickness = 1.05-0.10, snow_thickness=0.10)
+    simple_example_SeaIce.set_z_grid(z_max=2.0)
+    simple_example_SeaIce.add_layer(z1=0.0, z2=0.10, abs="pure_sea_ice", scat=500, dpf='dpf_OTHG_0_90.txt')
+    simple_example_SeaIce.add_layer(z1=0.10, z2=1.00, abs="pure_sea_ice", scat=50, dpf='dpf_OTHG_0_90.txt')
+    simple_example_SeaIce.add_layer(z1=1.00, z2=1.05, abs="pure_sea_ice", scat=50, dpf='dpf_OTHG_0_90.txt')
+    simple_example_SeaIce.add_layer(z1=1.05, z2=2.01, abs="pure_sea_ice", scat=0.1, dpf='dpf_OTHG_0_90.txt')
+    simple_example_SeaIce.run_simulation(printoutput=True)
+    simple_example_SeaIce.parse_results()
+    simple_example_SeaIce.draw_figures()
 
     # open_water_example = AC9Simulation(run_title='test_open', root_name='test_open', mode='open_water')
     # open_water_example.set_z_grid(z_max=3.00)

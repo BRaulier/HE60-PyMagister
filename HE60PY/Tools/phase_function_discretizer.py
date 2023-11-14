@@ -6,6 +6,10 @@ from scipy.integrate import quad
 from .olympus import *
 from scipy.interpolate import interp1d
 from scipy import integrate
+from .path import Path
+
+_path = Path()
+path_to_HE60 = _path.to_HE60
 
 
 def henvey_greenstein_pf(phi_deg, g):
@@ -24,7 +28,7 @@ def henvey_greenstein_2pf(phi_deg, gs, b):
     return beta
 
 def create_tabulated_file(angle_beta_array, tab_filename, pf_type):
-    path = '/Applications/HE60.app/Contents/source_code/Phase_Function_code/PF_user_data/Py_Magister_PF/'+tab_filename+'.txt'
+    path = f'{path_to_HE60}/Contents/source_code/Phase_Function_code/PF_user_data/Py_Magister_PF/'+tab_filename+'.txt'
     header = "/begin_header \n" \
              f"{pf_type} phase function \n"\
              "This file is on the HSF95 format for phase function discretization. \n" \
@@ -40,7 +44,7 @@ def create_tabulated_file(angle_beta_array, tab_filename, pf_type):
 
 
 def create_input_file(input_filename, dpf_filename, tab_filename, comment='If it ain’t broke, don’t fix it :).'):
-    path = '/Applications/HE60.app/Contents/source_code/Phase_Function_code/PF_PyMagister_input/'+input_filename+'.txt'
+    path = f'{path_to_HE60}/Contents/source_code/Phase_Function_code/PF_PyMagister_input/'+input_filename+'.txt'
     with open(path, 'w+') as file:
         file.write(dpf_filename+'\n')
         file.write(comment+'\n')
@@ -49,18 +53,18 @@ def create_input_file(input_filename, dpf_filename, tab_filename, comment='If it
 
 
 def create_executable_discretizer():
-    path = '/Applications/HE60.app/Contents/source_code/Phase_function_code'
-    path_to_PFdis = '/Applications/HE60.app/Contents/backend/PFdiscretization6'
-    cmd = ['sudo', './make_PFdiscretization6.sh']
+    path = f'{path_to_HE60}/Contents/source_code/Phase_function_code'
+    path_to_PFdis = f'{path_to_HE60}/Contents/backend/PFdiscretization6'
+    cmd = ['bash', './make_PFdiscretization6.sh']
     if DoesThisExist(path_to_PFdis):
-        pass  # Do not run this time consuming command if the file already exists.
+        pass  # Do not run this time-consuming command if the file already exists.
     else:
          subprocess.run(cmd, cwd=path, capture_output=True, check=True)
 
 
 def run_executable_discretizer(input_filename):
-    path = '/Applications/HE60.app/Contents/backend'
-    cmd = ['sudo ./PFdiscretization6 < ../source_code/Phase_Function_code/PF_PyMagister_input/'+input_filename+'.txt']
+    path = f'{path_to_HE60}/Contents/backend'
+    cmd = ['./PFdiscretization6 < ../source_code/Phase_Function_code/PF_PyMagister_input/'+input_filename+'.txt']
     subprocess.run(cmd, cwd=path, capture_output=True, check=True, shell=True)
 
 

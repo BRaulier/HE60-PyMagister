@@ -303,7 +303,7 @@ class DataViewer(DataBuilder):
         return R, T
 
     def get_R1R2_ratio(self, wavelength1, wavelength2):
-        R1, T1 = self.get_RT_at_wavelengtexith(wavelength1)
+        R1, T1 = self.get_RT_at_wavelength(wavelength1)
         R2, T2 = self.get_RT_at_wavelength(wavelength2)
         return R1/R2
 

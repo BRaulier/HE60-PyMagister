@@ -35,7 +35,7 @@ class BareIceDefaultBatch(RecordBuilder):
         # Record 4b
         self.default['record4']['iIOPmodel'] = 6  # User data IOP model
         self.default['record4']['iSkyRadmodel'] = 1  # Harrison and Coombes 1998 semi-empirical model
-        self.default['record4']['iSkyIrradmodel'] = -1  # Calls RADTRANX to obtain direct and direct irradiances
+        self.default['record4']['iSkyIrradmodel'] = 1  # Calls RADTRANX to obtain direct and direct irradiances
         self.default['record4']['iIOPTS'] = 0  # For pure water IOP's independent of temperature and salinity
         self.default['record4']['iChl'] = 0
         self.default['record4']['iCDOM'] = 0
@@ -80,17 +80,17 @@ class BareIceDefaultBatch(RecordBuilder):
     def set_record8(self):
         # record 8a
         self.default['record8']['iflagsky'] = 2  # 1: idealized sky, 2 (3): semi analytic, zenith angle or (time and location)
-        if self.default['record8']['iflagsky'] == 2:
+        if self.default['record8']['iflagsky'] == 2 or 1:
             self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['nsky'] = 3  # sunphi = 0.0 is downwind and sunphi = 90.0 places the Sun at a right angle to the wind.
             self.default['record8']['cloud'] = 0.5  # 0.0: clear sky, 1.0: solid overcast
-        elif self.default['record8']['iflagsky'] == 1:
+        if self.default['record8']['iflagsky'] == 1 or 2:
             self.default['record8']['suntheta'] = 45.0  # solar zenith angle (degrees)
-            self.default['record8']['nsky'] = 5
+            self.default['record8']['nsky'] = 3
             self.default['record8']['sunphi'] = 0.0  # solar azimuthal angle in degrees relative to the wind direction.
             self.default['record8']['C'] = 0.0  # Cardioidal parameter, 0.0: uniform sky, 2.0: cardioidal sky, 1.25: heavy overcast
-            self.default['record8']['rsky'] = 0.0  # 0.0: black sky, 1.0:full overcast
+            self.default['record8']['rsky'] = 1.0  # 0.0: black sky, 1.0:full overcast
             self.default['record8']['Edtotal'] = 1.0  # Downwelling spectral scalar irradiance du to sun and background
         # record 8b     # CORRESPONDING TO THE CHOICE OF IFLAGSKY (2), must be changed if you use other sky model ( 1 or 3)
         self.default['record8']['fjday'] = 180.0  # Julian day (for earth-sun distance)
