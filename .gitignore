@@ -8,4 +8,4 @@ build/*
 .DS_Store
 *.egg-info/
 HE60PY/Tools/database
-HE60PY/Tools/
+HE60PY/Tools/path_to_HE60.txt
