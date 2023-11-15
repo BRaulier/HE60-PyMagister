@@ -102,8 +102,9 @@ class EnvironmentBuilder:
                     print(line, end='')
         else:
             HE60_process.communicate()
-        # os.remove(bash_file_path)
-        # os.remove(self.ac9_path)
+        os.remove(bash_file_path)
+        os.remove(self.ac9_path)
+        os.remove(self.dddpf_path)
 
     def create_backscattering_file(self, path):
         header, footer = header_library.backscattering_file(self.wavelengths)
@@ -123,7 +124,9 @@ class EnvironmentBuilder:
             file.write(footer)
             
     def create_dddpf_file(self, folder_path):
-        with open(folder_path + 'Py_DDDPF_list.txt', 'w+') as file:
+        rootname = self.hermes.get['root_name']
+        self.dddpf_path = folder_path + f'DDDPF{rootname}.txt'
+        with open(self.dddpf_path, 'w+') as file:
             self.hermes.get['z_boundaries_dddpf'] = self.z_boundaries_dddpf
             self.hermes.get['dpf_filenames'] = self.dpf_filenames
             boundaries, assym_coeff = [], []
