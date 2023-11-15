@@ -125,7 +125,7 @@ class EnvironmentBuilder:
             
     def create_dddpf_file(self, folder_path):
         rootname = self.hermes.get['root_name']
-        self.dddpf_path = folder_path + f'DDDPF{rootname}.txt'
+        self.dddpf_path = folder_path + f'DDDPF{rootname}'
         with open(self.dddpf_path, 'w+') as file:
             self.hermes.get['z_boundaries_dddpf'] = self.z_boundaries_dddpf
             self.hermes.get['dpf_filenames'] = self.dpf_filenames
